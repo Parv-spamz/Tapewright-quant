@@ -35,7 +35,7 @@ from backtesting.metrics.risk_measures.measures import (
 from config.trading.risk_limits import RiskLimits
 from integrity.ledger import Ledger, canonical_json
 from research.costs import build_fill_model
-from research.data_access import ResearchData
+from research.data_access import ResearchData, get_experiment_result_path, save_experiment_results
 from research.protocol import protocol_chain
 from research.strategies_registry import build_strategy
 
@@ -118,7 +118,7 @@ def run_experiment(
     - Registered protocol requirement
     - Duplicate detection for 'trial' role (returns stored record without re-running)
     - Full metric calculation and recording in tamper-evident ledger
-    - Net daily returns saved to research/results/<run_id>.parquet
+    - Net daily returns saved to research/results/<run_id>
     """
     # 1. Require registered protocol
     try:
@@ -226,21 +226,20 @@ def run_experiment(
             "final_equity": float(eq_curve["equity"].iloc[-1]) if len(eq_curve) > 0 else 100_000.0,
         }
 
-        # 6. Save results to parquet
+        # 6. Save results
         run_id = f"{spec.family}_{spec.spec_hash[:12]}_{spec.split}_{uuid.uuid4().hex[:8]}"
         results_dir = Path("research/results")
-        results_dir.mkdir(parents=True, exist_ok=True)
-        results_path = results_dir / f"{run_id}.parquet"
+        results_path = get_experiment_result_path(results_dir, run_id)
 
         results_df = pd.DataFrame({
             "timestamp": eq_curve.index if isinstance(eq_curve.index, pd.DatetimeIndex) else pd.date_range("2020-01-01", periods=len(eq_curve)),
             "net_return": rets.reindex(eq_curve.index, fill_value=0.0).values,
             "equity": eq_curve["equity"].values,
         })
-        results_df.to_parquet(results_path, index=False)
+        save_experiment_results(results_df, results_path)
 
-        parquet_bytes = results_path.read_bytes()
-        results_sha = hashlib.sha256(parquet_bytes).hexdigest()
+        res_bytes = results_path.read_bytes()
+        results_sha = hashlib.sha256(res_bytes).hexdigest()
 
         # 7. Record in ledger
         payload = {
@@ -274,6 +273,6 @@ def run_experiment(
         }
         try:
             ledger.append(kind="experiment", status="FAIL", tag=f"experiment.{spec.family}", payload=fail_payload)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.warning("Failed to record experiment failure to ledger: %s", err)
         raise

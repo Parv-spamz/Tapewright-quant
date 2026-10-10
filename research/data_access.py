@@ -84,3 +84,20 @@ class ResearchData:
     def access_counts(self) -> int:
         """Return the number of validation split data accesses performed by this instance."""
         return self._val_access_count
+
+
+def get_experiment_result_path(results_dir: Path | str, run_id: str) -> Path:
+    """Return the filesystem path for an experiment run's results file."""
+    return Path(results_dir) / f"{run_id}.parquet"
+
+
+def save_experiment_results(df: pd.DataFrame, path: Path | str) -> None:
+    """Save experiment return series / results dataframe to parquet format."""
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(p)
+
+
+def load_experiment_results(path: Path | str) -> pd.DataFrame:
+    """Load experiment return series / results dataframe from parquet format."""
+    return pd.read_parquet(Path(path))

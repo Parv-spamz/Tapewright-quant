@@ -50,7 +50,7 @@ class MockResearchData(ResearchData):
 
 
 @pytest.fixture
-def test_environment(tmp_path: Path):
+def synth_environment(tmp_path: Path):
     """Fixture providing a temporary ledger, protocol, and synthetic ResearchData."""
     ledger_path = tmp_path / "test_ledger.jsonl"
     ledger = Ledger(str(ledger_path))
@@ -100,7 +100,7 @@ def test_environment(tmp_path: Path):
     }
 
 
-def test_running_without_registered_protocol_raises(test_environment: dict[str, Any]) -> None:
+def test_running_without_registered_protocol_raises(synth_environment: dict[str, Any]) -> None:
     """Attempting to run an experiment with an unregistered protocol ID raises ValueError."""
     spec = ExperimentSpec(
         family="crossover",
@@ -113,16 +113,16 @@ def test_running_without_registered_protocol_raises(test_environment: dict[str, 
         run_experiment(
             spec=spec,
             protocol_id="unregistered_protocol_deadbeef",
-            ledger=test_environment["ledger"],
-            data=test_environment["data"],
+            ledger=synth_environment["ledger"],
+            data=synth_environment["data"],
         )
 
 
-def test_duplicate_trial_returns_stored_record(test_environment: dict[str, Any]) -> None:
+def test_duplicate_trial_returns_stored_record(synth_environment: dict[str, Any]) -> None:
     """Duplicate trial run returns stored record and leaves ledger record count unchanged."""
-    ledger: Ledger = test_environment["ledger"]
-    proto_id: str = test_environment["protocol_id"]
-    data: ResearchData = test_environment["data"]
+    ledger: Ledger = synth_environment["ledger"]
+    proto_id: str = synth_environment["protocol_id"]
+    data: ResearchData = synth_environment["data"]
 
     spec = ExperimentSpec(
         family="crossover",
@@ -145,11 +145,11 @@ def test_duplicate_trial_returns_stored_record(test_environment: dict[str, Any])
     assert res1["run_id"] == res2["run_id"]
 
 
-def test_trial_count_equals_distinct_specs(test_environment: dict[str, Any]) -> None:
+def test_trial_count_equals_distinct_specs(synth_environment: dict[str, Any]) -> None:
     """trial_count strictly measures distinct spec_hash with role 'trial' and split 'dev'."""
-    ledger: Ledger = test_environment["ledger"]
-    proto_id: str = test_environment["protocol_id"]
-    data: ResearchData = test_environment["data"]
+    ledger: Ledger = synth_environment["ledger"]
+    proto_id: str = synth_environment["protocol_id"]
+    data: ResearchData = synth_environment["data"]
 
     spec1 = ExperimentSpec(
         family="crossover",
@@ -190,11 +190,11 @@ def test_trial_count_equals_distinct_specs(test_environment: dict[str, Any]) -> 
     assert trial_count(proto_id, ledger) == 2
 
 
-def test_buy_and_hold_zero_cost_reproduces_hand_computed_equity(test_environment: dict[str, Any]) -> None:
+def test_buy_and_hold_zero_cost_reproduces_hand_computed_equity(synth_environment: dict[str, Any]) -> None:
     """Zero-cost buy-and-hold matches hand-computed mathematical final equity."""
-    ledger: Ledger = test_environment["ledger"]
-    proto_id: str = test_environment["protocol_id"]
-    data: ResearchData = test_environment["data"]
+    ledger: Ledger = synth_environment["ledger"]
+    proto_id: str = synth_environment["protocol_id"]
+    data: ResearchData = synth_environment["data"]
 
     spec = ExperimentSpec(
         family="buy_and_hold_spy",
@@ -219,11 +219,11 @@ def test_buy_and_hold_zero_cost_reproduces_hand_computed_equity(test_environment
     assert final_eq == pytest.approx(expected_equity, rel=1e-3)
 
 
-def test_cost_increases_monotonically_reduce_final_equity(test_environment: dict[str, Any]) -> None:
+def test_cost_increases_monotonically_reduce_final_equity(synth_environment: dict[str, Any]) -> None:
     """Higher execution costs monotonically reduce final portfolio equity."""
-    ledger: Ledger = test_environment["ledger"]
-    proto_id: str = test_environment["protocol_id"]
-    data: ResearchData = test_environment["data"]
+    ledger: Ledger = synth_environment["ledger"]
+    proto_id: str = synth_environment["protocol_id"]
+    data: ResearchData = synth_environment["data"]
 
     spec = ExperimentSpec(
         family="crossover",
@@ -246,11 +246,11 @@ def test_cost_increases_monotonically_reduce_final_equity(test_environment: dict
     assert eq_0x >= eq_1x >= eq_2x >= eq_4x
 
 
-def test_fail_record_written_when_strategy_raises(test_environment: dict[str, Any]) -> None:
+def test_fail_record_written_when_strategy_raises(synth_environment: dict[str, Any]) -> None:
     """Strategy failure appends a record with status FAIL and re-raises exception."""
-    ledger: Ledger = test_environment["ledger"]
-    proto_id: str = test_environment["protocol_id"]
-    data: ResearchData = test_environment["data"]
+    ledger: Ledger = synth_environment["ledger"]
+    proto_id: str = synth_environment["protocol_id"]
+    data: ResearchData = synth_environment["data"]
 
     spec = ExperimentSpec(
         family="crossover",
@@ -273,11 +273,11 @@ def test_fail_record_written_when_strategy_raises(test_environment: dict[str, An
     assert "error" in fail_records[-1]["payload"]
 
 
-def test_results_sha256_matches_saved_file(test_environment: dict[str, Any]) -> None:
+def test_results_sha256_matches_saved_file(synth_environment: dict[str, Any]) -> None:
     """results_sha256 in payload matches the SHA-256 of the saved parquet file on disk."""
-    ledger: Ledger = test_environment["ledger"]
-    proto_id: str = test_environment["protocol_id"]
-    data: ResearchData = test_environment["data"]
+    ledger: Ledger = synth_environment["ledger"]
+    proto_id: str = synth_environment["protocol_id"]
+    data: ResearchData = synth_environment["data"]
 
     spec = ExperimentSpec(
         family="breakout",

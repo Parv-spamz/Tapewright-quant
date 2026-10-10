@@ -691,4 +691,45 @@ Database name: `tapewright_db`
 - **Known Limitations**:
   - Live FRED macro data fetch is subject to external network latency/timeouts; handled gracefully with fallback logging without corrupting research manifests.
   - Parquet partition directories require empty `__init__.py` markers if scanned by universal scaffold directory tests; automatically managed.
-
+### Prompt 21: Experiment Harness, Honest Trial Counting, Ablations
+- **Status**: COMPLETE
+- **Issue**: #6 (`Prompt 21: Experiment Harness, Honest Trial Counting, Ablations`)
+- **Part A: Experiment Runner, Cost Models, Registry & Baselines**:
+  - **Files Created / Modified**:
+    - `research/costs.py` (mapping protocol cost models to Prompt 10 execution costs and slippage objects)
+    - `research/strategies_registry.py` (registry for 6 strategy families: crossover, breakout, mean_reversion, xs_momentum, pairs, ml_meta, plus 4 baselines)
+    - `research/experiment.py` (`ExperimentSpec` immutable frozen spec with role-excluded canonical hash, `run_experiment` idempotency and ledger audit, `trial_count`)
+    - `tests/unit/test_experiment.py` (7 tests covering duplicate caching, trial counting, buy-and-hold reproduction, cost monotonicity, error logging, result hashes)
+    - `logs/proof/p21a_pytest.txt` (7 passed in 0.99s)
+- **Part B: Grid Search, Candidate Selection, Validation & Lockbox CLI**:
+  - **Files Created / Modified**:
+    - `research/grid.py` (grid generator for all 55 parameter combinations across 6 strategy families and baselines)
+    - `research/selection.py` (objective candidate selection, deflated Sharpe ratio DSR across dev trials, validation evaluation, protocol survival rule, trial matrix and PBO)
+    - `research/run_dev.py` (dev pipeline runner)
+    - `research/run_val.py` (val pipeline runner)
+    - `research/run_lockbox.py` (CLI refusing execution without exact confirmation passphrase; lockbox untouched)
+    - `tests/unit/test_selection.py` (6 tests covering DSR reference matching, selection constraints, deterministic selection, survival rule, validation idempotency, lockbox refusal)
+    - `logs/proof/p21b_dev.txt` (55 dev trials, dev PBO: 0.1580, 6 candidates selected)
+    - `logs/proof/p21b_val.txt` (All 6 candidates evaluated on validation; outcome: "no candidate survives the protocol" honestly reported)
+- **Part C: Component Ablations, Sensitivity Surfaces & Real Stress Calibration**:
+  - **Files Created / Modified**:
+    - `research/ablation.py` (V0-V5 pillar decomposition, LOO variants, paired block-bootstrap difference CIs)
+    - `research/sensitivity.py` (parameter grid Sharpe surfaces, plateau scores, cost sweeps across 0x-4x, break-even cost multipliers)
+    - `research/real_stress.py` (empirical historical stress calibration for 2008 Lehman, 2020 COVID, 2022 rate hikes, realized drawdown vs model)
+    - `research/run_ablation.py` (ablation runner)
+    - `research/run_sensitivity.py` (sensitivity runner)
+    - `research/run_stress.py` (stress calibration runner)
+    - `tests/unit/test_ablation.py` (5 tests covering variant step differences, paired bootstrap CI coverage, plateau score calculation, break-even interpolation, drawdown calculation to 1e-12)
+    - `logs/proof/p21c_ablation.txt` (Crossover ablation: V0-V4, V5 NOT_RUN, LOO analysis, paired 95% CIs)
+    - `logs/proof/p21c_sensitivity.txt` (Plateau scores and cost multiplier break-evens for 6 families)
+    - `logs/proof/p21c_stress.txt` (Calibrated real equity shocks: 2008 GFC -46.04%, 2020 COVID -33.72%, 2022 rate hikes -24.50%)
+- **Finish Protocol**:
+  - `logs/proof/p21_syntax.txt`: 607 files checked, 0 failed
+  - `logs/proof/p21_constraints.txt`: Constraints check PASSED: 0 violations
+  - `logs/proof/p21_test_integrity.txt`: check_test_integrity PASSED: 0 violations
+  - `logs/proof/p21_pytest.txt`: 18 passed in 21.25s across Prompt 21 test suites
+  - `integrity.record_proof`: Proof recorded for tag `p21` with status PASS
+- **Honest Empirical Results & Limitations**:
+  - **Validation Survival**: Zero candidates survived the pre-registered protocol rule (dev DSR threshold >= 0.90 not attained; crossover=0.0360, xs_momentum=0.0284, pairs=0.0090, ml_meta=0.0072). This honest empirical outcome is documented without parameter or threshold tuning.
+  - **Break-Even Cost Multipliers**: Crossover, mean reversion, ml_meta, and xs_momentum maintained positive Sharpe across the tested 0x to 4x range; break-even is reported as `NOT_FOUND` as net Sharpe did not cross 0 within the sweep bounds. Breakout crossed 0 at 0.2900x.
+  - **Lockbox Holdout**: The lockbox vault data remains completely untouched and unopened (`UNOPENED`, `eval_count=0`).

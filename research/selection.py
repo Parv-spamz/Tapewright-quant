@@ -26,7 +26,7 @@ from backtesting.metrics.risk_measures.overfit import (
     probability_of_backtest_overfitting,
 )
 from integrity.ledger import Ledger
-from research.data_access import ResearchData
+from research.data_access import ResearchData, get_experiment_result_path, load_experiment_results
 from research.experiment import ExperimentSpec, run_experiment, trial_count
 from research.protocol import protocol_chain
 
@@ -40,7 +40,7 @@ def trial_matrix(
 ) -> pd.DataFrame:
     """Build dates x trials matrix of dev net returns from verified results files.
 
-    Each results parquet file is cryptographically checked against its recorded SHA-256 hash.
+    Each results file is cryptographically checked against its recorded SHA-256 hash.
     """
     led = ledger or Ledger()
     chain = protocol_chain(protocol_id, led)
@@ -62,7 +62,7 @@ def trial_matrix(
     for r in trial_records:
         p = r["payload"]
         run_id = p["run_id"]
-        res_path = Path(p.get("results_path", r_dir / f"{run_id}.parquet"))
+        res_path = Path(p.get("results_path", get_experiment_result_path(r_dir, run_id)))
         if not res_path.exists():
             continue
 
@@ -72,7 +72,7 @@ def trial_matrix(
         if expected_sha and file_sha != expected_sha:
             raise ValueError(f"Hash mismatch for results file {res_path}: expected {expected_sha}, got {file_sha}")
 
-        df = pd.read_parquet(res_path)
+        df = load_experiment_results(res_path)
         if "timestamp" in df.columns and "net_return" in df.columns:
             s = pd.Series(df["net_return"].values, index=pd.to_datetime(df["timestamp"]))
             series_map[run_id] = s
@@ -150,11 +150,11 @@ def dev_dsr(
 
     # Load returns for target run
     r_dir = Path(results_dir)
-    target_path = Path(target_p.get("results_path", r_dir / f"{run_id}.parquet"))
+    target_path = Path(target_p.get("results_path", get_experiment_result_path(r_dir, run_id)))
     if not target_path.exists():
         raise FileNotFoundError(f"Results file not found: {target_path}")
 
-    target_df = pd.read_parquet(target_path)
+    target_df = load_experiment_results(target_path)
     rets = target_df["net_return"].values
     T = len(rets)
     sr_hat = compute_per_period_sharpe(rets)
@@ -174,9 +174,9 @@ def dev_dsr(
     all_sharpes: list[float] = []
     for r in trial_records:
         rp = r["payload"]
-        p_file = Path(rp.get("results_path", r_dir / f"{rp['run_id']}.parquet"))
+        p_file = Path(rp.get("results_path", get_experiment_result_path(r_dir, rp["run_id"])))
         if p_file.exists():
-            df_t = pd.read_parquet(p_file)
+            df_t = load_experiment_results(p_file)
             if "net_return" in df_t:
                 all_sharpes.append(compute_per_period_sharpe(df_t["net_return"].values))
 
@@ -430,7 +430,7 @@ def evaluate_on_validation(
 
         val_res = run_experiment(val_spec, protocol_id, led, rd)
         val_path = Path(val_res["results_path"])
-        val_df = pd.read_parquet(val_path)
+        val_df = load_experiment_results(val_path)
         val_rets = val_df["net_return"].values
         T = len(val_rets)
 
