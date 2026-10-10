@@ -170,3 +170,156 @@ class TestLedger:
         mod_a.write_text("x = 2\n", encoding="utf-8")
         h3 = code_hash(tmp_path)
         assert h1 != h3, "code_hash failed to detect modification in source file"
+
+
+class TestProvenance:
+    """Tests for dataset provenance, raw page archiving, and realism fingerprinting."""
+
+    def test_parsed_hash_deterministic(self) -> None:
+        import numpy as np
+        import pandas as pd
+        from integrity.provenance import parsed_hash
+
+        df1 = pd.DataFrame(
+            {"price": [100.0, 101.5, 99.8], "volume": [1000, 1500, 1200]},
+            index=pd.date_range("2024-01-01", periods=3),
+        )
+        df2 = pd.DataFrame(
+            {"price": [100.0, 101.5, 99.8], "volume": [1000, 1500, 1200]},
+            index=pd.date_range("2024-01-01", periods=3),
+        )
+        assert parsed_hash(df1) == parsed_hash(df2)
+
+        # Content difference must yield different hash
+        df3 = df1.copy()
+        df3.iloc[0, 0] = 100.01
+        assert parsed_hash(df1) != parsed_hash(df3)
+
+    def test_archive_raw_and_load_raw_tamper_detection(self, tmp_path: Path) -> None:
+        from integrity.provenance import archive_raw, load_raw, ProvenanceError
+
+        archive_dir = tmp_path / "raw_archive"
+        raw_data = b"raw_market_tick_data_page_123"
+
+        sha = archive_raw(raw_data, archive_dir)
+        loaded = load_raw(sha, archive_dir)
+        assert loaded == raw_data
+
+        # Tampering with raw file makes load_raw raise ProvenanceError
+        raw_file = archive_dir / f"{sha}.bin"
+        raw_file.write_bytes(b"corrupted_market_tick_data_page")
+
+        with pytest.raises(ProvenanceError, match="corrupted or tampered"):
+            load_raw(sha, archive_dir)
+
+    def test_require_real_raises_for_synthetic_manifest(self) -> None:
+        from integrity.provenance import DatasetManifest, ProvenanceError, require_real
+
+        synthetic_manifest = DatasetManifest.create(
+            source_kind="synthetic",
+            source_name="monte_carlo_gbm",
+            params={"n": 1000},
+            fetched_at_utc="2024-01-01T00:00:00Z",
+            n_rows=1000,
+            raw_pages=[],
+            raw_sha256="0" * 64,
+            parsed_sha256="0" * 64,
+            fingerprint={"n": 1000},
+        )
+        with pytest.raises(ProvenanceError, match="synthetic"):
+            require_real(synthetic_manifest)
+
+        real_manifest = DatasetManifest.create(
+            source_kind="real_api",
+            source_name="polygon_equities",
+            params={"ticker": "AAPL"},
+            fetched_at_utc="2024-01-01T00:00:00Z",
+            n_rows=1000,
+            raw_pages=[],
+            raw_sha256="0" * 64,
+            parsed_sha256="0" * 64,
+            fingerprint={"n": 1000},
+        )
+        # Does not raise
+        require_real(real_manifest)
+
+    def test_looks_synthetic_gbm_true_for_gbm_and_false_for_garch(self) -> None:
+        import numpy as np
+        from integrity.provenance import looks_synthetic_gbm, realism_fingerprint
+
+        # 1. Simulate GBM daily returns: n=2000, i.i.d. normal
+        np.random.seed(101)
+        n = 2000
+        gbm_returns = np.random.normal(loc=0.0002, scale=0.01, size=n)
+        fp_gbm = realism_fingerprint(gbm_returns)
+
+        print("\nGBM Fingerprint:", fp_gbm)
+        assert looks_synthetic_gbm(fp_gbm) is True, (
+            f"GBM series failed looks_synthetic_gbm: {fp_gbm}"
+        )
+
+        # 2. Simulate GARCH(1,1) series with t(5) innovations (volatility clustering & heavy tails)
+        np.random.seed(202)
+        omega = 1e-5
+        alpha = 0.15
+        beta = 0.80
+        z = np.random.standard_t(df=5, size=n)
+        z = z / np.std(z)
+
+        r_garch = np.zeros(n)
+        sig2 = np.zeros(n)
+        sig2[0] = omega / max(1e-6, 1.0 - alpha - beta)
+        r_garch[0] = np.sqrt(sig2[0]) * z[0]
+
+        for t in range(1, n):
+            sig2[t] = omega + alpha * (r_garch[t - 1] ** 2) + beta * sig2[t - 1]
+            r_garch[t] = np.sqrt(sig2[t]) * z[t]
+
+        fp_garch = realism_fingerprint(r_garch)
+        print("GARCH(1,1) Fingerprint:", fp_garch)
+        assert looks_synthetic_gbm(fp_garch) is False, (
+            f"GARCH(1,1) was falsely flagged as synthetic GBM: {fp_garch}"
+        )
+
+    def test_verify_manifest_full_cycle(self, tmp_path: Path) -> None:
+        import pandas as pd
+        from integrity.provenance import (
+            DatasetManifest,
+            archive_raw,
+            parsed_hash,
+            realism_fingerprint,
+            verify_manifest,
+            ProvenanceError,
+        )
+
+        archive_dir = tmp_path / "archive"
+        raw_bytes = b"sample_raw_csv_page_bytes"
+        raw_sha = archive_raw(raw_bytes, archive_dir)
+
+        df = pd.DataFrame(
+            {"returns": [0.01, -0.02, 0.015, -0.005] * 10},
+            index=pd.date_range("2024-01-01", periods=40),
+        )
+        p_sha = parsed_hash(df)
+        fp = realism_fingerprint(df["returns"])
+
+        manifest = DatasetManifest.create(
+            source_kind="real_user_file",
+            source_name="user_returns_csv",
+            params={"file": "test.csv"},
+            fetched_at_utc="2024-01-01T12:00:00Z",
+            n_rows=len(df),
+            raw_pages=[raw_sha],
+            raw_sha256=raw_sha,
+            parsed_sha256=p_sha,
+            fingerprint=fp,
+        )
+
+        # Valid manifest passes
+        assert verify_manifest(manifest, df, archive_dir) is True
+
+        # Modified DataFrame raises ProvenanceError
+        df_modified = df.copy()
+        df_modified.iloc[0, 0] = 0.99
+        with pytest.raises(ProvenanceError, match="DataFrame hash mismatch"):
+            verify_manifest(manifest, df_modified, archive_dir)
