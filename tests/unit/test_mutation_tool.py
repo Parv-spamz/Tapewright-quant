@@ -15,11 +15,16 @@ import subprocess
 import sys
 import tempfile
 
-from scripts.mutation_test import (
-    MutationApplier,
-    MutationCollector,
-    compute_tree_hashes,
-)
+import importlib.util
+
+_mut_path = Path(__file__).resolve().parents[2] / "scripts" / "mutation_test.py"
+_spec = importlib.util.spec_from_file_location("mutation_test_module", _mut_path)
+_mut_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mut_mod)
+
+MutationApplier = _mut_mod.MutationApplier
+MutationCollector = _mut_mod.MutationCollector
+compute_tree_hashes = _mut_mod.compute_tree_hashes
 
 
 def test_toy_module_weak_test_shows_survivors(tmp_path: Path) -> None:
