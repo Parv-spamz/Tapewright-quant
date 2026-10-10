@@ -1,0 +1,25 @@
+﻿=== FINPULSE-APEX ABLATION STUDY EXECUTION ===
+Active Protocol ID: f01f0813ddedf76eb97e5ab3cb35de473935bf31e6b093e508d5de066466d5ac
+
+=========================================================================================================
+Variant          | Split  | Status     | Sharpe     | Paired 95% CI            | Outcome                 
+---------------------------------------------------------------------------------------------------------
+V0               | dev    | PASS       | 0.6839     | [0.0000, 0.0000]         | baseline                
+V1               | dev    | PASS       | 0.6457     | [-0.0462, -0.0314]       | demonstrated benefit    
+V2               | dev    | PASS       | 0.6457     | [0.0000, 0.0000]         | no demonstrated benefit 
+V3               | dev    | PASS       | 0.6457     | [0.0000, 0.0000]         | no demonstrated benefit 
+V4               | dev    | PASS       | 0.6457     | [0.0000, 0.0000]         | no demonstrated benefit 
+V5               | dev    | NOT_RUN    | N/A        | N/A                      | Family crossover does not support side meta-label signals
+LOO_costs        | dev    | PASS       | 0.6839     | [0.0314, 0.0462]         | demonstrated benefit    
+LOO_vol_filter   | dev    | PASS       | 0.6457     | [-0.0462, -0.0314]       | demonstrated benefit    
+LOO_causal_gate  | dev    | PASS       | 0.6457     | [0.0000, 0.0000]         | no demonstrated benefit 
+V0               | val    | PASS       | 0.3747     | [0.0000, 0.0000]         | baseline                
+V1               | val    | PASS       | 0.3059     | [-0.0852, -0.0553]       | demonstrated benefit    
+V2               | val    | PASS       | 0.3059     | [0.0000, 0.0000]         | no demonstrated benefit 
+V3               | val    | PASS       | 0.3059     | [0.0000, 0.0000]         | no demonstrated benefit 
+V4               | val    | PASS       | 0.3059     | [0.0000, 0.0000]         | no demonstrated benefit 
+V5               | val    | NOT_RUN    | N/A        | N/A                      | Family crossover does not support side meta-label signals
+LOO_costs        | val    | PASS       | 0.3747     | [0.0553, 0.0852]         | demonstrated benefit    
+LOO_vol_filter   | val    | PASS       | 0.3059     | [-0.0852, -0.0553]       | demonstrated benefit    
+LOO_causal_gate  | val    | PASS       | 0.3059     | [0.0000, 0.0000]         | no demonstrated benefit 
+=========================================================================================================

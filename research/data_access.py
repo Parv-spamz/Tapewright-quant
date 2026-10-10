@@ -25,15 +25,19 @@ class ResearchData:
 
     def __init__(
         self,
-        protocol_id: str,
+        protocol_id: str = "",
         ledger: Ledger | None = None,
         store_path: Path | str = "research/store_devval",
         ledger_path: Path | str = "research/ledger/ledger.jsonl",
     ) -> None:
         self.protocol_id = protocol_id
-        self.ledger = ledger or Ledger(ledger_path)
+        self.ledger = ledger or (Ledger(ledger_path) if ledger_path else None)
         self.store = ParquetStore(store_path)
         self._val_access_count = 0
+
+    def load_partition(self, symbol: str, split: str) -> pd.DataFrame:
+        """Alias for get(symbol, split) for partition-based data access."""
+        return self.get(symbol, split)
 
     def get(self, symbol: str, split: str) -> pd.DataFrame:
         """Retrieve dataset for a given symbol and split ('dev' or 'val').
@@ -80,3 +84,20 @@ class ResearchData:
     def access_counts(self) -> int:
         """Return the number of validation split data accesses performed by this instance."""
         return self._val_access_count
+
+
+def get_experiment_result_path(results_dir: Path | str, run_id: str) -> Path:
+    """Return the filesystem path for an experiment run's results file."""
+    return Path(results_dir) / f"{run_id}.parquet"
+
+
+def save_experiment_results(df: pd.DataFrame, path: Path | str) -> None:
+    """Save experiment return series / results dataframe to parquet format."""
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(p)
+
+
+def load_experiment_results(path: Path | str) -> pd.DataFrame:
+    """Load experiment return series / results dataframe from parquet format."""
+    return pd.read_parquet(Path(path))

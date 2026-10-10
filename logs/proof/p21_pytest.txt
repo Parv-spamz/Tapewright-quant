@@ -1,0 +1,29 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 18 items
+
+tests/unit/test_experiment.py::test_running_without_registered_protocol_raises PASSED [  5%]
+tests/unit/test_experiment.py::test_duplicate_trial_returns_stored_record PASSED [ 11%]
+tests/unit/test_experiment.py::test_trial_count_equals_distinct_specs PASSED [ 16%]
+tests/unit/test_experiment.py::test_buy_and_hold_zero_cost_reproduces_hand_computed_equity PASSED [ 22%]
+tests/unit/test_experiment.py::test_cost_increases_monotonically_reduce_final_equity PASSED [ 27%]
+tests/unit/test_experiment.py::test_fail_record_written_when_strategy_raises PASSED [ 33%]
+tests/unit/test_experiment.py::test_results_sha256_matches_saved_file PASSED [ 38%]
+tests/unit/test_selection.py::test_dev_dsr_matches_prompt19_reference_on_built_matrix PASSED [ 44%]
+tests/unit/test_selection.py::test_selection_obeys_constraints_on_hand_built_ledger PASSED [ 50%]
+tests/unit/test_selection.py::test_selection_is_deterministic PASSED     [ 55%]
+tests/unit/test_selection.py::test_survival_rule_on_three_handmade_cases PASSED [ 61%]
+tests/unit/test_selection.py::test_evaluate_on_validation_idempotency_and_unselected_check PASSED [ 66%]
+tests/unit/test_selection.py::test_run_lockbox_refuses_without_exact_confirmation PASSED [ 72%]
+tests/unit/test_ablation.py::test_ablation_variants_produced_in_order_differ_by_one_flag PASSED [ 77%]
+tests/unit/test_ablation.py::test_paired_bootstrap_ci_contains_true_difference_planted_case PASSED [ 83%]
+tests/unit/test_ablation.py::test_plateau_score_on_hand_surface PASSED   [ 88%]
+tests/unit/test_ablation.py::test_break_even_cost_multiplier_on_hand_example PASSED [ 94%]
+tests/unit/test_ablation.py::test_calculate_peak_to_trough_drawdown_to_1e12 PASSED [100%]
+
+============================= 18 passed in 21.25s =============================
