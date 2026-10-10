@@ -1,0 +1,13 @@
+data/caching/parquet_store/*
+!data/caching/parquet_store/__init__.py
+logs/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.db
+*.sqlite
+*.sqlite3
+data/*.db

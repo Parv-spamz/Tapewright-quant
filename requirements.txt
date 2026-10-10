@@ -1,0 +1,17 @@
+numpy
+scipy
+pandas
+pyarrow
+statsmodels
+arch
+scikit-learn
+torch
+xgboost
+lightgbm
+catboost
+gymnasium
+PyMySQL
+mysql-connector-python
+pytest
+streamlit
+plotly

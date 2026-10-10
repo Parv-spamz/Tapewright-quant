@@ -1,0 +1,3 @@
+"""
+cointegration package module.
+"""

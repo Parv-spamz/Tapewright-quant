@@ -1,0 +1,67 @@
+======================================================================
+                  TAPEWRIGHT-QUANT TEARSHEET REPORT
+======================================================================
+
+=== SUMMARY PERFORMANCE METRICS ===
+  Annualized Return (CAGR) :     -0.87%
+  Annualized Volatility    :      6.01%
+  Sharpe Ratio (Rf=0.0%)  :    -0.1159
+  Sortino Ratio            :    -0.1444
+  Calmar Ratio             :    -0.0557
+  Max Drawdown             :    -15.70%
+  Historical VaR (99%)     :      0.78%
+  Historical CVaR (99%)    :      1.49%
+  Cornish-Fisher VaR (99%) :      2.26%
+  Omega Ratio              :     0.9785
+  Skewness                 :    -4.1008
+  Raw Kurtosis             :    58.5423
+
+=== OVERFITTING & PROBABILISTIC SHARPE (PSR/DSR) ===
+  Probabilistic Sharpe (PSR) :     0.4025
+  Deflated Sharpe (DSR)      : Not computed (trial_sharpes not provided, n_trials=1)
+
+=== BOOTSTRAP SHARPE CONFIDENCE INTERVAL ===
+  95% Block Bootstrap CI     : [-1.0057, 0.9324]
+
+=== TOP 5 DRAWDOWN PERIODS ===
+     start     trough        end     depth  duration  recovery_duration
+2023-04-03 2026-05-05        NaT -0.157049       703                NaN
+2022-06-15 2022-10-19 2023-03-27 -0.066449       195              108.0
+2021-11-08 2022-01-05 2022-02-09 -0.036649        64               24.0
+2022-02-23 2022-03-21 2022-05-03 -0.015717        48               30.0
+2021-09-30 2021-10-04 2021-10-18 -0.009634        12               10.0
+
+=== MONTHLY RETURNS GRID ===
+         Jan     Feb     Mar     Apr     May     Jun     Jul     Aug     Sep     Oct     Nov     Dec    Year
+2021       -       -       -       -       -       -       -   0.00%   0.00%   0.13%  -0.38%  -1.70%  -1.95%
+2022   2.08%   2.10%  -0.20%   0.21%   2.72%  -2.10%   1.22%  -1.25%  -2.32%  -0.54%   1.13%  -1.04%   1.87%
+2023   1.18%   2.33%   3.02%  -0.95%  -1.86%  -0.55%   1.84%  -0.83%   1.01%  -0.11%  -1.83%   2.84%   6.08%
+2024       -       -       -       -       -       -       -       -  -5.29%   0.26%  -0.87%  -0.21%  -6.06%
+2025  -1.49%   1.22%   2.93%  -0.60%   0.55%   1.55%  -0.85%   1.44%  -1.88%  -2.52%  -1.17%  -4.94%  -5.84%
+2026  -0.18%  -1.16%  -0.63%  -1.48%   2.08%   1.75%  -0.26%   1.09%   2.09%  -0.59%       -       -   2.66%
+
+=== TRADE STATISTICS ===
+  Total Closed Trades      :         43
+  Win Rate                 :     23.26%
+  Profit Factor            :     0.7923
+  Average Win              :    2460.50
+  Average Loss             :    -941.03
+  Portfolio Turnover       :      10.63
+
+=== ASCII EQUITY CURVE ===
+106700.89 |                      #                                    
+          |                       #     # #                           
+          |           # #      #   # ### #           #                
+          |            # #      #   #                 ##              
+          |        ###                           ####   #             
+          |    #  #       # ###            ##                         
+          | ###                              ## #        ##           
+          |     ##         #                   #                      
+          |                                                           
+          |                                                          #
+          |                                                      # ## 
+          |                                                ##     #   
+          |                                                  ## #     
+          |                                                    #      
+ 89943.61 |                                                           
+======================================================================

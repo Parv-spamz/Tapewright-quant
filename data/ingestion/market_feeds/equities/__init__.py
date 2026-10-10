@@ -1,0 +1,3 @@
+"""
+equities package module.
+"""

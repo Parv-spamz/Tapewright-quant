@@ -1,0 +1,3 @@
+"""
+trading package module.
+"""

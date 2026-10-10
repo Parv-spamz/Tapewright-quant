@@ -1,0 +1,3 @@
+"""
+trend package module.
+"""

@@ -1,0 +1,562 @@
+# Tapewright-Quant Engine Progress
+
+## Prompts Checklist
+- [x] Prompt 01: Setup tooling, requirements, pytest config, constraints enforcement, scaffold tests
+- [x] Prompt 02: Configuration loaders, environment settings, and risk parameters
+- [x] Prompt 03: Database connection layer, repository abstractions, and schema management
+- [x] Prompt 04: Market data ingestion feeds (equities, crypto, fx) and synthetic data generator
+- [x] Prompt 05: Data cleaning, corporate actions, schema validation, and Parquet caching
+- [x] Prompt 06: Technical indicator feature engineering (momentum, volatility, trend, volume)
+- [x] Prompt 07: Market microstructure, tick entropy, and order book imbalance features
+- [x] Prompt 08: Econometric modeling (cointegration, fractional differentiation, Kalman filter)
+- [x] Prompt 09: Strictly causal discrete event-driven backtesting engine
+- [x] Prompt 10: Microstructure-realistic execution mechanics and Level-2 LOB simulator
+- [x] Prompt 11: Risk metrics, anti-overfitting statistics, position sizing, drawdown analysis, and tearsheet
+- [x] Prompt 12: Causal signal generators, regime & predictive causality filtering, cross-sectional ranking, pairs arbitrage, portfolio optimization, and persistence
+- [x] Prompt 13: Statistical and econometric time-series forecasting models (ARIMA, GARCH, AdditiveTrendSeasonal, StateSpace)
+- [x] Prompt 14: Leakage-safe tabular models (XGBoost, LightGBM, CatBoost), Purged CV, meta-labeling, and model registry
+- [x] Prompt 15: Small CPU-friendly PyTorch sequence models (LSTM, WaveNet, SimpleTFT)
+- [x] Prompt 16: Gymnasium trading environment and pure PyTorch RL agents (DQN & PPO)
+- [x] Prompt 17: Orchestration, drift monitoring, macro stress tests, Monte Carlo, and dark-mode interactive dashboard
+- [x] Prompt 18: Full repository institutional audit, zero-lookahead & overfitting verification, AUDIT.md, and README.md
+
+
+---
+
+## Database Schema (from `database/schema/schema.sql`)
+Database name: `tapewright_db`
+
+### Tables and Columns
+1. `assets`
+   - `asset_id` (VARCHAR(32), PRIMARY KEY)
+   - `symbol` (VARCHAR(16), NOT NULL, UNIQUE)
+   - `name` (VARCHAR(128), NOT NULL)
+   - `asset_class` (ENUM('EQUITY', 'CRYPTO', 'FX', 'COMMODITY', 'INDEX'), NOT NULL)
+   - `exchange` (VARCHAR(32), NOT NULL)
+   - `currency` (VARCHAR(8), NOT NULL, DEFAULT 'USD')
+   - `is_active` (BOOLEAN, NOT NULL, DEFAULT TRUE)
+   - `created_at` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+
+2. `daily_market_summary`
+   - `id` (BIGINT, AUTO_INCREMENT, PRIMARY KEY)
+   - `asset_id` (VARCHAR(32), NOT NULL, FK -> assets.asset_id)
+   - `trade_date` (DATE, NOT NULL)
+   - `open_price` (DECIMAL(18, 6), NOT NULL)
+   - `high_price` (DECIMAL(18, 6), NOT NULL)
+   - `low_price` (DECIMAL(18, 6), NOT NULL)
+   - `close_price` (DECIMAL(18, 6), NOT NULL)
+   - `volume` (DECIMAL(24, 6), NOT NULL)
+   - `vwap` (DECIMAL(18, 6))
+
+3. `model_registry`
+   - `model_id` (VARCHAR(64), PRIMARY KEY)
+   - `model_name` (VARCHAR(128), NOT NULL)
+   - `model_family` (ENUM('TIME_SERIES', 'DEEP_LEARNING', 'ENSEMBLE', 'RL'), NOT NULL)
+   - `version` (VARCHAR(32), NOT NULL)
+   - `hyperparameters` (JSON)
+   - `metrics` (JSON)
+   - `trained_at` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+
+4. `trade_signals`
+   - `signal_id` (BIGINT, AUTO_INCREMENT, PRIMARY KEY)
+   - `asset_id` (VARCHAR(32), NOT NULL, FK -> assets.asset_id)
+   - `model_id` (VARCHAR(64), NOT NULL, FK -> model_registry.model_id)
+   - `timestamp` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+   - `signal_type` (ENUM('BUY', 'SELL', 'HOLD', 'REBALANCE'), NOT NULL)
+   - `confidence_score` (DECIMAL(5, 4), NOT NULL)
+   - `target_weight` (DECIMAL(6, 4))
+   - `metadata` (JSON)
+
+5. `order_executions`
+   - `order_id` (VARCHAR(64), PRIMARY KEY)
+   - `asset_id` (VARCHAR(32), NOT NULL, FK -> assets.asset_id)
+   - `signal_id` (BIGINT, FK -> trade_signals.signal_id)
+   - `side` (ENUM('BUY', 'SELL'), NOT NULL)
+   - `order_type` (ENUM('MARKET', 'LIMIT', 'STOP'), NOT NULL)
+   - `quantity` (DECIMAL(18, 6), NOT NULL)
+   - `executed_price` (DECIMAL(18, 6), NOT NULL)
+   - `slippage_cost` (DECIMAL(18, 6), DEFAULT 0.0)
+   - `fee` (DECIMAL(18, 6), DEFAULT 0.0)
+   - `executed_at` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+
+6. `portfolio_snapshots`
+   - `snapshot_id` (BIGINT, AUTO_INCREMENT, PRIMARY KEY)
+   - `portfolio_name` (VARCHAR(64), NOT NULL)
+   - `timestamp` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+   - `total_nav` (DECIMAL(20, 4), NOT NULL)
+   - `cash_balance` (DECIMAL(20, 4), NOT NULL)
+   - `unrealized_pnl` (DECIMAL(20, 4), NOT NULL)
+   - `realized_pnl` (DECIMAL(20, 4), NOT NULL)
+   - `sharpe_ratio` (DECIMAL(8, 4))
+   - `max_drawdown` (DECIMAL(6, 4))
+
+---
+
+## Stage Execution Log
+
+### Prompt 01: Setup Tooling, Requirements, Pytest Config, Constraints Enforcement, Scaffold Tests
+- **Status**: COMPLETE
+- **Files Created**:
+  - `requirements.txt`
+  - `pytest.ini`
+  - `.gitignore`
+  - `.env.example`
+  - `logs/proof/.gitkeep`
+  - `PROGRESS.md`
+  - `scripts/check_syntax.py`
+  - `scripts/check_constraints.py`
+  - `tests/unit/test_scaffold.py`
+  - `CLAUDE_ARCHITECTURAL_BLUEPRINT.md`
+  - 39 missing package `__init__.py` files across all required section 5 package directories
+- **Exact Test Commands & Proof Outputs**:
+  - `python -m pytest tests/unit/test_scaffold.py -v 2>&1 | Tee-Object -FilePath logs/proof/p01_pytest.txt`
+    - Result: `3 passed in 0.19s`
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p01_syntax.txt`
+    - Result: `116 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p01_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+- **Known Limitations**:
+  - Python version on host machine is 3.14.0. Core mathematical and database packages `numpy`, `scipy`, `pandas`, `sklearn`, `pymysql`, and `pytest` are installed and verified working.
+  - Large binary wheels (`torch` 124MB, `pyarrow` 29MB, `statsmodels` 11MB, `mysql-connector-python` 18MB) experienced download connection timeouts during batch `pip install`. `PyMySQL` was installed successfully to satisfy the MySQL database requirement without native compilation overhead.
+
+### Prompt 02: Configuration Loaders, Environment Settings, and Risk Parameters
+- **Status**: COMPLETE
+- **Files Created**:
+  - `config/environments/env_loader.py`
+  - `config/trading/universe.py`
+  - `config/trading/risk_limits.py`
+  - `config/trading/calendar.py`
+  - `config/database/db_config.py`
+  - `utils/logging/logger.py`
+  - `utils/dates/trading_dates.py`
+  - `utils/profiling/profilers.py`
+  - `utils/math/linalg.py`
+  - `tests/unit/test_config.py`
+  - `tests/unit/test_utils.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p02_syntax.txt`
+    - Result: `127 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p02_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p02_constraints_patch.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_config.py tests/unit/test_utils.py -v 2>&1 | Tee-Object -FilePath logs/proof/p02_pytest.txt`
+    - Result: `23 passed in 1.47s`
+- **Known Limitations**:
+  - In PowerShell 5.1, `tee` (aliased to `Tee-Object`) defaults to UTF-16LE without explicit `$PSDefaultParameterValues` override; UTF-8 output encoding was explicitly ensured.
+  - `ledoit_wolf_cov` requires sufficient observation samples ($N > 1$) with finite variance; empty DataFrames or non-finite inputs are guarded with explicit exception handling.
+
+### Prompt 03: Database Connection Layer, Repository Abstractions, and Schema Management
+- **Status**: COMPLETE
+- **Files Created**:
+  - `database/connection/manager.py`
+  - `database/migrations/runner.py`
+  - `database/migrations/001_initial.sql`
+  - `database/repositories/market_data_repo/repo.py`
+  - `database/repositories/market_data_repo/model_registry_repo.py`
+  - `database/repositories/signal_repo/repo.py`
+  - `database/repositories/order_repo/repo.py`
+  - `database/repositories/portfolio_repo/repo.py`
+  - `tests/unit/test_database.py`
+  - `tests/integration/test_mysql_live.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p03_syntax.txt`
+    - Result: `136 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p03_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_database.py -v 2>&1 | Tee-Object -FilePath logs/proof/p03_pytest.txt`
+    - Result: `6 passed in 0.59s`
+- **Known Limitations**:
+  - In `order_executions`, the schema stores executed orders (`executed_price`, `quantity`, `slippage_cost`, `fee`) without an explicit standalone `status` column; `OrderRepo.update_fill_status` updates fill parameters and verifies record existence.
+  - Live MySQL integration tests in `tests/integration/test_mysql_live.py` are conditionally skipped when `TAPEWRIGHT_DB_HOST` is unset, running purely in SQLite fallback mode during local development.
+
+### Prompt 04: Market Data Ingestion Feeds and Synthetic Level-2 Market Data Generator
+- **Status**: COMPLETE
+- **Files Created**:
+  - `data/ingestion/market_feeds/equities/synthetic.py`
+  - `data/ingestion/market_feeds/equities/l2_tape.py`
+  - `data/validation/schema_rules/rules.py`
+  - `data/cleaning/outlier_filters/filters.py`
+  - `data/cleaning/corporate_actions/adjust.py`
+  - `tests/unit/test_synthetic_clean.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p04_syntax.txt`
+    - Result: `142 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p04_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_synthetic_clean.py -v 2>&1 | Tee-Object -FilePath logs/proof/p04_pytest.txt`
+    - Result: `12 passed, 1 warning in 5.13s`
+
+### Prompt 05: Local Parquet Store, Bar Resamplers, Feed Parsers, and Market Data Provider
+- **Status**: COMPLETE
+- **Files Created**:
+  - `data/caching/parquet_store/store.py`
+  - `data/transformation/resamplers/bars.py`
+  - `data/ingestion/market_feeds/equities/yahoo.py`
+  - `data/ingestion/market_feeds/crypto/ccxt_feed.py`
+  - `data/ingestion/market_feeds/fx_forex/fx_feed.py`
+  - `data/ingestion/news_feeds/sec_edgar/edgar.py`
+  - `data/ingestion/news_feeds/financial_rss/rss.py`
+  - `data/ingestion/macroeconomic/fred_rates/fred.py`
+  - `data/ingestion/provider.py`
+  - `tests/unit/test_data_infra.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Out-File -Encoding utf8 logs/proof/p05_syntax.txt`
+    - Result: `152 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Out-File -Encoding utf8 logs/proof/p05_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_data_infra.py -v 2>&1 | Out-File -Encoding utf8 logs/proof/p05_pytest.txt`
+    - Result: `12 passed in 0.66s`
+  - `python -c "from data.ingestion.provider import get_prices; d=get_prices('AAPL','2023-01-01','2023-03-01'); print(d.attrs, d.shape)" 2>&1 | Out-File -Encoding utf8 logs/proof/p05_live_try.txt`
+    - Result: `{'source': 'synthetic'} (40, 5)` (Live try reported honestly: Yahoo Finance public unauthenticated chart endpoint returned empty in offline/sandboxed environment; provider safely triggered fallback to synthetic data with logged warning and `attrs['source']='synthetic'`).
+- **Known Limitations**:
+  - Parquet format stores timestamp arrays without preserving proprietary pandas `freq` metadata (`<Second>`); round-trip index preservation is validated on DatetimeIndex values, column data, and timezone awareness.
+  - Standard library feed clients (`urllib.request`) raise custom `FeedError` when offline or when remote services rate-limit or fail, ensuring zero unhandled exceptions or crashed unit tests.
+
+### Prompt 06: Vectorized Indicators and Microstructure Estimators
+- **Status**: COMPLETE
+- **Files Created**:
+  - `features/technical_indicators/trend/trend.py`
+  - `features/technical_indicators/momentum/momentum.py`
+  - `features/technical_indicators/volatility/volatility.py`
+  - `features/technical_indicators/volume/volume.py`
+  - `features/technical_indicators/builder.py`
+  - `features/market_microstructure/order_book/spreads.py`
+  - `features/market_microstructure/tick_entropy/entropy.py`
+  - `tests/unit/test_indicators_micro.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Out-File -Encoding utf8 logs/proof/p06_syntax.txt`
+    - Result: `160 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Out-File -Encoding utf8 logs/proof/p06_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_indicators_micro.py -v 2>&1 | Out-File -Encoding utf8 logs/proof/p06_pytest.txt`
+    - Result: `29 passed in 1.54s`
+- **Known Limitations**:
+  - In directional runs analysis, the Shannon entropy function operates on transition continuation/reversal sequences ($s_t \cdot s_{t-1}$), yielding 0.0 bits (< 0.1 bit) on alternating sequences and ~2.0 bits (> 1.9 bits) on i.i.d. random sequences for word length 2.
+  - VPIN calculation with trade-splitting across volume buckets achieves clean theoretical separation (1.0 for buy-saturated flows, 0.0 for balanced flows); on live market data with extreme volume spikes, bucket size calibration should dynamically track average daily volume.
+  - Depth imbalance exhibits a positive predictive Spearman rank correlation (IC = +0.3492, p < 1e-140) with next-step midprice returns on the simulated order book tape.
+
+### Prompt 07/08: Econometric Modeling, Cointegration, Kalman Filter, and Predictive Causal Graphs
+- **Status**: COMPLETE
+- **Files Created**:
+  - `features/econometric/fractional_diff/ffd.py`
+  - `features/econometric/kalman_filter/kalman.py`
+  - `features/econometric/cointegration/tests.py`
+  - `features/econometric/cointegration/causal_graph.py`
+  - `tests/unit/test_econometrics.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Out-File -Encoding utf8 logs/proof/p07_syntax.txt`
+    - Result: `165 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Out-File -Encoding utf8 logs/proof/p07_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_econometrics.py -v 2>&1 | Out-File -Encoding utf8 logs/proof/p07_pytest.txt`
+    - Result: `13 passed in 12.76s`
+- **Known Limitations**:
+  - Granger causality and Transfer Entropy indicate statistical predictive precedence / information flow, not structural or physical causation (explicitly documented in module docstrings).
+  - With $N$ series, $N(N-1)$ bivariate directed hypotheses are evaluated simultaneously; Benjamini-Hochberg step-up procedure guarantees FDR control below $q=0.01$.
+  - Quantile-binned Transfer Entropy uses contingency counts; on short time series (< 100 observations), small-sample bias can occur, which is mitigated by our empirical permutation null testing.
+
+### Prompt 08/09: Lopez de Prado Labeling, Purged Cross-Validation, Feature Registry, and Sentiment Analysis
+- **Status**: COMPLETE
+- **Files Created**:
+  - `pipelines/training/labeling.py`
+  - `pipelines/training/cv.py`
+  - `features/store/registry/registry.py`
+  - `features/sentiment/lexicon_scoring/lexicon.py`
+  - `features/sentiment/embeddings/embed.py`
+  - `tests/unit/test_labeling_cv.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Out-File -Encoding utf8 logs/proof/p08_syntax.txt`
+    - Result: `171 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Out-File -Encoding utf8 logs/proof/p08_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_labeling_cv.py -v 2>&1 | Out-File -Encoding utf8 logs/proof/p08_pytest.txt`
+    - Result: `13 passed in 1.91s`
+- **Known Limitations**:
+  - In `triple_barrier`, when both profit-taking and stop-loss barriers are breached in the exact same bar (e.g. wide candle range or zero barrier threshold), the documented resolution order gives precedence to profit-taking (`pt`).
+  - `PurgedKFold` and `WalkForward` cross-validation strictly prevent information leakage across overlapping label event intervals $[t_0, t_1]$; embargoing discards samples immediately following test folds, which reduces effective training sample count when autocorrelation horizon or embargo fraction is set high.
+  - `DEMO_LEXICON` in `lexicon.py` is a lightweight curated demonstrative dictionary (~40 positive, ~40 negative, ~10 negators) for deterministic fast execution; full production deployment should supply the comprehensive Loughran-McDonald dictionary file via `load_lm_csv`.
+  - `HashingTfidfEmbedder` provides lightweight, sub-millisecond sparse hashing embeddings without neural weight dependencies; `TorchTextEmbedder` provides transformer support when `transformers` is installed.
+
+### Prompt 09: Strictly Causal Discrete Event-Driven Backtesting Engine
+- **Status**: COMPLETE
+- **Files Created**:
+  - `backtesting/engine/event_loop/events.py`
+  - `backtesting/engine/event_loop/data_handler.py`
+  - `backtesting/engine/event_loop/portfolio.py`
+  - `backtesting/engine/event_loop/execution.py`
+  - `backtesting/engine/event_loop/strategy_base.py`
+  - `backtesting/engine/event_loop/engine.py`
+  - `backtesting/engine/event_loop/__init__.py`
+  - `tests/unit/test_event_loop.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Out-File -Encoding utf8 logs/proof/p09_syntax.txt`
+    - Result: `178 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Out-File -Encoding utf8 logs/proof/p09_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_event_loop.py -v 2>&1 | Out-File -Encoding utf8 logs/proof/p09_pytest.txt`
+    - Result: `9 passed in 0.61s`
+- **Known Limitations**:
+  - Default execution utilizes `ZeroCostFillModel`, simulating execution at next-bar open for market orders and immediate touch fills for limit orders; realistic slippage curves (Kyle's lambda, square-root law) and tiered fee schedules plug into `FillModel` in subsequent execution stages.
+  - In `HistoricBarDataHandler`, timestamp alignment operates on bar close/open timestamps; tick-level L2 microstructure playback with queue position estimation is evaluated in dedicated microstructure simulation components.
+  - Sizing in `Portfolio.on_signal` converts target portfolio percentages into share quantities using the latest marked bar close price; intraday price drift between signal generation and next-bar open fill introduces realistic execution tracking error.
+
+### Prompt 10: Microstructure-Realistic Execution Mechanics and Level-2 LOB Simulator
+- **Status**: COMPLETE
+- **Files Created**:
+  - `backtesting/execution/transaction_costs/costs.py`
+  - `backtesting/execution/transaction_costs/__init__.py`
+  - `backtesting/execution/slippage_models/models.py`
+  - `backtesting/execution/slippage_models/lob.py`
+  - `backtesting/execution/slippage_models/__init__.py`
+  - `backtesting/execution/fill_models.py`
+  - `backtesting/execution/__init__.py`
+  - `tests/unit/test_execution.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Out-File -Encoding utf8 logs/proof/p10_syntax.txt`
+    - Result: `183 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Out-File -Encoding utf8 logs/proof/p10_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_execution.py tests/unit/test_event_loop.py -v 2>&1 | Out-File -Encoding utf8 logs/proof/p10_pytest.txt`
+    - Result: `19 passed in 1.39s`
+- **Known Limitations**:
+  - In `LOBSimulator`, queue cancellations follow a constant proportional decay model (`cancel_rate * queue_ahead`); order-level queue jump / cancellation dynamics conditional on distance from mid-price can be parameterized if high-frequency tick messages include individual order cancel events.
+  - Sqrt-impact slippage applies to market orders exceeding the visible 5 book levels; the impact coefficient `c` and volatility scaling assume a steady liquidity replenishment rate outside the top-of-book levels.
+  - In `RealisticFillModel`, trailing VPIN and ADV metrics rely on causal historical windows; when historical window lengths are shorter than the initial warmup window, default parameterized constants serve as fallback until sufficient tape history accumulates.
+
+### Prompt 11: Risk Metrics, Anti-Overfitting Statistics, Position Sizing, Drawdown Analysis, and Tearsheet
+- **Status**: COMPLETE
+- **Files Created**:
+  - `backtesting/metrics/risk_measures/measures.py`
+  - `backtesting/metrics/risk_measures/overfit.py`
+  - `backtesting/metrics/risk_measures/sizing.py`
+  - `backtesting/metrics/risk_measures/__init__.py`
+  - `backtesting/metrics/drawdown_analysis/drawdown.py`
+  - `backtesting/metrics/drawdown_analysis/__init__.py`
+  - `backtesting/metrics/__init__.py`
+  - `backtesting/reports/tearsheet/tearsheet.py`
+  - `backtesting/reports/tearsheet/__init__.py`
+  - `backtesting/reports/__init__.py`
+  - `tests/unit/test_metrics_overfit.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p11_syntax.txt`
+    - Result: `189 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p11_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_metrics_overfit.py -v 2>&1 | Tee-Object -FilePath logs/proof/p11_pytest.txt`
+    - Result: `15 passed in 2.92s`
+- **Known Limitations**:
+  - In `probability_of_backtest_overfitting` (CSCV), combinatorially symmetric block combinations $C(S, S/2)$ for $S=16$ total 12,870 splits; a uniform random sample of `max_combos=2000` with fixed seed provides tight convergence to full combinatorial evaluation while capping compute overhead.
+  - In `deflated_sharpe_ratio`, when `trial_sharpes` variance is zero or fewer than 2 trials are supplied, expected max Sharpe defaults to 0.0 (no multi-testing selection bias adjustment).
+  - In `cvar_scaled_fraction`, tail risk scaling relies on trailing window returns; in periods where all trailing returns are strictly non-negative, sample CVaR is 0.0 and no CVaR haircut is applied until trailing losses manifest.
+  - In `monthly_returns_grid`, if non-timestamp integer series are provided, a synthetic business calendar is synthesized to enable standard month-by-month compounding reconciliation.
+
+### Prompt 12: Causal Signal Generators, Regime & Predictive Causality Filtering, Cross-Sectional Ranking, Pairs Arbitrage, Portfolio Optimization, and Persistence
+- **Status**: COMPLETE
+- **Files Created**:
+  - `signals/generation/crossover/crossover.py`
+  - `signals/generation/crossover/__init__.py`
+  - `signals/generation/breakout/breakout.py`
+  - `signals/generation/breakout/__init__.py`
+  - `signals/generation/mean_reversion/mean_reversion.py`
+  - `signals/generation/mean_reversion/__init__.py`
+  - `signals/generation/__init__.py`
+  - `signals/filtering/volatility_filter/filter.py`
+  - `signals/filtering/volatility_filter/causal_gate.py`
+  - `signals/filtering/volatility_filter/__init__.py`
+  - `signals/filtering/__init__.py`
+  - `signals/ranking/cross_sectional/ranker.py`
+  - `signals/ranking/cross_sectional/__init__.py`
+  - `signals/ranking/__init__.py`
+  - `signals/arbitrage/pairs_trading/pairs.py`
+  - `signals/arbitrage/pairs_trading/__init__.py`
+  - `signals/arbitrage/__init__.py`
+  - `signals/persist.py`
+  - `signals/__init__.py`
+  - `backtesting/portfolio/markowitz/markowitz.py`
+  - `backtesting/portfolio/markowitz/__init__.py`
+  - `backtesting/portfolio/black_litterman/bl.py`
+  - `backtesting/portfolio/black_litterman/__init__.py`
+  - `backtesting/portfolio/risk_parity/hrp.py`
+  - `backtesting/portfolio/risk_parity/__init__.py`
+  - `backtesting/portfolio/__init__.py`
+  - `tests/unit/test_signals_portfolio.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p12_syntax.txt`
+    - Result: `201 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p12_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_signals_portfolio.py -v 2>&1 | Tee-Object -FilePath logs/proof/p12_pytest.txt`
+    - Result: `15 passed in 3.41s`
+- **Known Limitations**:
+  - In `garch_regime_filter`, expanding window GARCH(1,1) refits every `refit_every` observations to ensure computational efficiency while strictly advancing one-step-ahead conditional volatility recursively using past residuals without lookahead.
+  - In `CausalGate`, filtering requires graph admittance from Prompt 7 causal discovery; if no features pass causal discovery gates, `filter_features` raises a descriptive `ValueError` to block unvalidated feature usage.
+  - In `PairsSignal`, spread calculation supports both adaptive Kalman filter state estimation (from Prompt 7) and rolling causal OLS hedge ratios; cointegration scanning across $N$ series executes $N(N-1)/2$ Engle-Granger tests, warranting FDR correction (e.g. Benjamini-Hochberg) for large universes.
+  - In `allocate(method="bl")`, market weights `w_mkt` and investor views `P, Q` must be provided; if views are omitted, posterior expected returns match CAPM equilibrium returns $\pi = \delta \Sigma w_{mkt}$.
+
+### Prompt 13: Statistical and Econometric Time-Series Forecasting Models
+- **Status**: COMPLETE
+- **Files Created**:
+  - `models/time_series/arima/arima.py`
+  - `models/time_series/arima/__init__.py`
+  - `models/time_series/garch/garch.py`
+  - `models/time_series/garch/__init__.py`
+  - `models/time_series/prophet/additive.py`
+  - `models/time_series/prophet/__init__.py`
+  - `models/time_series/state_space/ucm.py`
+  - `models/time_series/state_space/__init__.py`
+  - `models/time_series/evaluation.py`
+  - `models/time_series/__init__.py`
+  - `tests/unit/test_timeseries.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p13_syntax.txt`
+    - Result: `207 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p13_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_timeseries.py -v 2>&1 | Tee-Object -FilePath logs/proof/p13_pytest.txt`
+    - Result: `8 passed in 6.65s`
+- **Known Limitations**:
+  - In `auto_arima`, integration order $d$ is determined by sequential ADF and KPSS testing up to `max_d=2`; candidate $(p, q)$ specifications that fail matrix inversion or non-convergence during MLE are safely skipped.
+  - In `rolling_vol_forecast`, GARCH(1,1) estimates are refitted periodically every `refit_every` bars and updated recursively via one-step-ahead conditional variance between refits to ensure fast computation without lookahead.
+  - In `AdditiveTrendSeasonal`, changepoints are placed uniformly across the training range up to `changepoint_range * T`, with ridge regularization applied to piecewise slopes and Fourier harmonics (intercept unpenalized) without third-party Prophet dependencies.
+  - In `diebold_mariano`, loss differentials between identical forecast errors yield zero sample variance, gracefully returning test statistic 0.0 and p-value 1.0.
+
+### Prompt 14: Leakage-Safe Tabular Models, Purged Cross-Validation, Meta-Labeling, and Model Registry
+- **Status**: COMPLETE
+- **Files Created**:
+  - `models/ensemble/base.py`
+  - `models/ensemble/xgboost/model.py`
+  - `models/ensemble/xgboost/__init__.py`
+  - `models/ensemble/lightgbm/model.py`
+  - `models/ensemble/lightgbm/__init__.py`
+  - `models/ensemble/catboost/model.py`
+  - `models/ensemble/catboost/__init__.py`
+  - `models/ensemble/__init__.py`
+  - `models/registry.py`
+  - `pipelines/training/train.py`
+  - `pipelines/training/__init__.py`
+  - `tests/unit/test_training.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p14_syntax.txt`
+    - Result: `214 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p14_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_training.py -v 2>&1 | Tee-Object -FilePath logs/proof/p14_pytest.txt`
+    - Result: `8 passed in 5.91s`
+- **Known Limitations**:
+  - In `XGBoostModel`, `LightGBMModel`, and `CatBoostModel`, early stopping defaults to a strictly chronological time-ordered validation tail (never randomized split) to preserve causal ordering; `CatBoostModel` sets `allow_writing_files=False` to prevent artifact pollution.
+  - In `train_with_purged_cv`, `assert_no_leakage` verifies zero overlap between training sample evaluation spans $[t_0, t_1]$ and test evaluation windows on every fold; on pure-noise labels, mean Purged-CV AUC correctly registers in $[0.45, 0.55]$ (0.5226), while leaky random KFold exhibits an artificial inflated AUC of 0.6342.
+  - In `build_dataset`, fractional differentiation cutoff threshold adapts based on sample length (`threshold=1e-3` for series $< 1500$ bars) to prevent extensive initial NaN warmup dropouts while preserving multi-horizon memory.
+### Prompt 15: Small CPU-Friendly PyTorch Sequence Models (LSTM, WaveNet, SimpleTFT)
+- **Status**: COMPLETE
+- **Files Created**:
+  - `models/deep_learning/common.py`
+  - `models/deep_learning/lstm/lstm.py`
+  - `models/deep_learning/lstm/__init__.py`
+  - `models/deep_learning/wavenet/wavenet.py`
+  - `models/deep_learning/wavenet/__init__.py`
+  - `models/deep_learning/temporal_fusion_transformer/tft.py`
+  - `models/deep_learning/temporal_fusion_transformer/__init__.py`
+  - `models/deep_learning/__init__.py`
+  - `tests/unit/test_dl.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p15_syntax.txt`
+    - Result: `219 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p15_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_dl.py -v 2>&1 | Tee-Object -FilePath logs/proof/p15_pytest.txt`
+    - Result: `8 passed in 23.63s`
+- **Known Limitations**:
+  - `SimpleTFT` is a lightweight, CPU-friendly PyTorch sequence variant of the Temporal Fusion Transformer architecture incorporating Gated Residual Networks (GRN), per-timestep Variable Selection Networks (VSN) with exposed attention weights, an LSTM encoder, causal multi-head self-attention, and pinball quantile prediction heads ($0.1, 0.5, 0.9$), simplified from the full paper without static metadata or separate future covariate splits.
+  - In `make_sequences`, causal sequence slicing requires $T > \text{window}$; sample $i$ strictly aggregates features from bar $i$ up to $i + \text{window} - 1$ and aligns with the target observation at index $i + \text{window}$ (strictly the bar after the lookback window).
+  - In `StandardScalerTS`, scaling parameters (mean and standard deviation) are strictly fitted on historical training sequences across samples and time steps, leaving validation/test data uninspected.
+  - In `WaveNetForecaster`, causal dilated convolutions utilize left padding of $(k-1) \cdot d_l$ to guarantee an exact theoretical receptive field $RF = 1 + \sum (k-1) d_l$ ($RF = 16$ for $k=2, d=(1,2,4,8)$), ensuring past outputs at times $\le \tau - 1$ are perfectly invariant (diff $< 10^{-6}$) to future perturbations at times $\ge \tau$.
+  - In `train_model`, seeded AdamW optimization with gradient clipping ($1.0$) and early stopping restores best validation weights upon completion, shuffling training mini-batches while maintaining validation batch ordering.
+
+### Prompt 16: Gymnasium Trading Environment and Pure PyTorch RL Agents (DQN & PPO)
+- **Status**: COMPLETE
+- **Files Created**:
+  - `models/reinforcement_learning/rewards/rewards.py`
+  - `models/reinforcement_learning/rewards/__init__.py`
+  - `models/reinforcement_learning/environments/trading_env.py`
+  - `models/reinforcement_learning/environments/__init__.py`
+  - `models/reinforcement_learning/agents/networks.py`
+  - `models/reinforcement_learning/agents/ppo.py`
+  - `models/reinforcement_learning/agents/dqn.py`
+  - `models/reinforcement_learning/agents/evaluate.py`
+  - `models/reinforcement_learning/agents/__init__.py`
+  - `models/reinforcement_learning/__init__.py`
+  - `tests/unit/test_rl.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p16_syntax.txt`
+    - Result: `226 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p16_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_rl.py -v 2>&1 | Tee-Object -FilePath logs/proof/p16_pytest.txt`
+    - Result: `10 passed, 1 warning in 5.55s`
+- **Known Limitations**:
+  - `TradingEnv` models single-asset execution with microstructure realism: decisions taken at the close of bar $t$ fill at the open of bar $t+1$, incorporating overnight gap equity changes, transaction fees, and square-root Kyle market impact. Multi-asset cross-sectional portfolio rebalancing is handled in `backtesting/portfolio/` rather than the single-asset environment.
+  - In `TradingEnv` observation construction, an expanding causal standardizer calculates mean and standard deviation strictly over bars $0 \dots \tau$, guaranteeing that future rows (at times $> \tau$) produce zero change in historical observations.
+  - In `DifferentialSharpe`, when return variance is near-zero ($B_t - A_t^2 \le 10^{-12}$), the reward safely returns $0.0$ to prevent numerical divergence while online moments continue updating exponentially.
+  - `PPOAgent` and `DQNAgent` are built with pure PyTorch without `stable-baselines3`, supporting Generalized Advantage Estimation (GAE), clipped surrogate policy updates, Double-DQN target decoupling, and Huber loss optimization.
+  - In `evaluate_agent`, risk metrics are compiled across all evaluated episodes via `backtesting.metrics.risk_measures.summary`.
+
+### Prompt 17: Orchestration, Drift Monitoring, Macro Stress Tests, Monte Carlo, and Dark-Mode Interactive Dashboard
+- **Status**: COMPLETE
+- **Files Created**:
+  - `pipelines/etl/etl.py`
+  - `pipelines/etl/__init__.py`
+  - `pipelines/inference/daily.py`
+  - `pipelines/inference/__init__.py`
+  - `pipelines/monitoring/drift.py`
+  - `pipelines/monitoring/__init__.py`
+  - `backtesting/reports/tearsheet/stress.py`
+  - `backtesting/reports/tearsheet/figures.py`
+  - `backtesting/reports/tearsheet/app.py`
+  - `pipelines/run_demo.py`
+  - `tests/unit/test_pipelines_stress.py`
+  - `tests/integration/test_pipeline_e2e.py`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p17_syntax.txt`
+    - Result: `235 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p17_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m pytest tests/unit/test_pipelines_stress.py tests/integration/test_pipeline_e2e.py -v 2>&1 | Tee-Object -FilePath logs/proof/p17_pytest.txt`
+    - Result: `18 passed in 10.85s`
+  - `python -m pipelines.run_demo --symbols AAPL MSFT SPY --days 500 --strategy crossover --out reports_out/ 2>&1 | Tee-Object -FilePath logs/proof/p17_demo.txt`
+    - Result: `Pipeline executed successfully. Artifacts written to reports_out`
+  - `python -c "import subprocess, time, sys; proc = subprocess.Popen([sys.executable, '-m', 'streamlit', 'run', 'backtesting/reports/tearsheet/app.py', '--server.headless', 'true', '--server.port', '8599'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True); ..."` (logged to `logs/proof/p17_streamlit_boot.txt`)
+    - Result: `You can now view your Streamlit app in your browser.` (zero traceback)
+- **Known Limitations**:
+  - In `backtesting/reports/tearsheet/stress.py`, all macroeconomic stress test shocks (`BUILTIN_SCENARIOS` for Lehman 2008, COVID 2020 crash, and 2022 rate hike) are approximate owner-supplied parameters intended for scenario analysis and must be verified against proprietary or realized historical data before formal institutional citation.
+  - In `replay_historical_window`, if the underlying historical panel data does not contain valid observations spanning the crisis window, the method raises `DataUnavailableError` rather than substituting synthetic observations.
+  - In `pipelines/inference/daily.py`, daily signal generation enforces point-in-time truncation invariance strictly reading price data $\le$ `asof`, but assumes continuous price series without retroactive corporate action restatements unless explicitly ingested via the ETL pipeline.
+  - In `pipelines/run_demo.py`, static HTML dashboard generation bundles standalone Plotly CDN dependencies; dynamic ticker symbols and strategy names are passed through `html.escape` to prevent XSS injection.
+  - In `backtesting/reports/tearsheet/app.py`, the interactive Streamlit dashboard runs headless on port 8599 and provides complete visual tabs for performance, risk, Monte Carlo paths, and database audit tables, caching ETL execution via `@st.cache_data`.
+
+### Prompt 18: Full Repository Institutional Audit, Zero-Lookahead & Overfitting Verification, AUDIT.md, and README.md
+- **Status**: COMPLETE
+- **Files Created**:
+  - `tests/integration/test_zero_lookahead.py`
+  - `tests/integration/test_db_records.py`
+  - `tests/integration/test_overfit_audit.py`
+  - `reports_out/AUDIT.md`
+  - `README.md`
+- **Exact Test Commands & Proof Outputs**:
+  - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p18_syntax.txt`
+    - Result: `238 files checked, 0 failed`
+  - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p18_constraints.txt`
+    - Result: `Constraints check PASSED: 0 violations.`
+  - `python -m compileall -q . 2>&1 | Tee-Object -FilePath logs/proof/p18_compileall.txt`
+    - Result: clean compilation (0 syntax or import errors)
+  - `find . -type f ( -name "*.ts" -o -name "*.tsx" -o -name "*.mts" -o -name "*.cts" -o -name "tsconfig*.json" -o -name package.json ) -not -path "./.git/*" | tee logs/proof/p18_no_typescript.txt`
+    - Result: `0 matches (empty file)`
+  - `python -m pytest -v 2>&1 | Tee-Object -FilePath logs/proof/p18_full_pytest.txt`
+    - Result: `221 passed, 1 skipped, 2 warnings in 122.67s`
+    - Skipped test: `tests/integration/test_mysql_live.py::TestLiveMySQL::test_live_mysql_connection_and_migrations` (skipped cleanly because `TAPEWRIGHT_DB_HOST` is unset; verified via SQLite compatibility in all offline/CI runs)
+- **Known Limitations**:
+  - In `test_zero_lookahead.py`, all strategy engines (`crossover`, `breakout`, `mean_reversion`, `pairs`, `walk_forward_signals`) and `FeatureRegistry` features exhibit strictly zero lookahead (equity curve difference $< 10^{-9}$ between $N=300$ and $N=400$ evaluations), and a deliberate future-peeking strategy was successfully caught by the test detector ($> 1326$ divergence).
+  - In `test_db_records.py`, database integrity audit validates SQLite/MySQL parity: `order_executions` strictly tracks filled trades, `trade_signals` records all generated model signals, and the core accounting identity $\text{cash} + \sum (\text{positions} \times \text{close}) = \text{NAV}$ holds to within $10^{-6}$ precision across all daily snapshots.
+  - In `test_overfit_audit.py`, evaluation of 30 parameter variants on pure Gaussian noise prices results in an uncorrected best annualized Sharpe of $0.5749$, which collapses to a Deflated Sharpe Ratio of $DSR = 0.0000$ ($p=1.0000$) and CSCV PBO of $0.5143$, empirically proving the engine's anti-overfitting defense rejects false positive alphas.
+  - As formally documented in `reports_out/AUDIT.md`, backtests on synthetic or historical data provide algorithmic and econometric verification, but say nothing about real-market profitability.
+

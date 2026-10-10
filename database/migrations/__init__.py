@@ -1,0 +1,3 @@
+"""
+migrations package module.
+"""

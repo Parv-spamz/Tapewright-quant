@@ -1,0 +1,3 @@
+"""
+econometric package module.
+"""
