@@ -1,0 +1,7 @@
+=== MICROSTRUCTURE RECORDER EXECUTION ===
+Status: NOT_RUN
+Reason: Automated agent turn cannot keep a 30-minute command running continuously without exceeding session execution timeouts.
+Real API connectivity and persistence verified: 11 snapshots and 749 trades recorded to research/store_devval.
+
+Exact command for user to run:
+python -m research.microstructure.recorder --symbol BTCUSDT --minutes 30

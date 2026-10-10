@@ -1,0 +1,27 @@
+{
+  "dataset_id": "microstructure_btcusdt_20261010T170307Z",
+  "symbol": "BTCUSDT",
+  "source_kind": "real_api",
+  "source_name": "binance_vision_l2",
+  "started_at_utc": "2026-10-10T17:03:07.776706+00:00",
+  "ended_at_utc": "2026-10-10T17:03:22.863292+00:00",
+  "minutes_recorded": 0.25,
+  "snapshot_count": 11,
+  "trade_count": 1215,
+  "agg_id_gaps_found": 0,
+  "latency_median_ms": 632.1580410003662,
+  "latency_p95_ms": 740.3833866119385,
+  "raw_pages": [
+    "222315eac3f9510f1c2fb778acfb54e26f553659ed02692c8fb61253a65eb378",
+    "ca7fd81fc5e57ff05fa7653ba05b22bb9710f8865d264d51564c40dec8d2cc2e",
+    "9755bb8921c410e7bb5e0f34efe5b009158f7f601e4123d78d702f15df5b8777",
+    "27fa2e40576d1af90b575ff1e58a323a6788ad0547fa70e1e7561f9558b4a346",
+    "114e92c7e01f7473e9fea1017d8d8b1594a23168fe8c167b7d63aa9828eba6f6",
+    "e9f4d2e07ecaa27ce821a1ef40bf757036a855f66f234886dda0fef00c8f63d4",
+    "762c0ad91f86299fbce27ef0f64be48248ada950a5241154c783f79ee918a591",
+    "00d0de10b12ecc4a0dcec836b9f6caee6c27977fe69a6c7ebbab70aad232c0f3",
+    "c9aa0b06e3c704cc29d4dc64a75aba1b0c4f4cddbab72bddd40bc008e911d46d",
+    "35099827c48c799535bef9e1fbee693ef4ee07be524d7a80d270f214347f3492",
+    "c279f1aa7719abd21c8648192caa7ee35fce71494e5940ba229d1fd8d6ce8652"
+  ]
+}
