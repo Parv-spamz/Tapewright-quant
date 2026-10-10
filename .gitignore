@@ -1,6 +1,7 @@
 data/caching/parquet_store/*
 !data/caching/parquet_store/__init__.py
-logs/
+logs/*.log
+!logs/proof/
 .env
 __pycache__/
 *.pyc

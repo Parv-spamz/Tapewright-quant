@@ -1,0 +1,18 @@
+Python version: 3.14.0 (tags/v3.14.0:ebf955d, Oct  7 2025, 10:15:03) [MSC v.1944 64 bit (AMD64)]
+numpy: 2.4.1
+scipy: 1.17.1
+pandas: 2.3.3
+pyarrow: 25.0.1
+statsmodels: 0.15.0
+arch: 8.0.0
+scikit-learn: 1.8.0
+torch: 2.14.1
+xgboost: 3.4.1
+lightgbm: 4.7.0
+catboost: 1.2.10
+gymnasium: 1.4.0
+PyMySQL: 1.2.3
+mysql-connector-python: NOT_INSTALLED
+pytest: 9.1.1
+streamlit: 1.65.0
+plotly: 7.1.0

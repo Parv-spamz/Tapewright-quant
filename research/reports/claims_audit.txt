@@ -1,0 +1,18 @@
+ID     | STATUS    | SYMBOL                                                         | CLAIM
+========================================================================================================================
+c1     | MISSING   | NOT_FOUND                                                      | Hasbrouck lambda estimator
+c2     | MISSING   | NOT_FOUND                                                      | latency delay in the event loop
+c3     | MISSING   | NOT_FOUND                                                      | PurgedGroupTimeSeriesSplit
+c4     | MISSING   | NOT_FOUND                                                      | reverse stress solver
+c5     | MISSING   | NOT_FOUND                                                      | Heston stochastic-volatility generator
+c6     | UNTESTED  | backtesting.metrics.risk_measures.measures:cornish_fisher_var  | Cornish-Fisher VaR
+c7     | PASS      | features.econometric.cointegration.tests:half_life             | Ornstein-Uhlenbeck half-life
+c8     | PASS      | backtesting.metrics.risk_measures.overfit:monte_carlo_equity_cone | Monte Carlo equity cone in the dashboard (uses 200 paths)
+c9a    | PASS      | backtesting.reports.tearsheet.app:main                         | dashboard tab named Causal Graph
+c9b    | PASS      | backtesting.reports.tearsheet.app:main                         | dashboard tab named Portfolio
+c9c    | PASS      | backtesting.reports.tearsheet.app:main                         | dashboard tab named Models
+c9d    | PASS      | backtesting.reports.tearsheet.app:main                         | dashboard tab named Monitoring
+c9e    | PASS      | backtesting.reports.tearsheet.app:main                         | dashboard tab named Execution
+c10    | PASS      | backtesting.execution.slippage_models.lob:LOBSimulator         | L2 simulator queue position with partial fills and cancel_rate
+c11    | PASS      | backtesting.execution.slippage_models.models:AdverseSelectionPenalty | VPIN multiplier applied inside fills
+c12    | PASS      | backtesting.reports.tearsheet.stress:BUILTIN_SCENARIOS         | stress scenarios described in docs as calibrated

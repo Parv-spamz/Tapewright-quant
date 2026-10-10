@@ -1,0 +1,98 @@
+[
+  {
+    "id": "c1",
+    "text": "Hasbrouck lambda estimator",
+    "symbol": "NOT_FOUND",
+    "test_substring": "hasbrouck"
+  },
+  {
+    "id": "c2",
+    "text": "latency delay in the event loop",
+    "symbol": "NOT_FOUND",
+    "test_substring": "latency"
+  },
+  {
+    "id": "c3",
+    "text": "PurgedGroupTimeSeriesSplit",
+    "symbol": "NOT_FOUND",
+    "test_substring": "purged_group"
+  },
+  {
+    "id": "c4",
+    "text": "reverse stress solver",
+    "symbol": "NOT_FOUND",
+    "test_substring": "reverse_stress"
+  },
+  {
+    "id": "c5",
+    "text": "Heston stochastic-volatility generator",
+    "symbol": "NOT_FOUND",
+    "test_substring": "heston"
+  },
+  {
+    "id": "c6",
+    "text": "Cornish-Fisher VaR",
+    "symbol": "backtesting.metrics.risk_measures.measures:cornish_fisher_var",
+    "test_substring": "cornish"
+  },
+  {
+    "id": "c7",
+    "text": "Ornstein-Uhlenbeck half-life",
+    "symbol": "features.econometric.cointegration.tests:half_life",
+    "test_substring": "half_life"
+  },
+  {
+    "id": "c8",
+    "text": "Monte Carlo equity cone in the dashboard (uses 200 paths)",
+    "symbol": "backtesting.metrics.risk_measures.overfit:monte_carlo_equity_cone",
+    "test_substring": "monte_carlo"
+  },
+  {
+    "id": "c9a",
+    "text": "dashboard tab named Causal Graph",
+    "symbol": "backtesting.reports.tearsheet.app:main",
+    "test_substring": "causal"
+  },
+  {
+    "id": "c9b",
+    "text": "dashboard tab named Portfolio",
+    "symbol": "backtesting.reports.tearsheet.app:main",
+    "test_substring": "portfolio"
+  },
+  {
+    "id": "c9c",
+    "text": "dashboard tab named Models",
+    "symbol": "backtesting.reports.tearsheet.app:main",
+    "test_substring": "models"
+  },
+  {
+    "id": "c9d",
+    "text": "dashboard tab named Monitoring",
+    "symbol": "backtesting.reports.tearsheet.app:main",
+    "test_substring": "monitoring"
+  },
+  {
+    "id": "c9e",
+    "text": "dashboard tab named Execution",
+    "symbol": "backtesting.reports.tearsheet.app:main",
+    "test_substring": "execution"
+  },
+  {
+    "id": "c10",
+    "text": "L2 simulator queue position with partial fills and cancel_rate",
+    "symbol": "backtesting.execution.slippage_models.lob:LOBSimulator",
+    "test_substring": "queue"
+  },
+  {
+    "id": "c11",
+    "text": "VPIN multiplier applied inside fills",
+    "symbol": "backtesting.execution.slippage_models.models:AdverseSelectionPenalty",
+    "test_substring": "vpin"
+  },
+  {
+    "id": "c12",
+    "text": "stress scenarios described in docs as calibrated",
+    "symbol": "backtesting.reports.tearsheet.stress:BUILTIN_SCENARIOS",
+    "test_substring": "stress"
+  }
+]
