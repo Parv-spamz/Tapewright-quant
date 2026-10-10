@@ -1,0 +1,16 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 5 items
+
+tests/unit/test_calibrate.py::test_walk_cost_on_3_level_book_equals_hand_vwap_minus_mid PASSED [ 20%]
+tests/unit/test_calibrate.py::test_impact_fit_recovers_planted_exponent_within_tolerance PASSED [ 40%]
+tests/unit/test_calibrate.py::test_queue_fill_probability_on_hand_tape_equals_hand_computed_outcome PASSED [ 60%]
+tests/unit/test_calibrate.py::test_imbalance_ic_on_planted_signal_recovers_planted_positive_sign PASSED [ 80%]
+tests/unit/test_calibrate.py::test_real_vs_simulator_comparison_runs_on_synthetic_tapes PASSED [100%]
+
+============================== 5 passed in 1.80s ==============================

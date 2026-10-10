@@ -1,0 +1,16 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 5 items
+
+tests/unit/test_recorder.py::test_parse_depth_snapshot_hand_payload PASSED [ 20%]
+tests/unit/test_recorder.py::test_trade_sign_convention_hand_payload PASSED [ 40%]
+tests/unit/test_recorder.py::test_gap_detection_on_hand_trade_list PASSED [ 60%]
+tests/unit/test_recorder.py::test_pagination_from_id_logic_with_fake_fetcher PASSED [ 80%]
+tests/unit/test_recorder.py::test_recorder_simulated_5_ticks_produces_5_rows_no_duplicate_trades PASSED [100%]
+
+============================== 5 passed in 1.79s ==============================

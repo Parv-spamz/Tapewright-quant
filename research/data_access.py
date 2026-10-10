@@ -101,3 +101,27 @@ def save_experiment_results(df: pd.DataFrame, path: Path | str) -> None:
 def load_experiment_results(path: Path | str) -> pd.DataFrame:
     """Load experiment return series / results dataframe from parquet format."""
     return pd.read_parquet(Path(path))
+
+
+def write_microstructure_data(
+    symbol: str,
+    book_df: pd.DataFrame,
+    trades_df: pd.DataFrame,
+    store_path: Path | str = "research/store_devval",
+) -> None:
+    """Persist microstructure L2 book and trade series to ParquetStore partitions."""
+    store = ParquetStore(store_path)
+    if not book_df.empty:
+        store.write(symbol, book_df, "real_l2_book")
+    if not trades_df.empty:
+        store.write(symbol, trades_df, "real_l2_trades")
+
+
+def read_microstructure_data(
+    symbol: str,
+    interval: str,
+    store_path: Path | str = "research/store_devval",
+) -> pd.DataFrame:
+    """Read microstructure L2 book or trade series from ParquetStore partitions."""
+    store = ParquetStore(store_path)
+    return store.read(symbol, interval)

@@ -1,0 +1,26 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 15 items
+
+tests/unit/test_forward.py::test_signal_after_target_bar_open_is_refused PASSED [  6%]
+tests/unit/test_forward.py::test_outcome_without_signal_is_impossible PASSED [ 13%]
+tests/unit/test_forward.py::test_forward_equity_matches_hand_compounding PASSED [ 20%]
+tests/unit/test_forward.py::test_emit_twice_idempotency PASSED           [ 26%]
+tests/unit/test_forward.py::test_anchor_appends_one_line_per_call PASSED [ 33%]
+tests/unit/test_calibrate.py::test_walk_cost_on_3_level_book_equals_hand_vwap_minus_mid PASSED [ 40%]
+tests/unit/test_calibrate.py::test_impact_fit_recovers_planted_exponent_within_tolerance PASSED [ 46%]
+tests/unit/test_calibrate.py::test_queue_fill_probability_on_hand_tape_equals_hand_computed_outcome PASSED [ 53%]
+tests/unit/test_calibrate.py::test_imbalance_ic_on_planted_signal_recovers_planted_positive_sign PASSED [ 60%]
+tests/unit/test_calibrate.py::test_real_vs_simulator_comparison_runs_on_synthetic_tapes PASSED [ 66%]
+tests/unit/test_recorder.py::test_parse_depth_snapshot_hand_payload PASSED [ 73%]
+tests/unit/test_recorder.py::test_trade_sign_convention_hand_payload PASSED [ 80%]
+tests/unit/test_recorder.py::test_gap_detection_on_hand_trade_list PASSED [ 86%]
+tests/unit/test_recorder.py::test_pagination_from_id_logic_with_fake_fetcher PASSED [ 93%]
+tests/unit/test_recorder.py::test_recorder_simulated_5_ticks_produces_5_rows_no_duplicate_trades PASSED [100%]
+
+============================= 15 passed in 5.02s ==============================
