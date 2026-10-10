@@ -1,0 +1,18 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 7 items
+
+tests/unit/test_experiment.py::test_running_without_registered_protocol_raises PASSED [ 14%]
+tests/unit/test_experiment.py::test_duplicate_trial_returns_stored_record PASSED [ 28%]
+tests/unit/test_experiment.py::test_trial_count_equals_distinct_specs PASSED [ 42%]
+tests/unit/test_experiment.py::test_buy_and_hold_zero_cost_reproduces_hand_computed_equity PASSED [ 57%]
+tests/unit/test_experiment.py::test_cost_increases_monotonically_reduce_final_equity PASSED [ 71%]
+tests/unit/test_experiment.py::test_fail_record_written_when_strategy_raises PASSED [ 85%]
+tests/unit/test_experiment.py::test_results_sha256_matches_saved_file PASSED [100%]
+
+============================== 7 passed in 6.03s ==============================
