@@ -14,13 +14,16 @@ import json
 import logging
 import os
 from pathlib import Path
+
 import random
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
-from typing import Any
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from integrity.ledger import Ledger
 
@@ -174,7 +177,6 @@ class MutationApplier(ast.NodeTransformer):
         return self.generic_visit(node)
 
     def visit_Compare(self, node: ast.Compare) -> ast.AST:
-        node = self.generic_visit(node)
         new_ops = []
         for op in node.ops:
             curr_id = self._counter
@@ -198,10 +200,9 @@ class MutationApplier(ast.NodeTransformer):
             else:
                 new_ops.append(op)
         node.ops = new_ops
-        return node
+        return self.generic_visit(node)
 
     def visit_BinOp(self, node: ast.BinOp) -> ast.AST:
-        node = self.generic_visit(node)
         if isinstance(node.op, (ast.Add, ast.Sub, ast.Mult, ast.Div)):
             curr_id = self._counter
             self._counter += 1
@@ -214,10 +215,9 @@ class MutationApplier(ast.NodeTransformer):
                     node.op = ast.Div()
                 elif isinstance(node.op, ast.Div):
                     node.op = ast.Mult()
-        return node
+        return self.generic_visit(node)
 
     def visit_BoolOp(self, node: ast.BoolOp) -> ast.AST:
-        node = self.generic_visit(node)
         if isinstance(node.op, (ast.And, ast.Or)):
             curr_id = self._counter
             self._counter += 1
@@ -226,7 +226,7 @@ class MutationApplier(ast.NodeTransformer):
                     node.op = ast.Or()
                 elif isinstance(node.op, ast.Or):
                     node.op = ast.And()
-        return node
+        return self.generic_visit(node)
 
     def visit_Constant(self, node: ast.Constant) -> ast.AST:
         if not isinstance(node.value, bool):
@@ -242,7 +242,7 @@ class MutationApplier(ast.NodeTransformer):
                         node.value = 0.0
                     elif node.value == 0.0:
                         node.value = 1.0
-        return node
+        return self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> ast.AST:
         if isinstance(node.func, ast.Attribute) and node.func.attr == "shift":
