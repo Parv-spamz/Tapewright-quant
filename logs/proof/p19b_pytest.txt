@@ -1,0 +1,32 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 18 items
+
+tests/unit/test_integrity.py::TestLedger::test_ledger_append_200_and_verify_chain PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_flip_one_byte_fails_verification PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_delete_one_line_fails_verification PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_swap_two_lines_fails_verification PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_nan_or_inf_payload_raises PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_multithreaded_concurrency PASSED
+tests/unit/test_integrity.py::TestLedger::test_code_hash_sensitivity_and_tests_isolation PASSED
+tests/unit/test_integrity.py::TestProvenance::test_parsed_hash_deterministic PASSED
+tests/unit/test_integrity.py::TestProvenance::test_archive_raw_and_load_raw_tamper_detection PASSED
+tests/unit/test_integrity.py::TestProvenance::test_require_real_raises_for_synthetic_manifest PASSED
+tests/unit/test_integrity.py::TestProvenance::test_looks_synthetic_gbm_true_for_gbm_and_false_for_garch 
+GBM Fingerprint: {'abs_return_autocorr_lag1': 0.008900975533428297, 'excess_kurtosis': 0.0488971056448011, 'ljung_box_p_squared_lag10': 0.8988200240622525, 'n': 2000}
+GARCH(1,1) Fingerprint: {'abs_return_autocorr_lag1': 0.23822716052474077, 'excess_kurtosis': 56.934889884912266, 'ljung_box_p_squared_lag10': 4.963601301675469e-25, 'n': 2000}
+PASSED
+tests/unit/test_integrity.py::TestProvenance::test_verify_manifest_full_cycle PASSED
+tests/unit/test_integrity.py::TestRenderer::test_render_template_from_ledger PASSED
+tests/unit/test_integrity.py::TestRenderer::test_render_missing_tag_raises_render_error PASSED
+tests/unit/test_integrity.py::TestRenderer::test_render_missing_payload_key_raises_render_error PASSED
+tests/unit/test_integrity.py::TestRenderer::test_render_all_creates_wrapped_generated_markdown PASSED
+tests/unit/test_integrity.py::TestRenderer::test_lint_docs_flags_unwrapped_metrics_and_passes_generated PASSED
+tests/unit/test_integrity.py::TestRenderer::test_lint_docs_flags_unclosed_generated_block PASSED
+
+============================= 18 passed in 10.77s =============================

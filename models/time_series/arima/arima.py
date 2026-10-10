@@ -10,9 +10,12 @@ Provides:
 
 from __future__ import annotations
 
+import logging
 import warnings
 from dataclasses import dataclass
 from typing import Any, Tuple, Union
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 import pandas as pd
@@ -182,8 +185,9 @@ def auto_arima(
                     best_bic = float(fitted.bic)
                     best_order = (p, d, q)
                     best_fit = fitted
-            except Exception:
+            except Exception as e:
                 # Catch non-convergence or invertibility matrix failure and skip candidate
+                logger.warning("ARIMA candidate fit failed for order %s: %s", (p, d, q), e)
                 continue
 
     if best_fit is None:

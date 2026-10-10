@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 from backtesting.engine.event_loop.data_handler import HistoricBarDataHandler
 from backtesting.engine.event_loop.events import FillEvent, OrderEvent, SignalEvent
@@ -76,10 +79,10 @@ class BacktestEngine:
                         model_family="TIME_SERIES",
                         version="1.0.0",
                     )
-                except Exception:
-                    pass
-        except Exception:
-            pass
+                except Exception as e:
+                    logger.warning("Failed to register model %s: %s", m_id, e)
+        except Exception as e:
+            logger.warning("Error in demo initialization: %s", e)
 
     def _persist_signal(self, signal: SignalEvent) -> int | None:
         try:
@@ -107,7 +110,8 @@ class BacktestEngine:
                 timestamp=ts_val,
             )
             return sig_id
-        except Exception:
+        except Exception as e:
+            logger.warning("Failed to persist signal: %s", e)
             return None
 
     def _persist_fill(self, fill: FillEvent, signal_id: int | None = None) -> None:
@@ -133,8 +137,8 @@ class BacktestEngine:
                 fee=fill.commission,
                 executed_at=ts_val,
             )
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("Failed to persist fill: %s", e)
 
     def run(self) -> BacktestResult:
         """Run the event-driven simulation loop across all historical bars."""

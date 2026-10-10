@@ -1,0 +1,12 @@
+=== WARNINGS (10) ===
+WARNING: <script> tag in logs/proof/p17_constraints.txt:3
+WARNING: <script> tag in logs/proof/p17_constraints.txt:5
+WARNING: <script> tag in logs/proof/p18_constraints.txt:2
+WARNING: <script> tag in logs/proof/p18_constraints.txt:3
+WARNING: <script> tag in logs/proof/p18_constraints.txt:4
+WARNING: <script> tag in logs/proof/p18_constraints.txt:5
+WARNING: <script> tag in logs/proof/p18_constraints.txt:6
+WARNING: <script> tag in logs/proof/p18_constraints.txt:7
+WARNING: <script> tag in reports_out/dashboard.html:57
+WARNING: <script> tag in reports_out/dashboard.html:58
+Constraints check PASSED: 0 violations.

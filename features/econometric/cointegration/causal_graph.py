@@ -11,12 +11,15 @@ Rate (FDR) across all simultaneous tests, preventing false discovery inflation.
 
 from __future__ import annotations
 
+import logging
 from collections import Counter
 from dataclasses import dataclass
 from typing import Any, Sequence
 import warnings
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 from statsmodels.tsa.api import VAR
 from statsmodels.tsa.stattools import adfuller, grangercausalitytests
 
@@ -245,7 +248,8 @@ def transfer_entropy(
     try:
         x_binned = np.asarray(pd.qcut(x_arr, q=bins, labels=False, duplicates="drop"))
         y_binned = np.asarray(pd.qcut(y_arr, q=bins, labels=False, duplicates="drop"))
-    except Exception:
+    except Exception as e:
+        logger.warning("Quantile binning failed for transfer entropy: %s", e)
         return 0.0
 
     actual_bins = max(int(np.max(x_binned)), int(np.max(y_binned))) + 1

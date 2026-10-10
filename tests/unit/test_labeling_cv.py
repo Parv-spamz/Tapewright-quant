@@ -293,7 +293,8 @@ class TestSentimentLexiconAndEmbeddings:
         """TorchTextEmbedder raises clear ImportError if transformers missing."""
         import importlib.util
         if importlib.util.find_spec("transformers") is not None:
-            assert True
+            embedder = TorchTextEmbedder()
+            assert embedder is not None
         else:
             with pytest.raises(ImportError, match="requires 'transformers' library"):
                 TorchTextEmbedder()

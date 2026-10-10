@@ -1,0 +1,58 @@
+ROW ID               | SPEC                   | VERDICT            | MATCHED NODE ID
+========================================================================================================================
+l2_planted_ic        | > 0.05                 | READ_BY_HUMAN      | tests/unit/test_synthetic_clean.py::TestL2TapeSimulation::test_l2_tape_planted_signal_recovery
+    assert [line 124]: assert report.ok is True, f"validate_book failed: {report.errors}"
+    assert [line 131]: assert spearman_corr > 0.05, f"Expected Spearman correlation > 0.05, got {spearman_corr:.4f}"
+    assert [line 143]: assert corr_vol > 0.0, f"Expected positive correlation with net signed volume, got {corr_vol:.4f}"
+purged_noise_auc     | range [0.45, 0.55]     | READ_BY_HUMAN      | tests/unit/test_training.py::TestPurgedCVHonesty::test_purged_cv_honesty_on_pure_noise_vs_leaky_kfold
+    assert [line 164]: assert 0.45 <= mean_purged_auc <= 0.55, ( f"Purged CV AUC ({mean_purged_auc:.4f}) outside pure noise expectation [0.45, 0.55]" )
+    assert [line 169]: assert mean_plain_auc > mean_purged_auc + 0.05, ( f"Plain KFold AUC ({mean_plain_auc:.4f}) not visibly higher than Purged CV ({mean_purged_auc:.4f})" )
+purged_planted_auc   | > 0.55                 | STRICTER_OR_EQUAL  | tests/unit/test_training.py::TestPurgedCVHonesty::test_planted_signal_recovers_purged_auc_above_threshold
+    assert [line 208]: assert mean_auc > 0.55, f"Expected planted signal Purged AUC > 0.55, got {mean_auc:.4f}"
+pbo_noise            | range [0.35, 0.65]     | READ_BY_HUMAN      | tests/unit/test_metrics_overfit.py::TestOverfittingStatistics::test_probability_of_backtest_overfitting_noise_and_planted_edge
+    assert [line 224]: assert 0.35 <= pbo_noise <= 0.65, f"Pure noise PBO {pbo_noise} not in [0.35, 0.65]"
+    assert [line 234]: assert pbo_edge < 0.2, f"Planted edge PBO {pbo_edge} >= 0.2"
+pbo_edge             | < 0.2                  | READ_BY_HUMAN      | tests/unit/test_metrics_overfit.py::TestOverfittingStatistics::test_probability_of_backtest_overfitting_noise_and_planted_edge
+    assert [line 224]: assert 0.35 <= pbo_noise <= 0.65, f"Pure noise PBO {pbo_noise} not in [0.35, 0.65]"
+    assert [line 234]: assert pbo_edge < 0.2, f"Planted edge PBO {pbo_edge} >= 0.2"
+dsr_noise            | < 0.95                 | READ_BY_HUMAN      | tests/integration/test_overfit_audit.py::TestOverfitAudit::test_overfitting_detected_on_pure_noise_panel
+    assert [line 49]: assert len(crossover_configs) == 20
+    assert [line 59]: assert len(breakout_windows) == 10
+    assert [line 67]: assert len(variants_returns) == 30, "Exactly 30 strategy variants must be built"
+    assert [line 70]: assert returns_matrix.shape == (T, 30)
+    assert [line 109]: assert dsr_best < 0.95, ( f"DSR for best variant on noise ({dsr_best:.4f}) should be < 0.95 under multi-testing bias!" )
+    assert [line 112]: assert pbo > 0.50, ( f"PBO on noise ({pbo:.4f}) should indicate high probability of overfitting (> 0.50)!" )
+meta_label_auc       | > 0.9                  | READ_BY_HUMAN      | tests/integration/test_zero_lookahead.py::TestZeroLookaheadStrategies::test_ml_meta_walk_forward_zero_lookahead
+    assert [line 161]: assert meta["max_t1_train"] < meta["min_t0_test"], ( f"Walk-forward leakage: train end {meta['max_t1_train']} >= test start {meta['min_t0_test']}" )
+    assert [line 164]: assert meta["is_purged"] is True
+meta_label_auc       | > 0.9                  | READ_BY_HUMAN      | tests/unit/test_labeling_cv.py::TestTripleBarrierLabeling::test_meta_labels_binary_correctness
+    assert [line 140]: assert list(ml.values) == [1, 0, 0]
+meta_label_auc       | > 0.9                  | READ_BY_HUMAN      | tests/unit/test_training.py::TestMetaLabelingAndWalkForward::test_meta_label_pipeline_oracle_flag_and_bet_sizing
+    assert [line 238]: assert oof_auc > 0.90, f"Expected meta model OOF AUC > 0.9, got {oof_auc:.4f}"
+    assert [line 243]: assert (valid_sizes >= 0.0).all() and (valid_sizes <= 1.0).all()
+    assert [line 244]: assert bet_size(0.4) == 0.0
+    assert [line 245]: assert bet_size(1.0) == 1.0
+    assert [line 246]: assert abs(bet_size(0.75) - 0.5) < 1e-12
+dl_accuracy          | > 0.8                  | READ_BY_HUMAN      | tests/unit/test_dl.py::test_learning_benchmark
+    assert [line 285]: assert acc_lstm > 0.8, f"LSTM accuracy failed threshold: {acc_lstm:.4f}"
+    assert [line 293]: assert acc_wn > 0.8, f"WaveNet accuracy failed threshold: {acc_wn:.4f}"
+    assert [line 301]: assert acc_tft > 0.8, f"SimpleTFT accuracy failed threshold: {acc_tft:.4f}"
+dl_accuracy          | > 0.8                  | STRICTER_OR_EQUAL  | tests/unit/test_labeling_cv.py::TestPurgedCrossValidation::test_purged_kfold_no_leakage_and_sklearn_failure
+    assert [line 213]: assert not np.any(embargo_breaches)
+    assert [line 215]: assert fold_count == 5
+dl_accuracy          | > 0.8                  | READ_BY_HUMAN      | tests/unit/test_rl.py::test_sanity_learning
+    assert [line 386]: assert dqn_reward > rand_reward, f"DQN ({dqn_reward}) failed to beat random ({rand_reward})"
+    assert [line 394]: assert ppo_reward > rand_reward, f"PPO ({ppo_reward}) failed to beat random ({rand_reward})"
+regime_vol_ratio     | > 2                    | STRICTER_OR_EQUAL  | tests/unit/test_synthetic_clean.py::TestSyntheticGenerators::test_regime_switching_volatility_difference
+    assert [line 91]: assert vol_stress > 2.0 * vol_calm, ( f"Expected stress vol > 2x calm vol, got calm={vol_calm:.6f}, stress={vol_stress:.6f}" )
+regime_vol_ratio     | > 2                    | READ_BY_HUMAN      | tests/unit/test_timeseries.py::TestGARCHVolatilityModels::test_garch_truncation_invariance_and_regime_probability
+    assert [line 139]: assert (valid_rp >= 0.0).all(), "Regime probability contains values < 0.0"
+    assert [line 140]: assert (valid_rp <= 1.0).all(), "Regime probability contains values > 1.0"
+jump_kurtosis        | > 1                    | READ_BY_HUMAN      | tests/unit/test_synthetic_clean.py::TestSyntheticGenerators::test_kurtosis_jump_vs_gbm
+    assert [line 74]: assert k_jump > 1.0, f"Expected jump excess kurtosis > 1.0, got {k_jump:.4f}"
+    assert [line 79]: assert abs(k_gbm) < 0.5, f"Expected GBM excess kurtosis near 0 (|k| < 0.5), got {k_gbm:.4f}"
+causal_seeds         | >= 9                   | STRICTER_OR_EQUAL  | tests/unit/test_econometrics.py::TestCausalGraphIntegration::test_causal_graph_coupling_pattern_across_10_seeds
+    assert [line 246]: assert te_xy > te_yx
+    assert [line 261]: assert pattern_matches >= 9
+bootstrap_coverage   | >= 24                  | STRICTER_OR_EQUAL  | tests/unit/test_metrics_overfit.py::TestOverfittingStatistics::test_bootstrap_sharpe_ci_coverage
+    assert [line 255]: assert covered >= 24, f"Bootstrap coverage {covered}/30 is below requirement of 24/30"

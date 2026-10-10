@@ -43,8 +43,8 @@ def measure_memory(fn: Callable[..., T], *args: Any, **kwargs: Any) -> tuple[T, 
 
     try:
         tracemalloc.reset_peak()
-    except AttributeError:
-        pass
+    except AttributeError as e:
+        get_logger("profiler").warning("tracemalloc reset_peak unavailable: %s", e)
 
     try:
         result = fn(*args, **kwargs)

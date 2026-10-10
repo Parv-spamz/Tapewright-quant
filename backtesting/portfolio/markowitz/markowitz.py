@@ -9,9 +9,12 @@ to ensure numerical stability and out-of-sample robustness.
 
 from __future__ import annotations
 
+import logging
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
+
+logger = logging.getLogger(__name__)
 
 
 def min_variance(
@@ -163,7 +166,8 @@ def efficient_frontier(
             v = np.sqrt(max(float(w @ sigma @ w), 0.0))
             frontier_vols.append(v)
             frontier_weights.append(w)
-        except RuntimeError:
+        except RuntimeError as e:
+            logger.warning("Optimization failed for target return %f: %s", float(r_target), e)
             continue
 
     return (

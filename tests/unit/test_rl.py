@@ -48,6 +48,8 @@ def test_gymnasium_check_env() -> None:
             action_mode=mode,
         )
         check_env(env)
+        assert env.observation_space is not None
+        assert env.action_space is not None
 
 
 def test_env_causality() -> None:

@@ -1,5 +1,8 @@
 import json
+import logging
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from database.connection.manager import ConnectionManager, adapt_sql
 from database.repositories.market_data_repo.repo import _fetch_all_dicts, _fetch_one_dict
@@ -12,8 +15,8 @@ def _parse_signal_metadata(row: dict[str, Any] | None) -> dict[str, Any] | None:
     if isinstance(val, str):
         try:
             row["metadata"] = json.loads(val)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("Failed to deserialize signal metadata JSON: %s", e)
     return row
 
 

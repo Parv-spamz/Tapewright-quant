@@ -1,0 +1,18 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 7 items
+
+tests/unit/test_integrity.py::TestLedger::test_ledger_append_200_and_verify_chain PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_flip_one_byte_fails_verification PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_delete_one_line_fails_verification PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_swap_two_lines_fails_verification PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_nan_or_inf_payload_raises PASSED
+tests/unit/test_integrity.py::TestLedger::test_ledger_multithreaded_concurrency PASSED
+tests/unit/test_integrity.py::TestLedger::test_code_hash_sensitivity_and_tests_isolation PASSED
+
+============================== 7 passed in 8.82s ==============================

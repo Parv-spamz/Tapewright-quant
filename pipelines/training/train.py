@@ -5,8 +5,11 @@ meta-labeling, sample uniqueness weighting, and out-of-sample permutation import
 
 from __future__ import annotations
 
+import logging
 import warnings
 from typing import Any, Callable, Optional, Sequence, Union
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 import pandas as pd
@@ -117,7 +120,8 @@ def build_dataset(
                     feat_dict[f"{name}_{col}"] = res[col]
             else:
                 feat_dict[name] = res
-        except Exception:
+        except Exception as e:
+            logger.warning("Feature %s computation failed: %s", name, e)
             continue
 
     feat_df = pd.DataFrame(feat_dict, index=df.index)
@@ -557,7 +561,8 @@ def permutation_importance_oos(
             prob_pos = probas[:, 1] if probas.ndim == 2 and probas.shape[1] > 1 else probas.flatten()
             try:
                 return float(roc_auc_score(y_arr, prob_pos))
-            except Exception:
+            except Exception as e:
+                logger.warning("ROC AUC score computation failed: %s", e)
                 return 0.5
         else:
             preds = model.predict(X_eval)

@@ -1,0 +1,14 @@
+[
+  {"id": "l2_planted_ic", "keywords": ["l2", "planted"], "op": ">", "value": 0.05},
+  {"id": "purged_noise_auc", "keywords": ["purged", "noise"], "op": "range", "value": [0.45, 0.55]},
+  {"id": "purged_planted_auc", "keywords": ["planted", "purged"], "op": ">", "value": 0.55},
+  {"id": "pbo_noise", "keywords": ["backtest_overfitting"], "op": "range", "value": [0.35, 0.65]},
+  {"id": "pbo_edge", "keywords": ["backtest_overfitting"], "op": "<", "value": 0.2},
+  {"id": "dsr_noise", "keywords": ["overfit_audit"], "op": "<", "value": 0.95},
+  {"id": "meta_label_auc", "keywords": ["meta"], "op": ">", "value": 0.9},
+  {"id": "dl_accuracy", "keywords": ["learn"], "op": ">", "value": 0.8},
+  {"id": "regime_vol_ratio", "keywords": ["regime"], "op": ">", "value": 2},
+  {"id": "jump_kurtosis", "keywords": ["jump"], "op": ">", "value": 1},
+  {"id": "causal_seeds", "keywords": ["causal", "seeds"], "op": ">=", "value": 9},
+  {"id": "bootstrap_coverage", "keywords": ["bootstrap"], "op": ">=", "value": 24}
+]

@@ -8,8 +8,11 @@ determines risk-budgeted position sizing, and logs signals to the relational dat
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any, Optional, Sequence, Union
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 import pandas as pd
@@ -183,8 +186,8 @@ def run_daily_signals(
                         metadata={"vol_filter": is_vol_allowed, "gate": gate_allowed},
                     )
                     signal_record["signal_id"] = sig_id
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning("Error inserting signal: %s", e)
 
             generated_signals.append(signal_record)
 

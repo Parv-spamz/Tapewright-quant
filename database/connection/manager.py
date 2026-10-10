@@ -1,3 +1,4 @@
+import logging
 import os
 import queue
 import re
@@ -5,6 +6,8 @@ import sqlite3
 import threading
 from contextlib import contextmanager
 from typing import Any, Generator
+
+logger = logging.getLogger(__name__)
 
 from config.database.db_config import DBConfig, retry_with_backoff
 
@@ -127,8 +130,8 @@ class ConnectionManager:
             with self._sqlite_lock:
                 try:
                     self._sqlite_conn.close()
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning("Error closing SQLite connection: %s", e)
                 self._sqlite_conn = None
 
         if self._mysql_pool is not None:
@@ -136,8 +139,8 @@ class ConnectionManager:
                 try:
                     conn = self._mysql_pool.get_nowait()
                     conn.close()
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning("Error closing MySQL pooled connection: %s", e)
 
     @contextmanager
     def connection(self) -> Generator[Any, None, None]:
@@ -176,8 +179,8 @@ class ConnectionManager:
                 if conn is not None:
                     try:
                         conn.rollback()
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        logger.warning("Error rolling back MySQL connection: %s", e)
                 raise
             finally:
                 if conn is not None and self._mysql_pool is not None:

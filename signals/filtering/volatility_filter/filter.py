@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 from typing import Any
 import numpy as np
 import pandas as pd
 from arch import arch_model
+
+logger = logging.getLogger(__name__)
 
 from backtesting.engine.event_loop.events import SignalEvent
 
@@ -61,9 +64,9 @@ def garch_regime_filter(
                 omega = float(res.params.get("omega", omega))
                 alpha = float(res.params.get("alpha[1]", alpha))
                 beta = float(res.params.get("beta[1]", beta))
-            except Exception:
+            except Exception as e:
                 # Retain previous parameters if numerical optimization fails
-                pass
+                logger.warning("GARCH refit failed at t=%d, retaining parameters: %s", t, e)
 
         # One-step-ahead conditional variance using return from bar t - 1
         prev_r = vals[t - 1] * 100.0

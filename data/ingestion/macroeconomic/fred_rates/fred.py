@@ -1,9 +1,12 @@
 import csv
 import io
+import logging
 import urllib.error
 import urllib.request
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 from data.ingestion.market_feeds.equities.yahoo import FeedError
 
@@ -35,7 +38,8 @@ def parse_fred_csv(raw_text: str) -> pd.Series:
             try:
                 dt = pd.to_datetime(date_str)
                 dates.append(dt)
-            except Exception:
+            except Exception as e:
+                logger.warning("Failed to parse FRED date '%s': %s", date_str, e)
                 continue
 
             if val_str == "." or not val_str:

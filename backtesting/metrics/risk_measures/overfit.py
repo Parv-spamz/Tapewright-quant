@@ -16,11 +16,14 @@ def probabilistic_sharpe_ratio(
     T: int,
     skew: float = 0.0,
     kurt: float = 3.0,
+    annualized: bool = False,
+    ppy: int = 252,
 ) -> float:
     """Calculate the Probabilistic Sharpe Ratio (PSR).
 
     PSR = Phi( (sr_hat - sr_benchmark) * sqrt(T - 1) / sqrt(1 - skew*sr_hat + (kurt - 1)/4 * sr_hat^2) )
     where kurt is raw (non-excess) kurtosis, and sr values are in per-period units.
+    If annualized=True, sr_hat and sr_benchmark are converted internally by dividing by sqrt(ppy).
 
     Args:
         sr_hat: Observed Sharpe ratio estimate.
@@ -28,12 +31,18 @@ def probabilistic_sharpe_ratio(
         T: Sample size (number of return observations).
         skew: Sample skewness of returns.
         kurt: Sample raw (non-excess) kurtosis of returns (normal = 3.0).
+        annualized: Whether input Sharpe ratios are annualized. Default is False.
+        ppy: Periods per year for annualization conversion. Default is 252.
 
     Returns:
         float: Probability that the true Sharpe ratio exceeds the benchmark.
     """
     if T <= 1:
         return 0.5
+
+    if annualized:
+        sr_hat = float(sr_hat) / np.sqrt(ppy)
+        sr_benchmark = float(sr_benchmark) / np.sqrt(ppy)
 
     # Denominator variance adjustment (Mertens, 2002; Lopez de Prado, 2018)
     denom_var = 1.0 - skew * sr_hat + ((kurt - 1.0) / 4.0) * (sr_hat ** 2)
@@ -87,10 +96,15 @@ def deflated_sharpe_ratio(
     kurt: float = 3.0,
     n_trials: int = 1,
     var_sr: float = 0.0,
+    annualized: bool = False,
+    ppy: int = 252,
 ) -> float:
     """Calculate the Deflated Sharpe Ratio (DSR) discounting selection bias from multiple testing.
 
     DSR = PSR(sr_hat, sr_benchmark = expected_max_sharpe(n_trials, var_sr), T, skew, kurt)
+
+    If annualized=True, sr_hat is converted by dividing by sqrt(ppy), and var_sr is converted
+    by dividing by ppy, converting all quantities to per-period units before PSR evaluation.
 
     Args:
         sr_hat: Observed Sharpe ratio estimate.
@@ -99,10 +113,16 @@ def deflated_sharpe_ratio(
         kurt: Sample raw kurtosis of returns (normal = 3.0).
         n_trials: Number of strategies/trials tested.
         var_sr: Variance of Sharpe ratios across all trials.
+        annualized: Whether inputs are in annualized units. Default is False.
+        ppy: Periods per year for annualization conversion. Default is 252.
 
     Returns:
         float: Deflated Sharpe Ratio probability.
     """
+    if annualized:
+        sr_hat = float(sr_hat) / np.sqrt(ppy)
+        var_sr = float(var_sr) / float(ppy)
+
     benchmark = expected_max_sharpe(n_trials=n_trials, var_sr=var_sr)
     return probabilistic_sharpe_ratio(
         sr_hat=sr_hat,
@@ -110,6 +130,7 @@ def deflated_sharpe_ratio(
         T=T,
         skew=skew,
         kurt=kurt,
+        annualized=False,
     )
 
 

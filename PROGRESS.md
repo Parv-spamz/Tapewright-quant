@@ -557,6 +557,106 @@ Database name: `tapewright_db`
 - **Known Limitations**:
   - In `test_zero_lookahead.py`, all strategy engines (`crossover`, `breakout`, `mean_reversion`, `pairs`, `walk_forward_signals`) and `FeatureRegistry` features exhibit strictly zero lookahead (equity curve difference $< 10^{-9}$ between $N=300$ and $N=400$ evaluations), and a deliberate future-peeking strategy was successfully caught by the test detector ($> 1326$ divergence).
   - In `test_db_records.py`, database integrity audit validates SQLite/MySQL parity: `order_executions` strictly tracks filled trades, `trade_signals` records all generated model signals, and the core accounting identity $\text{cash} + \sum (\text{positions} \times \text{close}) = \text{NAV}$ holds to within $10^{-6}$ precision across all daily snapshots.
-  - In `test_overfit_audit.py`, evaluation of 30 parameter variants on pure Gaussian noise prices results in an uncorrected best annualized Sharpe of $0.5749$, which collapses to a Deflated Sharpe Ratio of $DSR = 0.0000$ ($p=1.0000$) and CSCV PBO of $0.5143$, empirically proving the engine's anti-overfitting defense rejects false positive alphas.
-  - As formally documented in `reports_out/AUDIT.md`, backtests on synthetic or historical data provide algorithmic and econometric verification, but say nothing about real-market profitability.
+
+### Prompt 19: Trust Layer
+- **Issue**: [#1](https://github.com/Parv-spamz/Tapewright-quant/issues/1)
+- **Status**: PART A COMPLETE, PART B IN PROGRESS
+- **Files Created in Part A**:
+  - `research/__init__.py`
+  - `research/threshold_spec.json`
+  - `research/claims.json`
+  - `research/reports/threshold_reconciliation.txt`
+  - `research/reports/claims_audit.txt`
+  - `scripts/threshold_reconcile.py`
+  - `scripts/claims_audit.py`
+  - `tests/unit/test_dsr_units.py`
+  - `tests/integration/test_honesty_v2.py`
+- **Part A Results & Proof Outputs**:
+  - Baseline Environment: `Python 3.14.0`, logged in `logs/proof/p19_env.txt`.
+  - Baseline Test Suite: `221 passed, 1 skipped` logged in `logs/proof/p19_baseline_pytest.txt` (`tests/integration/test_mysql_live.py` whitelisted skip).
+  - Threshold Reconciliation: 12 specification thresholds evaluated via AST in `research/reports/threshold_reconciliation.txt`.
+  - Claims Audit: Claims c1-c5 MISSING, c6 UNTESTED, c7-c12 PASS in `research/reports/claims_audit.txt`.
+  - Reference DSR Implementation: `tests/unit/test_dsr_units.py` passed (equality to $10^{-9}$, units contract invariance across annualized/per-period inputs, 50-seed noise quantiles).
+  - Original Multi-Seed AUC Experiment (`logs/proof/p19a_pytest.txt`):
+    - Purged AUC: `0.5015` (mean over 30 seeds, in $[0.47, 0.53]$)
+    - Plain KFold AUC: `0.5009`
+    - Difference: `−0.0006`
+    - Paired $t$-test $p$-value: `0.6202`
+    - Failed original $> 0.03$ difference threshold; preserved as empirical finding under Rule F8.
+  - Corrected Index-Level Purging Invariant Test:
+    - Verified ordinary KFold produces overlapping training events (30 overlaps across boundaries).
+    - Verified PurgedKFold eliminates all overlapping training events on all folds (`assert_no_leakage` passes, 0 overlaps).
+    - Verified embargo separation dynamically.
+    - All 5 tests passed in `test_dsr_units.py` and `test_honesty_v2.py`.
+
+- **Part B: Integrity Package**:
+  - **Status**: COMPLETE
+  - **Files Created**:
+    - `integrity/__init__.py`
+    - `integrity/ledger.py`
+    - `integrity/provenance.py`
+    - `integrity/render.py`
+    - `tests/unit/test_integrity.py`
+  - **Exact Commands Executed**:
+    - `python -m pytest tests/unit/test_integrity.py -k ledger -v -s 2>&1 | Tee-Object -FilePath logs/proof/p19b_ledger_pytest.txt`
+      - Result: `7 passed in 8.82s`
+    - `python -m pytest tests/unit/test_integrity.py -k provenance -v -s 2>&1 | Tee-Object -FilePath logs/proof/p19b_provenance_pytest.txt`
+      - Result: `5 passed, 7 deselected in 1.98s`
+    - `python -m pytest tests/unit/test_integrity.py -k render -v -s 2>&1 | Tee-Object -FilePath logs/proof/p19b_render_pytest.txt`
+      - Result: `6 passed, 12 deselected in 2.18s`
+    - `python -m pytest tests/unit/test_integrity.py -v -s 2>&1 | Tee-Object -FilePath logs/proof/p19b_pytest.txt`
+      - Result: `18 passed in 10.77s`
+    - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p19b_syntax.txt`
+      - Result: `248 files checked, 0 failed`
+    - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p19b_constraints.txt`
+      - Result: `Constraints check PASSED: 0 violations.`
+  - **Known Limitations**:
+    - `integrity.ledger`: Cross-platform locking via `O_CREAT | O_EXCL` enforces writer serialization with a 10s timeout, suitable for research pipelines but not high-frequency multi-process telemetry.
+    - `integrity.provenance`: `looks_synthetic_gbm` is a statistical heuristic flag based on Gaussian normality and lack of volatility clustering, not an absolute proof of synthetic origin.
+    - `integrity.render`: Template placeholder resolution requires strict match of tags in the active ledger; missing tags or malformed key paths fail fast with `RenderError` rather than falling back to default values.
+
+- **Part C: Verification Gate, Lock & Finish Protocol**:
+  - **Status**: COMPLETE
+  - **Files Created**:
+    - `scripts/check_test_integrity.py`
+    - `scripts/lock_tests.py`
+    - `scripts/append_audit_notes.py`
+    - `integrity/record_proof.py`
+    - `integrity/verify_all.py`
+    - `integrity/stages/__init__.py`
+    - `integrity/stages/lock.py`
+    - `integrity/stages/ledger_chain.py`
+    - `integrity/stages/constraints.py`
+    - `integrity/stages/test_integrity.py`
+    - `integrity/stages/claims_audit.py`
+    - `integrity/stages/docs_lint.py`
+    - `integrity/stages/pytest.py`
+    - `tests/SKIP_WHITELIST.txt`
+    - `tests/TEST_LOCK.json`
+    - `tests/unit/test_integrity_checker.py`
+    - `research/ledger/__init__.py`
+    - `research/ledger/ledger.jsonl`
+    - `research/reports/__init__.py`
+    - `research/reports/test_integrity_findings.txt`
+  - **Exact Commands Executed**:
+    - `python scripts/check_test_integrity.py 2>&1 | Tee-Object -FilePath logs/proof/p19c_test_integrity.txt`
+      - Result: `check_test_integrity PASSED: 0 violations.`
+    - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p19c_syntax.txt`
+      - Result: `262 files checked, 0 failed`
+    - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p19c_constraints.txt`
+      - Result: `Constraints check PASSED: 0 violations.`
+    - `python -m pytest tests/unit/test_integrity_checker.py -v 2>&1 | Tee-Object -FilePath logs/proof/p19c_pytest.txt`
+      - Result: `8 passed in 0.10s`
+    - `python -m pytest -q -rs 2>&1 | Tee-Object -FilePath logs/proof/p19_pytest.txt`
+      - Result: `252 passed, 1 skipped, 2 warnings in 47.61s`
+    - `python -m integrity.record_proof logs/proof/p19_pytest.txt --tag p19`
+      - Result: `Recorded proof tag 'p19' with status PASS`
+    - `python scripts/append_audit_notes.py`
+      - Result: Appended `audit.baseline_suite`, `audit.purged_noise`, and `audit.dsr_noise` to `research/ledger/ledger.jsonl`
+    - `python scripts/lock_tests.py --write` and `python scripts/lock_tests.py --extend`
+      - Result: `LOCK_FILE_SHA256=9d1970650bf938cc57e0ac978eb25af6ba2c6454cfbb5c2f8b12d7f22fbb5ead`
+    - `python -m integrity.verify_all --lock-sha 9d1970650bf938cc57e0ac978eb25af6ba2c6454cfbb5c2f8b12d7f22fbb5ead --quick`
+      - Result: 6 stages PASSED (lock, ledger_chain, constraints, test_integrity, docs_lint, pytest); claims_audit reports FAIL (5 MISSING, 1 UNTESTED as documented for unaddressed future prompt claims).
+  - **Known Limitations**:
+    - `integrity.stages.claims_audit`: Claims c1-c5 (MISSING) and c6 (UNTESTED) fail the claims audit stage as expected until subsequent evidence-phase prompts implement and test the remaining architectural claims.
 

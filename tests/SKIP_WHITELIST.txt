@@ -1,0 +1,2 @@
+tests/integration/test_mysql_live.py::TestLiveMySQL::test_live_mysql_connection_and_migrations live MySQL unavailable without TAPEWRIGHT_DB_HOST
+tests/integration/test_mysql_live.py::TestLiveMySQL live MySQL unavailable without TAPEWRIGHT_DB_HOST
