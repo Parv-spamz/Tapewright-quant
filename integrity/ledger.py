@@ -5,11 +5,14 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import hashlib
 import json
+import logging
 import math
 import os
 from pathlib import Path
 import time
 from typing import Any, Iterator, Sequence
+
+logger = logging.getLogger(__name__)
 
 ALLOWED_KINDS = {
     "protocol",
@@ -131,14 +134,14 @@ class FileLock:
         if self.fd is not None:
             try:
                 os.close(self.fd)
-            except OSError:
-                pass
+            except OSError as e:
+                logger.warning("Error closing lock file fd: %s", e)
             self.fd = None
         try:
             if self.lock_path.exists():
                 self.lock_path.unlink()
-        except OSError:
-            pass
+        except OSError as e:
+            logger.warning("Error unlinking lock path: %s", e)
 
 
 class Ledger:

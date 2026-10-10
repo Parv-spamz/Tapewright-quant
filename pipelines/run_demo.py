@@ -9,10 +9,13 @@ from __future__ import annotations
 
 import argparse
 import html
+import logging
 import os
 import sys
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 import pandas as pd
@@ -353,8 +356,8 @@ def run_pipeline(
             model_family="TIME_SERIES",
             version="1.0.0",
         )
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Error registering model in DB: %s", e)
 
     # 3. Load prices for backtesting
     primary_sym = clean_syms[0]

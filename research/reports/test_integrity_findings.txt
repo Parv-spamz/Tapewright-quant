@@ -1,0 +1,25 @@
+backtesting/engine/event_loop/engine.py:110 R5: except handler only passes, continues, or returns constant
+backtesting/engine/event_loop/engine.py:136 R5: except handler only passes, continues, or returns constant
+backtesting/engine/event_loop/engine.py:79 R5: except handler only passes, continues, or returns constant
+backtesting/engine/event_loop/engine.py:81 R5: except handler only passes, continues, or returns constant
+backtesting/portfolio/markowitz/markowitz.py:166 R5: except handler only passes, continues, or returns constant
+data/ingestion/macroeconomic/fred_rates/fred.py:38 R5: except handler only passes, continues, or returns constant
+database/connection/manager.py:130 R5: except handler only passes, continues, or returns constant
+database/connection/manager.py:139 R5: except handler only passes, continues, or returns constant
+database/connection/manager.py:179 R5: except handler only passes, continues, or returns constant
+database/repositories/market_data_repo/model_registry_repo.py:16 R5: except handler only passes, continues, or returns constant
+database/repositories/signal_repo/repo.py:15 R5: except handler only passes, continues, or returns constant
+features/econometric/cointegration/causal_graph.py:248 R5: except handler only passes, continues, or returns constant
+integrity/ledger.py:134 R5: except handler only passes, continues, or returns constant
+integrity/ledger.py:140 R5: except handler only passes, continues, or returns constant
+models/time_series/arima/arima.py:185 R5: except handler only passes, continues, or returns constant
+pipelines/inference/daily.py:186 R5: except handler only passes, continues, or returns constant
+pipelines/run_demo.py:356 R5: except handler only passes, continues, or returns constant
+pipelines/training/train.py:120 R5: except handler only passes, continues, or returns constant
+pipelines/training/train.py:560 R5: except handler only passes, continues, or returns constant
+signals/filtering/volatility_filter/filter.py:64 R5: except handler only passes, continues, or returns constant
+tests/unit/test_labeling_cv.py:296 R2: assert constant literal True
+tests/unit/test_rl.py:28 R1: test function 'test_gymnasium_check_env' has no assertions or raises/warns
+utils/profiling/profilers.py:46 R5: except handler only passes, continues, or returns constant
+
+check_test_integrity FAILED: 23 violation(s) found.
