@@ -1,0 +1,19 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 8 items
+
+tests/unit/test_integrity_checker.py::test_clean_tree_passes PASSED      [ 12%]
+tests/unit/test_integrity_checker.py::test_r1_violation_flagged PASSED   [ 25%]
+tests/unit/test_integrity_checker.py::test_r2_violation_flagged PASSED   [ 37%]
+tests/unit/test_integrity_checker.py::test_r3_violation_flagged PASSED   [ 50%]
+tests/unit/test_integrity_checker.py::test_r4_violation_flagged PASSED   [ 62%]
+tests/unit/test_integrity_checker.py::test_r5_violation_flagged PASSED   [ 75%]
+tests/unit/test_integrity_checker.py::test_r6_violation_flagged PASSED   [ 87%]
+tests/unit/test_integrity_checker.py::test_r7_violation_flagged PASSED   [100%]
+
+============================== 8 passed in 0.10s ==============================

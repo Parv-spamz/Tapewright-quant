@@ -615,3 +615,48 @@ Database name: `tapewright_db`
     - `integrity.provenance`: `looks_synthetic_gbm` is a statistical heuristic flag based on Gaussian normality and lack of volatility clustering, not an absolute proof of synthetic origin.
     - `integrity.render`: Template placeholder resolution requires strict match of tags in the active ledger; missing tags or malformed key paths fail fast with `RenderError` rather than falling back to default values.
 
+- **Part C: Verification Gate, Lock & Finish Protocol**:
+  - **Status**: COMPLETE
+  - **Files Created**:
+    - `scripts/check_test_integrity.py`
+    - `scripts/lock_tests.py`
+    - `scripts/append_audit_notes.py`
+    - `integrity/record_proof.py`
+    - `integrity/verify_all.py`
+    - `integrity/stages/__init__.py`
+    - `integrity/stages/lock.py`
+    - `integrity/stages/ledger_chain.py`
+    - `integrity/stages/constraints.py`
+    - `integrity/stages/test_integrity.py`
+    - `integrity/stages/claims_audit.py`
+    - `integrity/stages/docs_lint.py`
+    - `integrity/stages/pytest.py`
+    - `tests/SKIP_WHITELIST.txt`
+    - `tests/TEST_LOCK.json`
+    - `tests/unit/test_integrity_checker.py`
+    - `research/ledger/__init__.py`
+    - `research/ledger/ledger.jsonl`
+    - `research/reports/__init__.py`
+    - `research/reports/test_integrity_findings.txt`
+  - **Exact Commands Executed**:
+    - `python scripts/check_test_integrity.py 2>&1 | Tee-Object -FilePath logs/proof/p19c_test_integrity.txt`
+      - Result: `check_test_integrity PASSED: 0 violations.`
+    - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p19c_syntax.txt`
+      - Result: `262 files checked, 0 failed`
+    - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p19c_constraints.txt`
+      - Result: `Constraints check PASSED: 0 violations.`
+    - `python -m pytest tests/unit/test_integrity_checker.py -v 2>&1 | Tee-Object -FilePath logs/proof/p19c_pytest.txt`
+      - Result: `8 passed in 0.10s`
+    - `python -m pytest -q -rs 2>&1 | Tee-Object -FilePath logs/proof/p19_pytest.txt`
+      - Result: `252 passed, 1 skipped, 2 warnings in 47.61s`
+    - `python -m integrity.record_proof logs/proof/p19_pytest.txt --tag p19`
+      - Result: `Recorded proof tag 'p19' with status PASS`
+    - `python scripts/append_audit_notes.py`
+      - Result: Appended `audit.baseline_suite`, `audit.purged_noise`, and `audit.dsr_noise` to `research/ledger/ledger.jsonl`
+    - `python scripts/lock_tests.py --write` and `python scripts/lock_tests.py --extend`
+      - Result: `LOCK_FILE_SHA256=9d1970650bf938cc57e0ac978eb25af6ba2c6454cfbb5c2f8b12d7f22fbb5ead`
+    - `python -m integrity.verify_all --lock-sha 9d1970650bf938cc57e0ac978eb25af6ba2c6454cfbb5c2f8b12d7f22fbb5ead --quick`
+      - Result: 6 stages PASSED (lock, ledger_chain, constraints, test_integrity, docs_lint, pytest); claims_audit reports FAIL (5 MISSING, 1 UNTESTED as documented for unaddressed future prompt claims).
+  - **Known Limitations**:
+    - `integrity.stages.claims_audit`: Claims c1-c5 (MISSING) and c6 (UNTESTED) fail the claims audit stage as expected until subsequent evidence-phase prompts implement and test the remaining architectural claims.
+
