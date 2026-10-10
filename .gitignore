@@ -12,3 +12,7 @@ __pycache__/
 *.sqlite
 *.sqlite3
 data/*.db
+research/raw_archive/
+research/store_devval/
+research/vault/
+research/results/

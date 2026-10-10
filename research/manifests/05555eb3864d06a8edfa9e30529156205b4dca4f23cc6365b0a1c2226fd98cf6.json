@@ -1,0 +1,26 @@
+{
+  "dataset_id": "05555eb3864d06a8edfa9e30529156205b4dca4f23cc6365b0a1c2226fd98cf6",
+  "source_kind": "real_api",
+  "source_name": "yahoo.XLF",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLF",
+  "params": {
+    "symbol": "XLF",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:22.909046+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "06bf106208cf831122bbf8ee35f2e99a190b641d540447680d24ff6578080e6f"
+  ],
+  "raw_sha256": "06bf106208cf831122bbf8ee35f2e99a190b641d540447680d24ff6578080e6f",
+  "parsed_sha256": "fe47097d79ae1fb8329b61b0301047ad25fb3219e537a7e33f3ec336a8e446b9",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.4259988732796453,
+    "excess_kurtosis": 17.122832707623488,
+    "ljung_box_p_squared_lag10": 0.0,
+    "n": 5476
+  },
+  "generator": null
+}

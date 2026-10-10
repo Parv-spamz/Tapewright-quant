@@ -1,0 +1,26 @@
+{
+  "dataset_id": "6402a310dc85989765ec64d3d8938ff0c71c6f700047e03e6cc482990497f28f",
+  "source_kind": "real_api",
+  "source_name": "yahoo.XLK",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLK",
+  "params": {
+    "symbol": "XLK",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:24.651286+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "5e911cac211492e74eaadde162743959c90662b6c86f42ca31beb7aca0186000"
+  ],
+  "raw_sha256": "5e911cac211492e74eaadde162743959c90662b6c86f42ca31beb7aca0186000",
+  "parsed_sha256": "4329e2ba29cf685e894dce30191298526264faf05b381108ec1cd0857a3e3a8e",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.28901660127033924,
+    "excess_kurtosis": 9.770108793527456,
+    "ljung_box_p_squared_lag10": 0.0,
+    "n": 5476
+  },
+  "generator": null
+}

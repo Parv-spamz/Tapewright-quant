@@ -1,0 +1,26 @@
+{
+  "dataset_id": "509453de2e68d6beb152e8a48f423153677d780cbf534a6d9f7acf044b2067a0",
+  "source_kind": "real_api",
+  "source_name": "yahoo.XLE",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLE",
+  "params": {
+    "symbol": "XLE",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:21.183703+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "29cbdd7ca8b44ce01b55d5c6af5204be7d83b934af0af26f0da54dea84abbaf2"
+  ],
+  "raw_sha256": "29cbdd7ca8b44ce01b55d5c6af5204be7d83b934af0af26f0da54dea84abbaf2",
+  "parsed_sha256": "cf2b416c86bbbda222aaa7bfabf1d7dd6a2d86e8b63eba92c65e063c9c424b71",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.25858858029487575,
+    "excess_kurtosis": 11.614308163160253,
+    "ljung_box_p_squared_lag10": 0.0,
+    "n": 5476
+  },
+  "generator": null
+}

@@ -1,0 +1,30 @@
+{
+  "dataset_id": "9e041a1ffa71e2c3ff4a711019fa79636d108fb0e05cedda0d2cdbca613143fa",
+  "source_kind": "real_api",
+  "source_name": "binance.ETHUSDT",
+  "url": "https://data-api.binance.vision/api/v3/klines",
+  "params": {
+    "symbol": "ETHUSDT",
+    "interval": "1d",
+    "base": "https://data-api.binance.vision"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:34.022814+00:00",
+  "n_rows": 3342,
+  "first_ts": "2017-08-17 00:00:00",
+  "last_ts": "2026-10-10 00:00:00",
+  "raw_pages": [
+    "03cabb746ff5634a2287200e48307ebf9d90965171705b15da2e1b9cfca32d36",
+    "0f9619739f764fe34c8aeeeb0a050ff47d1156c102bc6009054d2791aaa86690",
+    "4bb4ecc3505b3efdfc5942b650ae08e598a0fc134fca1161a89049f75f39b903",
+    "d717029654e1948c00f64b736d6283b889df4911e0f6a79a77d01fc9a28a00b2"
+  ],
+  "raw_sha256": "19836c381c755eb5f6925d00837b6c3b79d69882dd08ae4985495d814bd3a413",
+  "parsed_sha256": "28122af153db01ed479f0e4f8db0bed1ce59e05a3a2219c29e89176f15d74749",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.17004117559911391,
+    "excess_kurtosis": 6.579720922924409,
+    "ljung_box_p_squared_lag10": 1.8065976379515026e-52,
+    "n": 3341
+  },
+  "generator": null
+}

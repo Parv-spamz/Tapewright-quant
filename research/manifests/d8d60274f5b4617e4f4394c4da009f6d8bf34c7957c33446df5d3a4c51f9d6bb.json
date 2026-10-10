@@ -1,0 +1,26 @@
+{
+  "dataset_id": "d8d60274f5b4617e4f4394c4da009f6d8bf34c7957c33446df5d3a4c51f9d6bb",
+  "source_kind": "real_api",
+  "source_name": "yahoo.GLD",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/GLD",
+  "params": {
+    "symbol": "GLD",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:19.928492+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "c5acd79f1aa21505bf5d0527cefdea10352ecde0b2f4cd1a6df3e8f0cbffdf51"
+  ],
+  "raw_sha256": "c5acd79f1aa21505bf5d0527cefdea10352ecde0b2f4cd1a6df3e8f0cbffdf51",
+  "parsed_sha256": "8a22d3f74d0106b8f63c2b7595ea05d3111e4ee99a9200bb2064753282eb44e0",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.13375094475507188,
+    "excess_kurtosis": 6.412966675278765,
+    "ljung_box_p_squared_lag10": 6.982356847076665e-159,
+    "n": 5476
+  },
+  "generator": null
+}
