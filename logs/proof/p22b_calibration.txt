@@ -1,0 +1,18 @@
+
+=== FINPULSE-APEX MICROSTRUCTURE CALIBRATION SUMMARY ===
+Symbol: BTCUSDT
+Spread Median: 1.00 ticks | Mean: 1.00 ticks
+Top-1 Depth Median: 14.1398 | Top-5 Depth Median: 18.1404
+Impact Exponent gamma: 1.1988 (SE: 0.1438, R2: 0.4811)
+Square-Root Impact Coeff c: 0.1196
+Differential LOBSimulator Agreement Rate: 100.00%
+Fill Rates: Independent=0.0%, Simulator=0.0%
+
+=======================================================================================
+Metric                 | Real Market Data          | Synthetic Benchmark / Simulation 
+---------------------------------------------------------------------------------------
+Imbalance IC (L=1, h=1)| +0.4930 (95% CI: [0.4930493313022979, 0.4930493313022979]) | +0.3939 (IID GBM)
+Trade Sign Autocorr (1)| +0.1810                    | -0.0193 (Rademacher)
+Trade Sign Autocorr (5)| +0.1120                    | -0.0032 (Rademacher)
+Queue Fill Decision    | 0.0% Fill Rate              | 0.0% Fill Rate
+=======================================================================================
