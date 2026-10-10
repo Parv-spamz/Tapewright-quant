@@ -557,6 +557,35 @@ Database name: `tapewright_db`
 - **Known Limitations**:
   - In `test_zero_lookahead.py`, all strategy engines (`crossover`, `breakout`, `mean_reversion`, `pairs`, `walk_forward_signals`) and `FeatureRegistry` features exhibit strictly zero lookahead (equity curve difference $< 10^{-9}$ between $N=300$ and $N=400$ evaluations), and a deliberate future-peeking strategy was successfully caught by the test detector ($> 1326$ divergence).
   - In `test_db_records.py`, database integrity audit validates SQLite/MySQL parity: `order_executions` strictly tracks filled trades, `trade_signals` records all generated model signals, and the core accounting identity $\text{cash} + \sum (\text{positions} \times \text{close}) = \text{NAV}$ holds to within $10^{-6}$ precision across all daily snapshots.
-  - In `test_overfit_audit.py`, evaluation of 30 parameter variants on pure Gaussian noise prices results in an uncorrected best annualized Sharpe of $0.5749$, which collapses to a Deflated Sharpe Ratio of $DSR = 0.0000$ ($p=1.0000$) and CSCV PBO of $0.5143$, empirically proving the engine's anti-overfitting defense rejects false positive alphas.
-  - As formally documented in `reports_out/AUDIT.md`, backtests on synthetic or historical data provide algorithmic and econometric verification, but say nothing about real-market profitability.
+
+### Prompt 19: Trust Layer
+- **Issue**: [#1](https://github.com/Parv-spamz/Tapewright-quant/issues/1)
+- **Status**: PART A COMPLETE, PART B IN PROGRESS
+- **Files Created in Part A**:
+  - `research/__init__.py`
+  - `research/threshold_spec.json`
+  - `research/claims.json`
+  - `research/reports/threshold_reconciliation.txt`
+  - `research/reports/claims_audit.txt`
+  - `scripts/threshold_reconcile.py`
+  - `scripts/claims_audit.py`
+  - `tests/unit/test_dsr_units.py`
+  - `tests/integration/test_honesty_v2.py`
+- **Part A Results & Proof Outputs**:
+  - Baseline Environment: `Python 3.14.0`, logged in `logs/proof/p19_env.txt`.
+  - Baseline Test Suite: `221 passed, 1 skipped` logged in `logs/proof/p19_baseline_pytest.txt` (`tests/integration/test_mysql_live.py` whitelisted skip).
+  - Threshold Reconciliation: 12 specification thresholds evaluated via AST in `research/reports/threshold_reconciliation.txt`.
+  - Claims Audit: Claims c1-c5 MISSING, c6 UNTESTED, c7-c12 PASS in `research/reports/claims_audit.txt`.
+  - Reference DSR Implementation: `tests/unit/test_dsr_units.py` passed (equality to $10^{-9}$, units contract invariance across annualized/per-period inputs, 50-seed noise quantiles).
+  - Original Multi-Seed AUC Experiment (`logs/proof/p19a_pytest.txt`):
+    - Purged AUC: `0.5015` (mean over 30 seeds, in $[0.47, 0.53]$)
+    - Plain KFold AUC: `0.5009`
+    - Difference: `−0.0006`
+    - Paired $t$-test $p$-value: `0.6202`
+    - Failed original $> 0.03$ difference threshold; preserved as empirical finding under Rule F8.
+  - Corrected Index-Level Purging Invariant Test:
+    - Verified ordinary KFold produces overlapping training events (30 overlaps across boundaries).
+    - Verified PurgedKFold eliminates all overlapping training events on all folds (`assert_no_leakage` passes, 0 overlaps).
+    - Verified embargo separation dynamically.
+    - All 5 tests passed in `test_dsr_units.py` and `test_honesty_v2.py`.
 
