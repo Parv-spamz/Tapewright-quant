@@ -25,15 +25,19 @@ class ResearchData:
 
     def __init__(
         self,
-        protocol_id: str,
+        protocol_id: str = "",
         ledger: Ledger | None = None,
         store_path: Path | str = "research/store_devval",
         ledger_path: Path | str = "research/ledger/ledger.jsonl",
     ) -> None:
         self.protocol_id = protocol_id
-        self.ledger = ledger or Ledger(ledger_path)
+        self.ledger = ledger or (Ledger(ledger_path) if ledger_path else None)
         self.store = ParquetStore(store_path)
         self._val_access_count = 0
+
+    def load_partition(self, symbol: str, split: str) -> pd.DataFrame:
+        """Alias for get(symbol, split) for partition-based data access."""
+        return self.get(symbol, split)
 
     def get(self, symbol: str, split: str) -> pd.DataFrame:
         """Retrieve dataset for a given symbol and split ('dev' or 'val').

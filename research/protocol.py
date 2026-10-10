@@ -117,6 +117,17 @@ def protocol_chain(protocol_id: str, ledger: Ledger) -> list[str]:
     return list(reversed(chain))
 
 
+def active_protocol(ledger: Ledger) -> str | None:
+    """Retrieve the latest registered active protocol ID from the ledger."""
+    records = [
+        r for r in ledger._read_all_records()
+        if r.get("kind") == "protocol" and r.get("status") == "PASS"
+    ]
+    if not records:
+        return None
+    return records[-1]["payload"]["protocol_id"]
+
+
 def get_accumulated_trials(protocol_id: str | None, ledger: Ledger) -> int:
     """Accumulate total historical trials conducted across supersedes chain."""
     if not protocol_id:

@@ -72,7 +72,7 @@ class CrossSectionalMomentumStrategy(Strategy):
         scores: dict[str, float] = {}
         for sym in self.universe:
             df = data_handler.get_latest_bars(sym, n=needed)
-            if len(df) < self.lookback + self.skip:
+            if len(df) < self.lookback + self.skip + 1:
                 continue
             p_now = df["close"].iloc[-self.skip - 1]
             p_past = df["close"].iloc[-self.lookback - self.skip - 1]
@@ -349,8 +349,8 @@ def build_strategy(
         # Construct sleeve for best pair candidate
         best_pair = pair_candidates[0]
         return PairsStrategy(
-            asset1=best_pair["asset1"],
-            asset2=best_pair["asset2"],
+            symbol_y=best_pair["asset1"],
+            symbol_x=best_pair["asset2"],
             lookback=params.get("lookback", 60),
             entry_z=params.get("entry_z", 2.0),
             exit_z=0.5,

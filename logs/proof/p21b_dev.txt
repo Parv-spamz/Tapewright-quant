@@ -1,0 +1,24 @@
+﻿=== FINPULSE-APEX DEV PIPELINE EXECUTION ===
+Active Protocol ID: f01f0813ddedf76eb97e5ab3cb35de473935bf31e6b093e508d5de066466d5ac
+
+--- Running all strategy grids and baselines on DEV ---
+2026-10-10 21:23:40,192 | WARNING | Portfolio | No valid market price recorded for ETHUSDT to size signal
+2026-10-10 21:23:47,727 | WARNING | Portfolio | No valid market price recorded for ETHUSDT to size signal
+Total dev trials recorded: 55
+
+--- Computing Probability of Backtest Overfitting (PBO) ---
+Dev PBO: 0.1580
+
+--- Selecting Strategy Candidates (>=30 trades, MDD >= -40%, Max Sharpe) ---
+Candidates selected: 6
+
+=========================================================================================================
+Family           | Spec Hash      | Net Sharpe | Dev DSR    | Trades   | Max DD     | Ann Ret   
+---------------------------------------------------------------------------------------------------------
+breakout         | 1bf3280eb6d1   | -0.4273    | 0.0000     | 3854     | -0.2622    | -0.0127   
+crossover        | 7481ca4a751e   | 0.6457     | 0.0360     | 598      | -0.3248    | 0.0841    
+mean_reversion   | 66b3cd7a4245   | 0.2169     | 0.0000     | 110      | -0.0190    | 0.0017    
+ml_meta          | 0c9acda7f682   | 0.4913     | 0.0072     | 553      | -0.3948    | 0.0619    
+pairs            | de26ca9ebb35   | 0.5197     | 0.0090     | 265      | -0.3684    | 0.0604    
+xs_momentum      | eacb11b494b2   | 0.6226     | 0.0284     | 1001     | -0.3190    | 0.0833    
+=========================================================================================================
