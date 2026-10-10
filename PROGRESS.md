@@ -768,5 +768,45 @@ Database name: `tapewright_db`
   - **Live Connectivity**: Verified live order book and trade stream ingestion from Binance Vision API without API keys; verified 0 trade gaps across 749 live trades.
   - **Calibration Agreement**: LOBSimulator queue model agreed with empirical queue fills across 100.0% of evaluated queue events.
   - **Local Clock Invalidation**: In accordance with the prompt, docstrings and CLI explicitly state that the local clock is NOT an outside authority; external commit and push timestamps act as independent chronological proofs.
-  - **Forward Barrier**: Enforces that candidate strategies must possess `role='selected'` in the ledger and signal timestamp must be strictly earlier than target bar open.
 
+### Prompt 23: Hardening, Evidence Dashboard, Reproducible Docs
+- **Status**: COMPLETE
+- **Issue**: #10 (`Prompt 23: Hardening, Evidence Dashboard, Reproducible Docs`)
+- **Part A: Mutation Testing**:
+  - **Files Created / Modified**:
+    - `scripts/mutation_test.py` (AST mutator targeting arithmetic operators, comparison operators, boolean logic, lookahead off-by-one shifts, constant replacements; tree hash invariance before/after)
+    - `tests/unit/test_mutation_killers.py` (targeted tests killing surviving mutants in event_loop, risk_measures, and signals)
+    - `tests/unit/test_mutation_tool.py` (toy tests confirming weak/strong test mutant killing and real tree hash invariance)
+    - `logs/proof/p23a_mutation.txt` (proof of kill rates: event_loop 84.6%, risk_measures 87.5%, signals 100.0%, all >= 80% threshold; ledger proof registered)
+- **Part B: Metamorphic & Differential Testing**:
+  - **Files Created / Modified**:
+    - `tests/integration/test_metamorphic.py` (6 metamorphic/differential tests: scale invariance, time-reversal sign flip, cash conservation, cost monotonicity, symbol permutation invariance, lookahead mutant detection)
+    - `backtesting/engine/data_handler.py` (sorted symbol dictionary iteration ensuring canonical execution order across symbol dict variations)
+    - `logs/proof/p23b_pytest.txt` (6 integration tests passed in 11.24s)
+- **Part C: Evidence Dashboard Wire-up**:
+  - **Files Created / Modified**:
+    - `backtesting/reports/tearsheet/figures.py` (pure figure renderers: plot_calibration_curves, plot_forward_vs_backtest, plot_regime_breakdown, plot_metamorphic_evidence)
+    - `backtesting/reports/tearsheet/app.py` (evidence dashboard tabs: Evidence, Forward, Metamorphic, Calibration, Realism; reads ledger records and displays provenance/manifest metrics)
+    - `tests/unit/test_evidence_figures.py` (11 unit tests verifying figure renderers, NaN handling, and Streamlit AppTest tab assertions)
+    - `logs/proof/p23c_pytest.txt` (11 passed in 4.79s)
+    - `logs/proof/p23c_streamlit_boot.txt` (headless boot verified with status 200)
+- **Part D: Generated Docs & Offline Reproduction**:
+  - **Files Created / Modified**:
+    - `docs/templates/README.md.tpl`, `FINDINGS.md.tpl`, `METHODOLOGY.md.tpl`, `LIMITATIONS.md.tpl` (ledger-backed templates with zero hand-typed metrics, resolving tag/status placeholders)
+    - `research/rebuild.py` (offline rebuild from raw archive and manifests, verifying parsed hashes without network)
+    - `research/reproduce.py` (offline reproduction re-running baseline, trial, and selected_eval experiments within 1e-9 tolerance)
+    - `integrity/stages/stage_reproduce.py` (offline rebuild verification stage integrated into verify_all)
+    - `tests/unit/test_reproduce.py` (4 unit tests verifying offline reproduction, archive blob corruption failure, render missing tag failure, doc linter on hand-edited numbers)
+    - `README.md`, `docs/README.md`, `docs/FINDINGS.md`, `docs/METHODOLOGY.md`, `docs/LIMITATIONS.md`, `docs/FORWARD_TEST.md` (rendered from ledger head, doc linter PASSED: 0 violations)
+- **Finish Protocol Outputs**:
+  - `logs/proof/p23_syntax.txt`: `636 files checked, 0 failed`
+  - `logs/proof/p23_constraints.txt`: `Constraints check PASSED: 0 violations.`
+  - `logs/proof/p23_integrity.txt`: `check_test_integrity PASSED: 0 violations.`
+  - `logs/proof/p23_full_pytest.txt`: `333 passed, 1 skipped, 7 warnings in 267.80s`
+  - `integrity.record_proof`: Proof recorded for tag `p23` with status `PASS`
+  - Extended Test Lock: `LOCK_FILE_SHA256=8e7be5011149fd4f1e1fdbe64abd4cf5ae3a624e227ad7d5b251bc2f2548a45a`
+  - Verification Gate Runner (`verify_all`): 10/10 stages PASSED (lock, ledger_chain, constraints, test_integrity, claims_audit, docs_lint, pytest, forward, reproduce, research)
+- **Honest Empirical Results & Limitations**:
+  - **Reproduction Invariance**: Re-running baseline (Seq 24), trial (Seq 28), and selected evaluation (Seq 185) from recorded specs reproduced exact metrics with 0.00e+00 difference, demonstrating full deterministic reproducibility.
+  - **Documentation Anti-Forgery**: All documented metrics and outcomes are rendered dynamically from cryptographically chained ledger records; hand-editing numerical results triggers automated linter failure.
+  - **Lockbox Vault Intact**: Lockbox holdout data remains strictly isolated and un-evaluated (`UNOPENED`, `eval_count=0`).

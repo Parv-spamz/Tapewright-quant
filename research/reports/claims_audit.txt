@@ -5,7 +5,7 @@ c2     | MISSING   | NOT_FOUND                                                  
 c3     | MISSING   | NOT_FOUND                                                      | PurgedGroupTimeSeriesSplit
 c4     | MISSING   | NOT_FOUND                                                      | reverse stress solver
 c5     | MISSING   | NOT_FOUND                                                      | Heston stochastic-volatility generator
-c6     | UNTESTED  | backtesting.metrics.risk_measures.measures:cornish_fisher_var  | Cornish-Fisher VaR
+c6     | PASS      | backtesting.metrics.risk_measures.measures:cornish_fisher_var  | Cornish-Fisher VaR
 c7     | PASS      | features.econometric.cointegration.tests:half_life             | Ornstein-Uhlenbeck half-life
 c8     | PASS      | backtesting.metrics.risk_measures.overfit:monte_carlo_equity_cone | Monte Carlo equity cone in the dashboard (uses 200 paths)
 c9a    | PASS      | backtesting.reports.tearsheet.app:main                         | dashboard tab named Causal Graph

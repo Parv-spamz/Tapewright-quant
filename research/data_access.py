@@ -125,3 +125,14 @@ def read_microstructure_data(
     """Read microstructure L2 book or trade series from ParquetStore partitions."""
     store = ParquetStore(store_path)
     return store.read(symbol, interval)
+
+
+def write_1d_dataset(
+    symbol: str,
+    df: pd.DataFrame,
+    store_path: Path | str = "research/store_devval",
+) -> None:
+    """Persist daily 1d bar dataframe to ParquetStore partition."""
+    store = ParquetStore(store_path)
+    store.write(symbol, df, "1d")
+

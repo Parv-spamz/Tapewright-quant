@@ -18,8 +18,9 @@ import tempfile
 import importlib.util
 
 _mut_path = Path(__file__).resolve().parents[2] / "scripts" / "mutation_test.py"
-_spec = importlib.util.spec_from_file_location("mutation_test_module", _mut_path)
+_spec = importlib.util.spec_from_file_location("mutation_test_module", str(_mut_path))
 _mut_mod = importlib.util.module_from_spec(_spec)
+sys.modules["mutation_test_module"] = _mut_mod
 _spec.loader.exec_module(_mut_mod)
 
 MutationApplier = _mut_mod.MutationApplier
