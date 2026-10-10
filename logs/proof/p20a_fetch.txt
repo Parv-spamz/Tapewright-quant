@@ -1,0 +1,17 @@
+SPY        | f146c764f98c42c7 | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+QQQ        | b50c7bb3921a90be | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+IWM        | a8b2d7b5b6058f06 | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+EFA        | f1e2bf59202212cd | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+TLT        | 647cb95cf7c18937 | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+IEF        | a4addd620738b40a | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+GLD        | d8d60274f5b4617e | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+XLE        | 509453de2e68d6be | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+XLF        | 05555eb3864d06a8 | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+XLK        | 6402a310dc859897 | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+XLV        | 400db8db5298ec99 | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+XLY        | e269ce629c4a8950 | rows=5477  | 2005-01-03 to 2026-10-09 | PASS
+BTCUSDT    | 6c6ff0b8154f33ad | rows=3342  | 2017-08-17 to 2026-10-10 | PASS
+ETHUSDT    | 9e041a1ffa71e2c3 | rows=3342  | 2017-08-17 to 2026-10-10 | PASS
+DGS10      | NOT_RUN(The read operation timed out)
+DGS2       | NOT_RUN(The read operation timed out)
+VIXCLS     | NOT_RUN(The read operation timed out)

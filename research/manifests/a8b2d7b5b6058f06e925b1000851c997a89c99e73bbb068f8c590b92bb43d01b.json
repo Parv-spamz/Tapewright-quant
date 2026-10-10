@@ -1,0 +1,26 @@
+{
+  "dataset_id": "a8b2d7b5b6058f06e925b1000851c997a89c99e73bbb068f8c590b92bb43d01b",
+  "source_kind": "real_api",
+  "source_name": "yahoo.IWM",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/IWM",
+  "params": {
+    "symbol": "IWM",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:13.622139+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "2bd3459492c433fbdef8a906227f8b3c1fb3530c0ef741f5d7741fc2de870dfe"
+  ],
+  "raw_sha256": "2bd3459492c433fbdef8a906227f8b3c1fb3530c0ef741f5d7741fc2de870dfe",
+  "parsed_sha256": "f42a2f4858a55ccfa6f833d723288fa3e41a4532c0f4a332bd73875826915c4b",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.28216609178367036,
+    "excess_kurtosis": 6.28150825401781,
+    "ljung_box_p_squared_lag10": 0.0,
+    "n": 5476
+  },
+  "generator": null
+}

@@ -38,6 +38,8 @@
   "tests/unit/test_labeling_cv.py": "2648700e421193e23968cba105b944399b4e3c1ded5ef6e30ab90a859b316c2f",
   "tests/unit/test_metrics_overfit.py": "c45068bbb320a2700c7a6119d3f2cb1bdb54a7c498c1bdf0a2256e909c74924b",
   "tests/unit/test_pipelines_stress.py": "ec448976028fe33df01b9f1f860d0d8535c35e5cd9639405c7dde399fde7db9f",
+  "tests/unit/test_protocol_lockbox.py": "d18ee7959417b82fdd5401ffb6e2be23303696c162d6a19f1ccb13666c28ba6f",
+  "tests/unit/test_real_data.py": "b9169bc1a97529f27598b49ec6a0317afd1adb4aa894518b977d63723b5f3db0",
   "tests/unit/test_rl.py": "d63c1e41b7e697238903a5fcf696d92de5e395a9b168dd22209797350e82dfa1",
   "tests/unit/test_scaffold.py": "9404a8e7be3d2e58879def0eeb26c807d6a33e11824ce4e8ce5e06cf29687e31",
   "tests/unit/test_signals_portfolio.py": "16c77734af802d48ae110f23a5f68f8da735c5a70b8135ca7cb76df66adc9079",

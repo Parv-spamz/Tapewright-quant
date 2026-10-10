@@ -1,0 +1,26 @@
+{
+  "dataset_id": "a4addd620738b40ac12d33dd032fe9d43b269ae88cd9cbd801904f842589a425",
+  "source_kind": "real_api",
+  "source_name": "yahoo.IEF",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/IEF",
+  "params": {
+    "symbol": "IEF",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:18.222611+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "341174ea36a9ec263c6000f1ef757df50fb66b98fa3e39795887412b3ea7e358"
+  ],
+  "raw_sha256": "341174ea36a9ec263c6000f1ef757df50fb66b98fa3e39795887412b3ea7e358",
+  "parsed_sha256": "f66d3d63d2e4d349fb90295a6fe64f841bfee505d4fadd84fef684b7c865cb67",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.194620861008224,
+    "excess_kurtosis": 2.762748683852317,
+    "ljung_box_p_squared_lag10": 2.370956294387696e-254,
+    "n": 5476
+  },
+  "generator": null
+}

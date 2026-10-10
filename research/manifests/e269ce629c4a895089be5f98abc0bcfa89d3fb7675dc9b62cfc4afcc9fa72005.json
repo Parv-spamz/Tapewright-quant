@@ -1,0 +1,26 @@
+{
+  "dataset_id": "e269ce629c4a895089be5f98abc0bcfa89d3fb7675dc9b62cfc4afcc9fa72005",
+  "source_kind": "real_api",
+  "source_name": "yahoo.XLY",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLY",
+  "params": {
+    "symbol": "XLY",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:27.485030+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "1984e6011a8226c33c1483b2f3c2844f19a442d0004bad9bd02cef76a6bf1a44"
+  ],
+  "raw_sha256": "1984e6011a8226c33c1483b2f3c2844f19a442d0004bad9bd02cef76a6bf1a44",
+  "parsed_sha256": "12788a791508922f65eb49b43371710dd555b3e0e033ffcb1f0d38b296f2c8d9",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.2663833669716288,
+    "excess_kurtosis": 7.581438954837184,
+    "ljung_box_p_squared_lag10": 0.0,
+    "n": 5476
+  },
+  "generator": null
+}

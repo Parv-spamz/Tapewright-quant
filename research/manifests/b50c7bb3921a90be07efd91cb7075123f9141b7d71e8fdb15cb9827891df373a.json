@@ -1,0 +1,26 @@
+{
+  "dataset_id": "b50c7bb3921a90be07efd91cb7075123f9141b7d71e8fdb15cb9827891df373a",
+  "source_kind": "real_api",
+  "source_name": "yahoo.QQQ",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/QQQ",
+  "params": {
+    "symbol": "QQQ",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:12.173829+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "1c858bd17edaa31559aa4a12c55db1553e4eece539468adeb0fcf8cd86a48f11"
+  ],
+  "raw_sha256": "1c858bd17edaa31559aa4a12c55db1553e4eece539468adeb0fcf8cd86a48f11",
+  "parsed_sha256": "b397591949bfd258f355ba2809797d04f1e354e47f6e9a1cbfcd3fe6010ca002",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.24557501899206546,
+    "excess_kurtosis": 7.6245405996784825,
+    "ljung_box_p_squared_lag10": 0.0,
+    "n": 5476
+  },
+  "generator": null
+}

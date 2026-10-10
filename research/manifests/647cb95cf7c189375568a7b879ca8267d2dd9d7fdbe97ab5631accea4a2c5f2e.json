@@ -1,0 +1,26 @@
+{
+  "dataset_id": "647cb95cf7c189375568a7b879ca8267d2dd9d7fdbe97ab5631accea4a2c5f2e",
+  "source_kind": "real_api",
+  "source_name": "yahoo.TLT",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/TLT",
+  "params": {
+    "symbol": "TLT",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:17.033664+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "9c7eb0a3d43518921e517b8522f131c9544f1ff972b8e113ade0d908571d6ae1"
+  ],
+  "raw_sha256": "9c7eb0a3d43518921e517b8522f131c9544f1ff972b8e113ade0d908571d6ae1",
+  "parsed_sha256": "b9ae6c0da22f9e86eb2e631c83102f2b655b2f060288aa27d4c6051719884618",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.24322773616837,
+    "excess_kurtosis": 3.523033232585502,
+    "ljung_box_p_squared_lag10": 0.0,
+    "n": 5476
+  },
+  "generator": null
+}

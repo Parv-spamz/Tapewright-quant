@@ -1,0 +1,26 @@
+{
+  "dataset_id": "f1e2bf59202212cdf190c5d5a308fbe306a87fd4ab1fed7bf19355ce11951291",
+  "source_kind": "real_api",
+  "source_name": "yahoo.EFA",
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/EFA",
+  "params": {
+    "symbol": "EFA",
+    "interval": "1d"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:15.515086+00:00",
+  "n_rows": 5477,
+  "first_ts": "2005-01-03 00:00:00",
+  "last_ts": "2026-10-09 00:00:00",
+  "raw_pages": [
+    "17e6919d5bd21b167189aac3a9104c14ad445127593ea680c8d4284721048d48"
+  ],
+  "raw_sha256": "17e6919d5bd21b167189aac3a9104c14ad445127593ea680c8d4284721048d48",
+  "parsed_sha256": "14d0535da1f2bc387864fd65faa714e7aa1c8d4a6e8e14971d8a8ef52fe53e47",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.31348552639648697,
+    "excess_kurtosis": 14.226230569096895,
+    "ljung_box_p_squared_lag10": 0.0,
+    "n": 5476
+  },
+  "generator": null
+}

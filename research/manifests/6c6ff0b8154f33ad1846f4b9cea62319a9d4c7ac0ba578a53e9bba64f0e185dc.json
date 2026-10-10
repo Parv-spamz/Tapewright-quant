@@ -1,0 +1,30 @@
+{
+  "dataset_id": "6c6ff0b8154f33ad1846f4b9cea62319a9d4c7ac0ba578a53e9bba64f0e185dc",
+  "source_kind": "real_api",
+  "source_name": "binance.BTCUSDT",
+  "url": "https://data-api.binance.vision/api/v3/klines",
+  "params": {
+    "symbol": "BTCUSDT",
+    "interval": "1d",
+    "base": "https://data-api.binance.vision"
+  },
+  "fetched_at_utc": "2026-10-10T13:31:29.144862+00:00",
+  "n_rows": 3342,
+  "first_ts": "2017-08-17 00:00:00",
+  "last_ts": "2026-10-10 00:00:00",
+  "raw_pages": [
+    "5d961f44531a03237b8994e4e29ee0da3bdaae3267363897ae05f785fe51c77e",
+    "651049a55ad2f2d1e5e071f6f13941d38a11f0fdada805c2c6cf346d5b521bc7",
+    "8dd88eb5a74462712050d88ccda8d5599821975ac2453060a844234c41de5fd2",
+    "f30b9e364e83482a8ce3ecb25b3abbb8b1841b408eab8a97412d0700748b78cc"
+  ],
+  "raw_sha256": "f05ac8d683d7a2c6b01b9f67f50705d7b1ec82febd63f1872ecc577f038f0342",
+  "parsed_sha256": "a63bf96b4fb03c985b14b18fcfb484baad9e0488a9b284c758a3f0801d84f6f2",
+  "fingerprint": {
+    "abs_return_autocorr_lag1": 0.17804101106398793,
+    "excess_kurtosis": 8.785962535074631,
+    "ljung_box_p_squared_lag10": 5.120617815062839e-42,
+    "n": 3341
+  },
+  "generator": null
+}
