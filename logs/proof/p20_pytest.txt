@@ -1,0 +1,25 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 14 items
+
+tests/unit/test_protocol_lockbox.py::test_protocol_registration_idempotent PASSED [  7%]
+tests/unit/test_protocol_lockbox.py::test_modified_protocol_requires_supersedes_and_accumulates_trials PASSED [ 14%]
+tests/unit/test_protocol_lockbox.py::test_splits_hash_mismatch_refused PASSED [ 21%]
+tests/unit/test_protocol_lockbox.py::test_synthetic_dataset_rejected PASSED [ 28%]
+tests/unit/test_protocol_lockbox.py::test_research_data_access_and_logging PASSED [ 35%]
+tests/unit/test_protocol_lockbox.py::test_lockbox_evaluation_invariants PASSED [ 42%]
+tests/unit/test_protocol_lockbox.py::test_lockbox_crash_blocks_further_attempt PASSED [ 50%]
+tests/unit/test_real_data.py::test_split_of_boundaries PASSED            [ 57%]
+tests/unit/test_real_data.py::test_parse_yahoo_json PASSED               [ 64%]
+tests/unit/test_real_data.py::test_yahoo_null_threshold_raises PASSED    [ 71%]
+tests/unit/test_real_data.py::test_parse_binance_klines PASSED           [ 78%]
+tests/unit/test_real_data.py::test_binance_pagination_logic PASSED       [ 85%]
+tests/unit/test_real_data.py::test_parse_fred_csv PASSED                 [ 92%]
+tests/unit/test_real_data.py::test_store_dataset_splits_isolation PASSED [100%]
+
+============================= 14 passed in 2.20s ==============================

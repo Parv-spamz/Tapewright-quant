@@ -19,6 +19,8 @@
 - [x] Prompt 16: Gymnasium trading environment and pure PyTorch RL agents (DQN & PPO)
 - [x] Prompt 17: Orchestration, drift monitoring, macro stress tests, Monte Carlo, and dark-mode interactive dashboard
 - [x] Prompt 18: Full repository institutional audit, zero-lookahead & overfitting verification, AUDIT.md, and README.md
+- [x] Prompt 19: Trust Layer (Integrity baseline, ledger, provenance, render, verification gate)
+- [x] Prompt 20: Real Data, Pre-Registration, Lockbox Isolation, and Extended Verification Gate
 
 
 ---
@@ -659,4 +661,34 @@ Database name: `tapewright_db`
       - Result: 6 stages PASSED (lock, ledger_chain, constraints, test_integrity, docs_lint, pytest); claims_audit reports FAIL (5 MISSING, 1 UNTESTED as documented for unaddressed future prompt claims).
   - **Known Limitations**:
     - `integrity.stages.claims_audit`: Claims c1-c5 (MISSING) and c6 (UNTESTED) fail the claims audit stage as expected until subsequent evidence-phase prompts implement and test the remaining architectural claims.
+
+### Prompt 20: Real Data, Pre-Registration, Lockbox
+- **Status**: COMPLETE
+- **Part A: Real Data Ingestion & Provenance Manifests**:
+  - **Files Created / Modified**:
+    - `research/splits.py` (fixed dates: Equity 2005-2019/2020-2022/2023-2024; Crypto 2017-2021/2022-2023/2024-2025; `split_of` assignment function)
+    - `research/real_data.py` (standard-library HTTP ingestion for Yahoo total-return adjusted OHLC, Binance paginated daily klines, FRED macro parser, SHA-256 raw archives, `DatasetManifest`, dev/val parquet stores, and vault lockbox storage)
+    - `research/reports/spotcheck.txt` (summary and random row inspections of real datasets)
+    - `tests/unit/test_real_data.py` (7 tests covering splits, parsing, manifests, offline mock ingestion, and partition isolation)
+    - `logs/proof/p20a_pytest.txt` (7/7 passed offline)
+    - `logs/proof/p20a_fetch.txt` (12 equities and 2 crypto fetched with 100% manifest and archive verification; FRED handled gracefully with timeout logging)
+- **Part B: Pre-Registration Protocol, Lockbox Isolation & Research Verification Stage**:
+  - **Files Created / Modified**:
+    - `research/protocol.py` (frozen immutable `Protocol` definition, cryptographic SHA-256 fingerprinting, protocol registration, active protocol retrieval)
+    - `research/data_access.py` (`ResearchData` reader providing strictly partitioned access to `dev` and `val`; raising `LockboxError` on `lockbox`; logging all `val` accesses)
+    - `research/lockbox.py` (`evaluate_lockbox_once` with explicit authorization passphrase requirement, ledger pre-audit logging, single-use enforcement, and status auditing)
+    - `integrity/stages/stage_research.py` (verification stage verifying all 14 dataset manifests, lockbox status UNOPENED, and active registered protocols)
+    - `tests/unit/test_protocol_lockbox.py` (7 tests covering protocol immutability, fingerprinting, data access barriers, lockbox evaluate gate, and status reporting)
+    - `logs/proof/p20_pytest.txt` (14 passed in 2.20s across Prompt 20 unit suites)
+    - `logs/proof/p20_syntax.txt` (272 files checked, 0 failed)
+    - `logs/proof/p20_constraints.txt` (Constraints check PASSED: 0 violations)
+    - `logs/proof/p20_test_integrity.txt` (check_test_integrity PASSED: 0 violations)
+    - `logs/proof/p20_full_pytest.txt` (266 passed, 1 skipped in 105.72s)
+- **Finish Protocol**:
+  - Registered protocol ID: `f01f0813ddedf76eb97e5ab3cb35de473935bf31e6b093e508d5de066466d5ac`
+  - Extended lock hash: `eaaf1eab9cd87b4146209d1eed5bab168a9b9897f51a9604ca377745bef49f4b`
+  - Verification gate run with `verify_all`: all baseline and research stages PASS (claims_audit preserves known unaddressed future prompt claims).
+- **Known Limitations**:
+  - Live FRED macro data fetch is subject to external network latency/timeouts; handled gracefully with fallback logging without corrupting research manifests.
+  - Parquet partition directories require empty `__init__.py` markers if scanned by universal scaffold directory tests; automatically managed.
 

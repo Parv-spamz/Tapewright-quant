@@ -1,0 +1,17 @@
+...s.................................................................... [ 26%]
+........................................................................ [ 53%]
+........................................................................ [ 80%]
+...................................................                      [100%]
+============================== warnings summary ===============================
+tests/unit/test_rl.py::test_gymnasium_check_env
+  C:\Users\aropa\AppData\Roaming\Python\Python314\site-packages\gymnasium\utils\env_checker.py:496: UserWarning: [33mWARN: Not able to test alternative render modes due to the environment not having a spec. Try instantiating the environment through `gymnasium.make`[0m
+    logger.warn(
+
+tests/unit/test_synthetic_clean.py::TestSyntheticGenerators::test_cointegrated_pair_adf_significance
+  C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant\tests\unit\test_synthetic_clean.py:111: FutureWarning: adfuller currently returns a plain tuple whose length depends on the store and autolag arguments. In release 0.16 or after July 2027, whichever is later, the default behavior will switch to always returning an ADFullerResult. Set result_object=True to switch now, or result_object=False to keep the current behavior and silence this warning.
+    adf_result = ts.adfuller(spread)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\integration\test_mysql_live.py:18: Live MySQL tests skipped: TAPEWRIGHT_DB_HOST environment variable is not set.
+266 passed, 1 skipped, 2 warnings in 105.72s (0:01:45)
