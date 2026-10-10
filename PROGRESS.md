@@ -589,3 +589,29 @@ Database name: `tapewright_db`
     - Verified embargo separation dynamically.
     - All 5 tests passed in `test_dsr_units.py` and `test_honesty_v2.py`.
 
+- **Part B: Integrity Package**:
+  - **Status**: COMPLETE
+  - **Files Created**:
+    - `integrity/__init__.py`
+    - `integrity/ledger.py`
+    - `integrity/provenance.py`
+    - `integrity/render.py`
+    - `tests/unit/test_integrity.py`
+  - **Exact Commands Executed**:
+    - `python -m pytest tests/unit/test_integrity.py -k ledger -v -s 2>&1 | Tee-Object -FilePath logs/proof/p19b_ledger_pytest.txt`
+      - Result: `7 passed in 8.82s`
+    - `python -m pytest tests/unit/test_integrity.py -k provenance -v -s 2>&1 | Tee-Object -FilePath logs/proof/p19b_provenance_pytest.txt`
+      - Result: `5 passed, 7 deselected in 1.98s`
+    - `python -m pytest tests/unit/test_integrity.py -k render -v -s 2>&1 | Tee-Object -FilePath logs/proof/p19b_render_pytest.txt`
+      - Result: `6 passed, 12 deselected in 2.18s`
+    - `python -m pytest tests/unit/test_integrity.py -v -s 2>&1 | Tee-Object -FilePath logs/proof/p19b_pytest.txt`
+      - Result: `18 passed in 10.77s`
+    - `python scripts/check_syntax.py 2>&1 | Tee-Object -FilePath logs/proof/p19b_syntax.txt`
+      - Result: `248 files checked, 0 failed`
+    - `python scripts/check_constraints.py 2>&1 | Tee-Object -FilePath logs/proof/p19b_constraints.txt`
+      - Result: `Constraints check PASSED: 0 violations.`
+  - **Known Limitations**:
+    - `integrity.ledger`: Cross-platform locking via `O_CREAT | O_EXCL` enforces writer serialization with a 10s timeout, suitable for research pipelines but not high-frequency multi-process telemetry.
+    - `integrity.provenance`: `looks_synthetic_gbm` is a statistical heuristic flag based on Gaussian normality and lack of volatility clustering, not an absolute proof of synthetic origin.
+    - `integrity.render`: Template placeholder resolution requires strict match of tags in the active ledger; missing tags or malformed key paths fail fast with `RenderError` rather than falling back to default values.
+
