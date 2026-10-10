@@ -323,3 +323,126 @@ class TestProvenance:
         df_modified.iloc[0, 0] = 0.99
         with pytest.raises(ProvenanceError, match="DataFrame hash mismatch"):
             verify_manifest(manifest, df_modified, archive_dir)
+
+
+class TestRenderer:
+    """Tests for ledger-backed template rendering and documentation anti-forgery linter."""
+
+    def test_render_template_from_ledger(self, tmp_path: Path) -> None:
+        from integrity.ledger import Ledger
+        from integrity.render import render_template_string
+
+        ledger_file = tmp_path / "ledger.jsonl"
+        ledger = Ledger(ledger_file, root=tmp_path)
+        ledger.append(
+            kind="experiment",
+            status="PASS",
+            tag="purged_noise",
+            payload={"auc": 0.501523, "details": {"p_val": 0.00412}},
+        )
+
+        template = "Status: {{status:purged_noise}}, AUC: {{tag:purged_noise:payload.auc|.4f}}, p: {{tag:purged_noise:payload.details.p_val|.3e}}"
+        rendered = render_template_string(template, ledger)
+
+        assert rendered == "Status: PASS, AUC: 0.5015, p: 4.120e-03"
+
+    def test_render_missing_tag_raises_render_error(self, tmp_path: Path) -> None:
+        from integrity.ledger import Ledger
+        from integrity.render import render_template_string, RenderError
+
+        ledger_file = tmp_path / "ledger.jsonl"
+        ledger = Ledger(ledger_file, root=tmp_path)
+
+        with pytest.raises(RenderError, match="Tag 'missing_tag' not found"):
+            render_template_string("Sharpe: {{tag:missing_tag:payload.sharpe|.2f}}", ledger)
+
+        with pytest.raises(RenderError, match="Tag 'missing_tag' not found"):
+            render_template_string("Status: {{status:missing_tag}}", ledger)
+
+    def test_render_missing_payload_key_raises_render_error(self, tmp_path: Path) -> None:
+        from integrity.ledger import Ledger
+        from integrity.render import render_template_string, RenderError
+
+        ledger_file = tmp_path / "ledger.jsonl"
+        ledger = Ledger(ledger_file, root=tmp_path)
+        ledger.append(
+            kind="experiment",
+            status="PASS",
+            tag="sample_tag",
+            payload={"other_key": 123},
+        )
+
+        with pytest.raises(RenderError, match="Key path 'payload.non_existent_key' not found"):
+            render_template_string("Value: {{tag:sample_tag:payload.non_existent_key|.2f}}", ledger)
+
+    def test_render_all_creates_wrapped_generated_markdown(self, tmp_path: Path) -> None:
+        from integrity.ledger import Ledger
+        from integrity.render import render_all
+
+        ledger_file = tmp_path / "ledger.jsonl"
+        ledger = Ledger(ledger_file, root=tmp_path)
+        ledger.append(
+            kind="proof",
+            status="PASS",
+            tag="benchmark",
+            payload={"sharpe": 1.4567},
+        )
+
+        tpl_dir = tmp_path / "templates"
+        tpl_dir.mkdir(parents=True)
+        tpl_file = tpl_dir / "summary.md.tpl"
+        tpl_file.write_text("# Report\nSharpe: {{tag:benchmark:payload.sharpe|.2f}}\n", encoding="utf-8")
+
+        out_dir = tmp_path / "docs_out"
+        rendered_files = render_all(ledger, templates_dir=tpl_dir, out_dir=out_dir)
+
+        assert len(rendered_files) == 1
+        out_md = rendered_files[0]
+        content = out_md.read_text(encoding="utf-8")
+
+        head_hash = ledger.head_hash()
+        assert content.startswith(f"<!-- GENERATED from ledger head {head_hash}. Do not edit by hand. -->")
+        assert "<!-- GENERATED:BEGIN -->" in content
+        assert "<!-- GENERATED:END -->" in content
+        assert "Sharpe: 1.46" in content
+
+    def test_lint_docs_flags_unwrapped_metrics_and_passes_generated(self, tmp_path: Path) -> None:
+        from integrity.render import lint_docs
+
+        # 1. Unwrapped metric number violation
+        violating_file = tmp_path / "unwrapped.md"
+        violating_file.write_text(
+            "# Performance\nWe achieved a Sharpe of 1.8 across all test periods.\n",
+            encoding="utf-8",
+        )
+
+        violations = lint_docs([violating_file])
+        assert len(violations) == 1
+        assert "Hardcoded metric 'Sharpe' near number '1.8'" in violations[0]
+
+        # 2. Wrapped inside GENERATED block passes
+        valid_generated_file = tmp_path / "generated.md"
+        valid_generated_file.write_text(
+            "<!-- GENERATED:BEGIN -->\nWe achieved a Sharpe of 1.8 across all test periods.\n<!-- GENERATED:END -->\n",
+            encoding="utf-8",
+        )
+        assert lint_docs([valid_generated_file]) == []
+
+        # 3. Fenced code block is exempt
+        fenced_code_file = tmp_path / "code.md"
+        fenced_code_file.write_text(
+            "```python\n# Target Sharpe of 1.8\nsharpe = 1.8\n```\n",
+            encoding="utf-8",
+        )
+        assert lint_docs([fenced_code_file]) == []
+
+    def test_lint_docs_flags_unclosed_generated_block(self, tmp_path: Path) -> None:
+        from integrity.render import lint_docs
+
+        unclosed_file = tmp_path / "unclosed.md"
+        unclosed_file.write_text(
+            "<!-- GENERATED:BEGIN -->\nSome metric text here.\n",
+            encoding="utf-8",
+        )
+        violations = lint_docs([unclosed_file])
+        assert any("Unclosed <!-- GENERATED:BEGIN -->" in v for v in violations)

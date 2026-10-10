@@ -1,0 +1,17 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\aropa\OneDrive\Desktop\larp projects\Tapewright-quant
+configfile: pytest.ini
+plugins: anyio-4.13.0, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 18 items / 12 deselected / 6 selected
+
+tests/unit/test_integrity.py::TestRenderer::test_render_template_from_ledger PASSED
+tests/unit/test_integrity.py::TestRenderer::test_render_missing_tag_raises_render_error PASSED
+tests/unit/test_integrity.py::TestRenderer::test_render_missing_payload_key_raises_render_error PASSED
+tests/unit/test_integrity.py::TestRenderer::test_render_all_creates_wrapped_generated_markdown PASSED
+tests/unit/test_integrity.py::TestRenderer::test_lint_docs_flags_unwrapped_metrics_and_passes_generated PASSED
+tests/unit/test_integrity.py::TestRenderer::test_lint_docs_flags_unclosed_generated_block PASSED
+
+====================== 6 passed, 12 deselected in 2.18s =======================
