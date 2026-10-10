@@ -21,8 +21,11 @@ from backtesting.metrics.risk_measures.measures import (
     calmar,
     cornish_fisher_var,
     historical_var,
+    kurtosis,
     omega_ratio,
+    parametric_var,
     sharpe,
+    skew,
     sortino,
 )
 from backtesting.metrics.risk_measures.overfit import (
@@ -322,6 +325,7 @@ def test_kill_sortino_sharpe_calmar() -> None:
     sort_0 = sortino(mixed, mar=0.0)
     sort_1 = sortino(mixed, mar=0.01)
     assert sort_0 > sort_1, "Higher MAR must reduce Sortino ratio"
+    assert np.isclose(sortino(mixed), sortino(mixed, mar=0.0)), "Default mar must be 0.0"
 
     # Sharpe with rf kills - rf_per_period -> + rf_per_period
     sh_0 = sharpe(mixed, rf=0.0)
@@ -330,20 +334,22 @@ def test_kill_sortino_sharpe_calmar() -> None:
 
     # Sharpe constant returns (std < 1e-12) kills return 0.0 -> 1.0
     assert sharpe(pd.Series([0.05, 0.05, 0.05])) == 0.0
+    assert sharpe(pd.Series([0.05])) == 0.0, "Length 1 series must return 0.0 Sharpe"
 
-    # Calmar drawdown calculation (equity - peak) / peak kills - -> +
+    # Calmar drawdown calculation (equity - peak) / peak kills - -> + and 1.0 + arr -> 0.0 + arr
     eq_down = pd.Series([0.1, -0.2, -0.1, 0.05])
     calm = calmar(eq_down)
     assert calm < 0.0, "Losing series must produce negative Calmar"
 
-    # Calmar with overall positive return and non-zero drawdown kills 1.0 + arr -> 0.0 + arr
-    assert calmar(pd.Series([0.05, -0.02, 0.04])) > 0.0
+    # Calmar exact numerical value kills 1.0 + arr, (equity - peak), min(drawdowns)
+    calm_exact = calmar(pd.Series([0.10, -0.10]), ppy=2)
+    assert np.isclose(calm_exact, -0.10), f"Calmar must equal -0.10, got {calm_exact}"
 
-    # Cornish-Fisher VaR formula -(mu - z * sigma) with alpha=0.95
-    cf_var = cornish_fisher_var(mixed, alpha=0.95)
-    assert cf_var > 0.0
+    # Parametric VaR formula -(mu - z * sigma) kills - -> +
+    p_var = parametric_var(pd.Series([0.01, -0.02, 0.03, -0.04]), alpha=0.95)
+    assert p_var > 0.0, "Parametric VaR must be positive loss"
 
-    # Cornish-Fisher VaR with non-zero kurtosis
+    # Cornish-Fisher VaR with non-zero kurtosis kills * -> / in kurtosis term
     cf_kurt = cornish_fisher_var(pd.Series([0.01, 0.02, -0.01, 0.03, -0.02, 0.04]), alpha=0.95)
     assert cf_kurt > 0.0
 
@@ -355,16 +361,17 @@ def test_kill_sortino_sharpe_calmar() -> None:
     assert omega_ratio(pd.Series([0.01, 0.02])) == float("inf")
     assert omega_ratio(pd.Series([0.0, 0.0])) == 1.0
 
+    # Skew with short series len <= 2 kills 0 -> 1
+    assert skew(pd.Series([0.01])) == 0.0
+    assert skew(pd.Series([0.01, 0.02])) == 0.0
+
 
 def test_kill_overfit_and_sizing_annualization() -> None:
     # PSR benchmark annualization kills / np.sqrt(ppy) -> * np.sqrt(ppy)
-    psr_daily = probabilistic_sharpe_ratio(
-        sr_hat=0.08, sr_benchmark=0.04, T=252, annualized=True, ppy=252
+    psr_exact = probabilistic_sharpe_ratio(
+        sr_hat=1.0, sr_benchmark=1.0, T=252, annualized=True, ppy=252
     )
-    psr_no_ppy = probabilistic_sharpe_ratio(
-        sr_hat=0.08, sr_benchmark=0.04, T=252, annualized=False, ppy=252
-    )
-    assert psr_daily != psr_no_ppy
+    assert np.isclose(psr_exact, 0.5), f"When sr_hat == sr_benchmark, PSR must equal 0.5, got {psr_exact}"
 
     # DSR sr_hat annualization kills sr_hat / sqrt(ppy)
     dsr = deflated_sharpe_ratio(
@@ -372,9 +379,14 @@ def test_kill_overfit_and_sizing_annualization() -> None:
     )
     assert 0.0 <= dsr <= 1.0
 
-    # CSCV PBO oos_mean / oos_std
-    trials = pd.DataFrame(np.random.RandomState(42).normal(0.001, 0.01, (20, 2)))
-    pbo, logits = probability_of_backtest_overfitting(trials)
+    # CSCV PBO oos_mean / oos_std kills / -> *
+    dom_trials = pd.DataFrame(
+        {
+            0: [0.02, 0.03, 0.02, 0.03],
+            1: [0.01, -0.02, 0.01, -0.01],
+        }
+    )
+    pbo, logits = probability_of_backtest_overfitting(dom_trials)
     assert 0.0 <= pbo <= 1.0
 
     # Bootstrap Sharpe CI alpha / 2.0
@@ -395,15 +407,17 @@ def test_kill_overfit_and_sizing_annualization() -> None:
     size_rf = half_kelly_fraction(mu=0.05, sigma=0.1, rf=0.02, cap=5.0)
     assert size_0 > size_rf > 0.0
 
-    # Position sizing constraint diagnostics
+    # Position sizing constraint diagnostics and default rf=0.0 (kills rf: float = 0.0 -> 1.0)
     limits = RiskLimits(max_position_pct=0.25, max_leverage=1.0)
-    f_pos, diag = position_size(mu=0.05, sigma=0.01, returns_window=np.array([0.01, 0.02]), limits=limits)
+    f_pos, diag = position_size(mu=0.05, sigma=0.1, returns_window=np.array([0.01, 0.02]), limits=limits)
+    assert f_pos > 0.0, "Kelly fraction with default rf must be positive"
     assert diag["binding_constraint"] in ("max_position_pct", "cvar_scaled", "kelly")
 
-    # Kelly sized strategy wrapper on_bar with signal (kills remove not and curr_vol * -> /)
+    # Kelly sized strategy wrapper on_bar with signal (kills curr_vol * -> /)
     dummy_strat = BreakoutStrategy("SPY", n=2, target_pct=0.2)
     sized_strat = KellySizedStrategyWrapper(strategy=dummy_strat, window=5, limits=limits)
     df_sizing = _make_ohlcv_df(n=10)
+    df_sizing.loc[df_sizing.index[-1], "close"] = 300.0
     handler_sz = HistoricBarDataHandler({"SPY": df_sizing})
     for _ in range(len(df_sizing)):
         handler_sz.update_bars()
@@ -411,13 +425,14 @@ def test_kill_overfit_and_sizing_annualization() -> None:
         timestamp=datetime(2020, 1, 15, tzinfo=timezone.utc),
         symbol="SPY",
         open=200.0,
-        high=205.0,
+        high=305.0,
         low=195.0,
-        close=204.0,
+        close=300.0,
         volume=100.0,
     )
     sigs_sz = sized_strat.on_bar(tick_sz, handler_sz)
-    assert isinstance(sigs_sz, list)
+    assert len(sigs_sz) == 1
+    assert sigs_sz[0].target_pct is not None and sigs_sz[0].target_pct > 0.0
 
 
 # ==============================================================================
@@ -426,29 +441,80 @@ def test_kill_overfit_and_sizing_annualization() -> None:
 
 
 def test_kill_breakout_strict_inequalities_and_shifts() -> None:
-    dates = pd.date_range("2020-01-01", periods=5, freq="D", tz="UTC")
-    df = pd.DataFrame(
+    # High spike test kills prior_high shift(1) -> shift(0)
+    df_spike = pd.DataFrame(
         {
-            "high": [10.0, 10.0, 10.0, 10.0, 10.0],
-            "low": [5.0, 5.0, 5.0, 5.0, 5.0],
-            "close": [7.0, 8.0, 9.0, 9.5, 10.0],
-            "open": [7.0, 8.0, 9.0, 9.5, 10.0],
-            "volume": [100.0] * 5,
+            "high": [10.0, 10.0, 15.0],
+            "low": [5.0, 5.0, 5.0],
+            "close": [8.0, 8.0, 12.0],
+            "open": [8.0, 8.0, 11.0],
+            "volume": [100.0] * 3,
         },
-        index=dates,
+        index=pd.date_range("2020-01-01", periods=3, freq="D", tz="UTC"),
     )
-    # Donchian: close > prior_high must be strictly greater than (kills > -> >=)
-    sig = donchian_breakout(df, n=3)
-    assert sig.iloc[-1] == 0, "Touch of prior high without breach must produce 0, not 1"
+    sig_spike = donchian_breakout(df_spike, n=2)
+    assert sig_spike.iloc[-1] == 1, "Breakout must compare close to prior high, not current high"
 
-    # Breach on bar 5: close at 10.5
-    df.iloc[4, df.columns.get_loc("close")] = 10.5
-    sig_breach = donchian_breakout(df, n=3)
-    assert sig_breach.iloc[-1] == 1, "Breach of prior high must produce 1"
+    # Low drop test kills prior_low shift(1) -> shift(0)
+    df_low_spike = pd.DataFrame(
+        {
+            "high": [10.0, 10.0, 10.0],
+            "low": [5.0, 5.0, 2.0],
+            "close": [8.0, 8.0, 4.0],
+            "open": [8.0, 8.0, 5.0],
+            "volume": [100.0] * 3,
+        },
+        index=pd.date_range("2020-01-01", periods=3, freq="D", tz="UTC"),
+    )
+    sig_low_spike = donchian_breakout(df_low_spike, n=2)
+    assert sig_low_spike.iloc[-1] == -1, "Breakout must compare close to prior low, not current low"
 
-    # Volatility breakout strict inequalities
-    vol_sig = volatility_breakout(df, n=3, k=1.0)
-    assert len(vol_sig) == len(df)
+    # Volatility breakout lookahead spike test kills shift(1) -> shift(-1)
+    df_vol_la = pd.DataFrame(
+        {
+            "high": [10.0, 10.0, 12.0, 1000.0],
+            "low": [5.0, 5.0, 5.0, 5.0],
+            "close": [10.0, 10.0, 12.0, 1000.0],
+            "open": [10.0, 10.0, 10.0, 1000.0],
+            "volume": [100.0] * 4,
+        },
+        index=pd.date_range("2020-01-01", periods=4, freq="D", tz="UTC"),
+    )
+    sig_vol_la = volatility_breakout(df_vol_la, n=2, k=1.0)
+    assert sig_vol_la.iloc[2] == 1, "Bar 2 breakout must not be suppressed by lookahead to bar 3"
+
+    # Volatility breakout exact touch kills > -> >=
+    df_touch = pd.DataFrame(
+        {
+            "high": [10.0, 10.0, 10.0],
+            "low": [10.0, 10.0, 10.0],
+            "close": [10.0, 10.0, 10.0],
+            "open": [10.0, 10.0, 10.0],
+            "volume": [100.0] * 3,
+        },
+        index=pd.date_range("2020-01-01", periods=3, freq="D", tz="UTC"),
+    )
+    assert volatility_breakout(df_touch, n=2, k=0.0).iloc[-1] == 0, "Touch of upper band without breach must be 0"
+
+    # Volatility breakout upper breach kills 1 -> 0
+    df_vol_up = pd.DataFrame(
+        {"close": [10.0, 10.0, 10.0, 20.0]},
+        index=pd.date_range("2020-01-01", periods=4, freq="D", tz="UTC"),
+    )
+    sig_v_up = volatility_breakout(df_vol_up, n=2, k=1.0)
+    assert sig_v_up.iloc[-1] == 1, "Breach of upper band must emit +1 signal"
+
+    # Donchian touch kills > -> >=
+    df_d_touch = pd.DataFrame(
+        {
+            "high": [100.0, 100.0, 100.0],
+            "low": [90.0, 90.0, 90.0],
+            "close": [95.0, 95.0, 100.0],
+        },
+        index=pd.date_range("2020-01-01", periods=3, freq="D", tz="UTC"),
+    )
+    sig_d_touch = donchian_breakout(df_d_touch, n=2)
+    assert sig_d_touch.iloc[-1] == 0, "Touch of prior high without breach must emit 0"
 
     # Strategy on_bar short signal curr_sig == -1
     df_short = pd.DataFrame(
@@ -504,7 +570,9 @@ def test_kill_crossover_events_and_thresholds() -> None:
     assert c_strat.last_signal == 0
 
     # CrossoverStrategy on_bar short signal curr_sig == -1 (kills 1 -> 0)
-    handler_c = HistoricBarDataHandler({"SPY": _make_ohlcv_df(n=10)})
+    df_down = _make_ohlcv_df(n=10)
+    df_down["close"] = [100.0 - i * 5.0 for i in range(10)]
+    handler_c = HistoricBarDataHandler({"SPY": df_down})
     for _ in range(10):
         handler_c.update_bars()
     c_strat_short = CrossoverStrategy("SPY", fast=2, slow=4)
@@ -518,7 +586,8 @@ def test_kill_crossover_events_and_thresholds() -> None:
         volume=100.0,
     )
     c_sigs = c_strat_short.on_bar(tick_c_drop, handler_c)
-    assert isinstance(c_sigs, list)
+    assert len(c_sigs) == 1
+    assert c_sigs[0].direction == "SHORT", "Short crossover must emit SHORT direction"
 
 
 def test_kill_mean_reversion_rsi_and_warmup() -> None:
@@ -527,24 +596,51 @@ def test_kill_mean_reversion_rsi_and_warmup() -> None:
     sig = bollinger_rsi_reversion(df, n=5, k=1.5, rsi_n=3)
     assert (sig.iloc[:5] == 0).all(), "Warmup period must be strictly 0"
 
-    # Strategy on_bar curr_sig == 1
-    handler = HistoricBarDataHandler({"SPY": df})
-    for _ in range(len(df)):
-        handler.update_bars()
-    mr_strat = MeanReversionStrategy("SPY", n=3, k=1.0, rsi_n=2)
-    tick = TickEvent(
+    # RSI calculation formula 1.0 + rs kills + -> -
+    df_rsi = pd.DataFrame(
+        {"close": [10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 14.0, 13.0, 12.0, 11.0]},
+        index=pd.date_range("2020-01-01", periods=10, freq="D", tz="UTC"),
+    )
+    sig_rsi = bollinger_rsi_reversion(df_rsi, n=3, k=1.0, rsi_n=3, lo=20.0, hi=80.0)
+    assert (sig_rsi.isin([-1, 0, 1])).all()
+
+    # Overbought touch kills > -> >=
+    df_flat = pd.DataFrame(
+        {
+            "high": [10.0] * 5,
+            "low": [10.0] * 5,
+            "close": [10.0] * 5,
+            "open": [10.0] * 5,
+            "volume": [100.0] * 5,
+        },
+        index=pd.date_range("2020-01-01", periods=5, freq="D", tz="UTC"),
+    )
+    assert (bollinger_rsi_reversion(df_flat, n=2, k=0.0, rsi_n=2, lo=0.0, hi=100.0) == 0).all()
+
+    # Strategy on_bar curr_sig == 1 vs != 1
+    df_mr_short = pd.DataFrame(
+        {
+            "high": [10.0] * 5 + [50.0],
+            "low": [10.0] * 5 + [48.0],
+            "close": [10.0] * 5 + [50.0],
+            "open": [10.0] * 5 + [49.0],
+            "volume": [100.0] * 6,
+        },
+        index=pd.date_range("2020-01-01", periods=6, freq="D", tz="UTC"),
+    )
+    handler_mr_s = HistoricBarDataHandler({"SPY": df_mr_short})
+    for _ in range(len(df_mr_short)):
+        handler_mr_s.update_bars()
+    mr_strat_s = MeanReversionStrategy("SPY", n=3, k=1.0, rsi_n=2)
+    tick_mr_s = TickEvent(
         timestamp=datetime(2020, 1, 20, tzinfo=timezone.utc),
         symbol="SPY",
-        open=10.0,
-        high=10.0,
-        low=10.0,
-        close=10.0,
+        open=49.0,
+        high=50.0,
+        low=48.0,
+        close=50.0,
         volume=100.0,
     )
-    res = mr_strat.on_bar(tick, handler)
-    assert isinstance(res, list)
-
-    # RSI calculation precision and bands
-    df_mr = _make_ohlcv_df(n=20)
-    sig_mr = bollinger_rsi_reversion(df_mr, n=5, k=1.0, rsi_n=5, lo=30.0, hi=70.0)
-    assert len(sig_mr) == len(df_mr)
+    res_mr_s = mr_strat_s.on_bar(tick_mr_s, handler_mr_s)
+    assert len(res_mr_s) == 1
+    assert res_mr_s[0].direction == "SHORT", "Overbought mean reversion must emit SHORT"

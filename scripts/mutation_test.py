@@ -482,6 +482,15 @@ def print_summary_table(results: dict[str, Any]) -> None:
         )
     print("=" * 78)
 
+    has_survivors = any(data["survivors"] for data in results.values())
+    if has_survivors:
+        print("\nSurviving Mutants by Module:")
+        for mod, data in results.items():
+            if data["survivors"]:
+                print(f"  [{mod}] ({len(data['survivors'])} survivors):")
+                for s in data["survivors"]:
+                    print(f"    - {s['file']}:{s['line']} ({s['mutation']})")
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="AST-based mutation testing harness.")
