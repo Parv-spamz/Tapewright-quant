@@ -76,7 +76,8 @@ class HistoricBarDataHandler:
         self.current_timestamp = t
 
         ticks: list[TickEvent] = []
-        for symbol, df in self.bars.items():
+        for symbol in sorted(self.bars.keys()):
+            df = self.bars[symbol]
             if t in df.index:
                 row = df.loc[t]
                 if isinstance(row, pd.DataFrame):
