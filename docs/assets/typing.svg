@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 36" width="650" height="36" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 36" width="600" height="36" fill="none">
   <defs>
     <style>
       .prompt-symbol {
         font-family: 'SF Mono', 'Fira Code', 'Roboto Mono', Consolas, monospace;
         font-size: 15px;
         font-weight: 700;
-        fill: #38BDF8;
+        fill: #00E5BF;
       }
       .typing-phrase {
         font-family: 'SF Mono', 'Fira Code', 'Roboto Mono', Consolas, monospace;
@@ -22,38 +22,29 @@
         50% { opacity: 0; }
       }
 
-      /* Staggered phrase opacity cycle across 16s total duration */
-      .phrase-1 { animation: cyclePhrase1 16s infinite; }
-      .phrase-2 { animation: cyclePhrase2 16s infinite; }
-      .phrase-3 { animation: cyclePhrase3 16s infinite; }
-      .phrase-4 { animation: cyclePhrase4 16s infinite; }
+      /* 3-phrase cycle across 9s total duration */
+      .phrase-1 { animation: cyclePhrase1 9s infinite; }
+      .phrase-2 { animation: cyclePhrase2 9s infinite; }
+      .phrase-3 { animation: cyclePhrase3 9s infinite; }
 
       @keyframes cyclePhrase1 {
         0% { opacity: 0; }
-        2% { opacity: 1; }
-        22% { opacity: 1; }
-        24% { opacity: 0; }
+        3% { opacity: 1; }
+        30% { opacity: 1; }
+        33% { opacity: 0; }
         100% { opacity: 0; }
       }
       @keyframes cyclePhrase2 {
-        0%, 24% { opacity: 0; }
-        26% { opacity: 1; }
-        47% { opacity: 1; }
-        49% { opacity: 0; }
+        0%, 33% { opacity: 0; }
+        36% { opacity: 1; }
+        63% { opacity: 1; }
+        66% { opacity: 0; }
         100% { opacity: 0; }
       }
       @keyframes cyclePhrase3 {
-        0%, 49% { opacity: 0; }
-        51% { opacity: 1; }
-        72% { opacity: 1; }
-        74% { opacity: 0; }
-        100% { opacity: 0; }
-      }
-      @keyframes cyclePhrase4 {
-        0%, 74% { opacity: 0; }
-        76% { opacity: 1; }
+        0%, 66% { opacity: 0; }
+        69% { opacity: 1; }
         97% { opacity: 1; }
-        99% { opacity: 0; }
         100% { opacity: 0; }
       }
     </style>
@@ -64,27 +55,22 @@
 
   <!-- Rotating Phrases -->
   <g transform="translate(30, 23)">
-    <!-- Phrase 1 -->
+    <!-- Phrase 1: Simulate markets -->
     <text x="0" y="0" class="typing-phrase phrase-1" fill="#00E5BF">
-      Strictly causal discrete-event backtesting
+      Simulate markets
     </text>
 
-    <!-- Phrase 2 -->
-    <text x="0" y="0" class="typing-phrase phrase-2" fill="#38BDF8">
-      Microstructure-aware Level-2 execution simulation
+    <!-- Phrase 2: Test trading ideas -->
+    <text x="0" y="0" class="typing-phrase phrase-2" fill="#E2E8F0">
+      Test trading ideas
     </text>
 
-    <!-- Phrase 3 -->
-    <text x="0" y="0" class="typing-phrase phrase-3" fill="#A5B4FC">
-      Leakage-resistant purged &amp; embargoed econometrics
-    </text>
-
-    <!-- Phrase 4 -->
-    <text x="0" y="0" class="typing-phrase phrase-4" fill="#34D399">
-      Cryptographically auditable experiment ledger
+    <!-- Phrase 3: Challenge the results -->
+    <text x="0" y="0" class="typing-phrase phrase-3" fill="#38BDF8">
+      Challenge the results
     </text>
   </g>
 
   <!-- Trailing Terminal Cursor Block -->
-  <rect x="475" y="10" width="8" height="16" rx="1" class="cursor"/>
+  <rect x="235" y="10" width="7" height="16" rx="1" class="cursor"/>
 </svg>
