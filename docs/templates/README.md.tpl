@@ -9,14 +9,15 @@
 A trading research engine built to simulate markets, test ideas, and challenge its own results.
 
 <p align="center">
-  <img src="docs/assets/typing.svg" alt="Simulate markets · Test trading ideas · Challenge the results" width="500" />
-</p>
-
-<p align="center">
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10%2B-00E5BF?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" /></a>
+  <a href="database/schema/schema.sql"><img src="https://img.shields.io/badge/Database-MySQL%208%20%7C%20SQLite-00758F?style=flat-square&logo=mysql&logoColor=white" alt="MySQL / SQLite" /></a>
 </p>
 
 </div>
+
+> [!WARNING]
+> **Financial & Research Disclaimer**
+> Tapewright-Quant is an open-source quantitative research and educational platform. Simulated backtest performance—even under discrete-event simulation, purged cross-validation, and deflated Sharpe ratios—does not guarantee future live trading profitability. Real markets involve non-stationary regime shifts, microsecond latency competition, counterparty risk, and liquidity shocks.
 
 ## What is Tapewright-Quant?
 
