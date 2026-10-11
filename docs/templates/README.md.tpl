@@ -1,5 +1,11 @@
 <div align="center">
 
+<p align="center">
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" /></a>
+  <a href="database/schema/schema.sql"><img src="https://img.shields.io/badge/Database-MySQL%208%20%7C%20SQLite-00758F?style=flat-square&logo=mysql&logoColor=white" alt="MySQL / SQLite" /></a>
+  <a href="data/caching/parquet_store.py"><img src="https://img.shields.io/badge/Storage-Columnar%20Parquet-0D9488?style=flat-square" alt="Parquet Storage" /></a>
+</p>
+
 <img src="docs/assets/logo.svg" alt="Tapewright-Quant Logo" width="100%" />
 
 <p align="center">
@@ -22,15 +28,6 @@ Tapewright-Quant (FinPulse-Apex) is an open-source quantitative research and exe
 
 > ⚠️ **WARNING: Financial & Research Disclaimer**
 > Tapewright-Quant is an open-source quantitative research and educational platform. Simulated backtest performance—even under discrete-event simulation, purged cross-validation, and deflated Sharpe ratios—does not guarantee future live trading profitability. Real markets involve non-stationary regime shifts, microsecond latency competition, counterparty risk, and liquidity shocks.
-
-<p align="center">
-  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" /></a>
-  <a href="database/schema/schema.sql"><img src="https://img.shields.io/badge/Database-MySQL%208%20%7C%20SQLite-00758F?style=flat-square&logo=mysql&logoColor=white" alt="MySQL / SQLite" /></a>
-  <a href="data/caching/parquet_store.py"><img src="https://img.shields.io/badge/Storage-Columnar%20Parquet-0D9488?style=flat-square" alt="Parquet Storage" /></a>
-  <a href="backtesting/engine/event_loop/"><img src="https://img.shields.io/badge/Engine-Causal%20Event--Driven-0284C7?style=flat-square" alt="Causal Event Driven" /></a>
-  <a href="integrity/verify_all.py"><img src="https://img.shields.io/badge/Verification-10--Stage%20Gate%20PASSED-059669?style=flat-square" alt="Verification Gate" /></a>
-  <a href="research/vault/"><img src="https://img.shields.io/badge/Holdout%20Vault-SEALED%20(UNOPENED)-7C3AED?style=flat-square" alt="Sealed Vault" /></a>
-</p>
 
 [Overview](#overview) | [Architecture](#system-architecture) | [The 5 Pillars](#the-5-pillars) | [Event Lifecycle](#event-lifecycle) | [Trust Layer](#research-integrity--trust-layer) | [Verification](#verification--hardening-metrics) | [Empirical Findings](#empirical-findings) | [Repo Map](#repository-map) | [Docs](#documentation-sitemap)
 
