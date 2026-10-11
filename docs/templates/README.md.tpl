@@ -9,22 +9,9 @@
 <img src="docs/assets/logo.svg" alt="Tapewright-Quant Logo" width="100%" />
 
 <p align="center">
-  <img src="docs/assets/typing.svg" alt="Tapewright-Quant Typing Line" width="600" />
+  <strong>Institutional-Grade Quantitative Research & Microstructure Execution Engine</strong><br />
+  An open-source framework built on causal discrete events, empirical order-book queues, and cryptographic experiment provenance.
 </p>
-
-<p align="center">
-  <code>Strictly causal backtesting</code> &bull;
-  <code>Microstructure-aware execution</code> &bull;
-  <code>Leakage-resistant research</code> &bull;
-  <code>Cryptographically auditable experiments</code>
-</p>
-
-<p align="center">
-  <strong>Institutional-Grade Quantitative Research &amp; Microstructure Execution Engine</strong><br />
-  <em>Strictly causal discrete events, empirical order-book queues, and cryptographic experiment provenance.</em>
-</p>
-
-Tapewright-Quant (FinPulse-Apex) is an open-source quantitative research and execution engine engineered to eliminate vectorized lookahead bias, unpenalized overfitting, and uncalibrated fill friction through causal discrete events and cryptographic auditability.
 
 > ⚠️ **WARNING: Financial & Research Disclaimer**
 > Tapewright-Quant is an open-source quantitative research and educational platform. Simulated backtest performance—even under discrete-event simulation, purged cross-validation, and deflated Sharpe ratios—does not guarantee future live trading profitability. Real markets involve non-stationary regime shifts, microsecond latency competition, counterparty risk, and liquidity shocks.
