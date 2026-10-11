@@ -1,0 +1,26 @@
+# Canonical Line Ending Configuration for Cryptographic Test Suite Lock
+#
+# Generates reproducible byte-identical checkouts across Windows, Linux, and macOS
+# to guarantee verification of tests/TEST_LOCK.json without modifying locked files.
+
+# 1. Base locked suites: LF line endings
+tests/*.py text eol=lf
+tests/**/*.py text eol=lf
+scripts/*.py text eol=lf
+integrity/*.py text eol=lf
+integrity/**/*.py text eol=lf
+tests/SKIP_WHITELIST.txt text eol=lf
+
+# 2. Lock file: committed verbatim with CRLF; preserve raw repository blob bytes
+tests/TEST_LOCK.json -text
+
+# 3. Legacy test files locked with CRLF bytes in baseline TEST_LOCK.json
+tests/__init__.py text eol=crlf
+tests/backtest_tests/__init__.py text eol=crlf
+tests/integration/__init__.py text eol=crlf
+tests/integration/pipeline/__init__.py text eol=crlf
+tests/unit/__init__.py text eol=crlf
+tests/unit/data/__init__.py text eol=crlf
+tests/unit/features/__init__.py text eol=crlf
+tests/unit/models/__init__.py text eol=crlf
+tests/unit/test_dsr_units.py text eol=crlf
