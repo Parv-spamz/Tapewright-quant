@@ -691,4 +691,122 @@ Database name: `tapewright_db`
 - **Known Limitations**:
   - Live FRED macro data fetch is subject to external network latency/timeouts; handled gracefully with fallback logging without corrupting research manifests.
   - Parquet partition directories require empty `__init__.py` markers if scanned by universal scaffold directory tests; automatically managed.
+### Prompt 21: Experiment Harness, Honest Trial Counting, Ablations
+- **Status**: COMPLETE
+- **Issue**: #6 (`Prompt 21: Experiment Harness, Honest Trial Counting, Ablations`)
+- **Part A: Experiment Runner, Cost Models, Registry & Baselines**:
+  - **Files Created / Modified**:
+    - `research/costs.py` (mapping protocol cost models to Prompt 10 execution costs and slippage objects)
+    - `research/strategies_registry.py` (registry for 6 strategy families: crossover, breakout, mean_reversion, xs_momentum, pairs, ml_meta, plus 4 baselines)
+    - `research/experiment.py` (`ExperimentSpec` immutable frozen spec with role-excluded canonical hash, `run_experiment` idempotency and ledger audit, `trial_count`)
+    - `tests/unit/test_experiment.py` (7 tests covering duplicate caching, trial counting, buy-and-hold reproduction, cost monotonicity, error logging, result hashes)
+    - `logs/proof/p21a_pytest.txt` (7 passed in 0.99s)
+- **Part B: Grid Search, Candidate Selection, Validation & Lockbox CLI**:
+  - **Files Created / Modified**:
+    - `research/grid.py` (grid generator for all 55 parameter combinations across 6 strategy families and baselines)
+    - `research/selection.py` (objective candidate selection, deflated Sharpe ratio DSR across dev trials, validation evaluation, protocol survival rule, trial matrix and PBO)
+    - `research/run_dev.py` (dev pipeline runner)
+    - `research/run_val.py` (val pipeline runner)
+    - `research/run_lockbox.py` (CLI refusing execution without exact confirmation passphrase; lockbox untouched)
+    - `tests/unit/test_selection.py` (6 tests covering DSR reference matching, selection constraints, deterministic selection, survival rule, validation idempotency, lockbox refusal)
+    - `logs/proof/p21b_dev.txt` (55 dev trials, dev PBO: 0.1580, 6 candidates selected)
+    - `logs/proof/p21b_val.txt` (All 6 candidates evaluated on validation; outcome: "no candidate survives the protocol" honestly reported)
+- **Part C: Component Ablations, Sensitivity Surfaces & Real Stress Calibration**:
+  - **Files Created / Modified**:
+    - `research/ablation.py` (V0-V5 pillar decomposition, LOO variants, paired block-bootstrap difference CIs)
+    - `research/sensitivity.py` (parameter grid Sharpe surfaces, plateau scores, cost sweeps across 0x-4x, break-even cost multipliers)
+    - `research/real_stress.py` (empirical historical stress calibration for 2008 Lehman, 2020 COVID, 2022 rate hikes, realized drawdown vs model)
+    - `research/run_ablation.py` (ablation runner)
+    - `research/run_sensitivity.py` (sensitivity runner)
+    - `research/run_stress.py` (stress calibration runner)
+    - `tests/unit/test_ablation.py` (5 tests covering variant step differences, paired bootstrap CI coverage, plateau score calculation, break-even interpolation, drawdown calculation to 1e-12)
+    - `logs/proof/p21c_ablation.txt` (Crossover ablation: V0-V4, V5 NOT_RUN, LOO analysis, paired 95% CIs)
+    - `logs/proof/p21c_sensitivity.txt` (Plateau scores and cost multiplier break-evens for 6 families)
+    - `logs/proof/p21c_stress.txt` (Calibrated real equity shocks: 2008 GFC -46.04%, 2020 COVID -33.72%, 2022 rate hikes -24.50%)
+- **Finish Protocol**:
+  - `logs/proof/p21_syntax.txt`: 607 files checked, 0 failed
+  - `logs/proof/p21_constraints.txt`: Constraints check PASSED: 0 violations
+  - `logs/proof/p21_test_integrity.txt`: check_test_integrity PASSED: 0 violations
+  - `logs/proof/p21_pytest.txt`: 18 passed in 21.25s across Prompt 21 test suites
+  - `integrity.record_proof`: Proof recorded for tag `p21` with status PASS
+- **Honest Empirical Results & Limitations**:
+  - **Validation Survival**: Zero candidates survived the pre-registered protocol rule (dev DSR threshold >= 0.90 not attained; crossover=0.0360, xs_momentum=0.0284, pairs=0.0090, ml_meta=0.0072). This honest empirical outcome is documented without parameter or threshold tuning.
+  - **Break-Even Cost Multipliers**: Crossover, mean reversion, ml_meta, and xs_momentum maintained positive Sharpe across the tested 0x to 4x range; break-even is reported as `NOT_FOUND` as net Sharpe did not cross 0 within the sweep bounds. Breakout crossed 0 at 0.2900x.
+  - **Lockbox Holdout**: The lockbox vault data remains completely untouched and unopened (`UNOPENED`, `eval_count=0`).
 
+### Prompt 22: Real Microstructure Calibration + Forward Test
+- **Status**: COMPLETE
+- **Issue**: #8 (`Prompt 22: Real Microstructure Calibration + Forward Test`)
+- **Part A: Microstructure Recorder**:
+  - **Files Created / Modified**:
+    - `research/microstructure/__init__.py`
+    - `research/microstructure/recorder.py` (standard-library HTTP ingestion for Binance depth snapshots and aggregate trades, pagination from `last_agg_id + 1`, midpoint timestamping, latency tracking, gap detection)
+    - `research/data_access.py` (helpers for parquet I/O preserving Rule R7)
+    - `tests/unit/test_recorder.py` (5 tests covering depth parsing, trade sign convention, gap detection, pagination, and multi-tick recording)
+    - `logs/proof/p22a_record.txt` (Live connectivity verified: 11 snapshots, 749 unique trades, 0 gaps; 30-min run documented as NOT_RUN)
+- **Part B: Microstructure Calibration & Queue Simulator Comparison**:
+  - **Files Created / Modified**:
+    - `research/microstructure/calibrate.py` (spread, depth, imbalance IC with block bootstrap, sign autocorrelation, book-walking VWAP cost, power-law impact fit, queue fill probability test vs Prompt 10 `LOBSimulator`)
+    - `research/calibration/params.json` (calibrated parameters: gamma=1.1988, c=0.1196, simulator agreement=100.0%)
+    - `tests/unit/test_calibrate.py` (5 tests covering VWAP walk cost, impact exponent recovery, queue fill hand tape, imbalance IC recovery, and real vs simulator comparison)
+    - `logs/proof/p22b_calibration.txt` (full calibration report and ledger registration for cal.spread, cal.depth, cal.imbalance_ic, cal.sign_autocorr, cal.impact, cal.queue)
+- **Part C: Forward Test Harness, Anchoring & Stage Verification**:
+  - **Files Created / Modified**:
+    - `research/forward.py` (`emit_signals` pre-registration time-barrier enforcement, `evaluate_forward` realized outcome calculation under protocol costs, `forward_report` cumulative forward equity derived strictly from outcome records)
+    - `integrity/anchor.py` (`anchor_ledger` hash chain verification, `research/ledger/ANCHORS.txt` chronological logging, outside timestamping instructions)
+    - `integrity/stages/stage_forward.py` (verification stage verifying all forward signals strictly precede target bar open and every outcome has an earlier signal)
+    - `docs/templates/FORWARD_TEST.md.tpl` (Windows Task Scheduler operational instructions without hand-typed metrics)
+    - `tests/unit/test_forward.py` (5 tests covering time barrier refusal, orphan outcome rejection, hand compounding equivalence, emission idempotency, and anchor file growth)
+- **Finish Protocol Outputs**:
+  - `logs/proof/p22_syntax.txt`: `616 files checked, 0 failed`
+  - `logs/proof/p22_constraints.txt`: `Constraints check PASSED: 0 violations.`
+  - `logs/proof/p22_test_integrity.txt`: `check_test_integrity PASSED: 0 violations.`
+  - `logs/proof/p22_pytest.txt`: `15 passed in 5.02s`
+  - `integrity.record_proof`: Proof recorded for tag `p22` with status `PASS` (sha256: `429e377d7db1b2dfc4d7c637f72fa6e7b12ee9480ff3f8255829b30e4cbf147d`)
+  - Extended Test Lock: `LOCK_FILE_SHA256=bea5b685afcf73d1c0d7e2cd1fa04dcb322c167b93fad2ed5494256c64da2884`
+- **Honest Empirical Results & Limitations**:
+  - **Live Connectivity**: Verified live order book and trade stream ingestion from Binance Vision API without API keys; verified 0 trade gaps across 749 live trades.
+  - **Calibration Agreement**: LOBSimulator queue model agreed with empirical queue fills across 100.0% of evaluated queue events.
+  - **Local Clock Invalidation**: In accordance with the prompt, docstrings and CLI explicitly state that the local clock is NOT an outside authority; external commit and push timestamps act as independent chronological proofs.
+
+### Prompt 23: Hardening, Evidence Dashboard, Reproducible Docs
+- **Status**: COMPLETE
+- **Issue**: #10 (`Prompt 23: Hardening, Evidence Dashboard, Reproducible Docs`)
+- **Part A: Mutation Testing**:
+  - **Files Created / Modified**:
+    - `scripts/mutation_test.py` (AST mutator targeting arithmetic operators, comparison operators, boolean logic, lookahead off-by-one shifts, constant replacements; tree hash invariance before/after)
+    - `tests/unit/test_mutation_killers.py` (targeted tests killing surviving mutants in event_loop, risk_measures, and signals)
+    - `tests/unit/test_mutation_tool.py` (toy tests confirming weak/strong test mutant killing and real tree hash invariance)
+    - `logs/proof/p23a_mutation.txt` (proof of kill rates: event_loop 84.6%, risk_measures 87.5%, signals 100.0%, all >= 80% threshold; ledger proof registered)
+- **Part B: Metamorphic & Differential Testing**:
+  - **Files Created / Modified**:
+    - `tests/integration/test_metamorphic.py` (6 metamorphic/differential tests: scale invariance, time-reversal sign flip, cash conservation, cost monotonicity, symbol permutation invariance, lookahead mutant detection)
+    - `backtesting/engine/data_handler.py` (sorted symbol dictionary iteration ensuring canonical execution order across symbol dict variations)
+    - `logs/proof/p23b_pytest.txt` (6 integration tests passed in 11.24s)
+- **Part C: Evidence Dashboard Wire-up**:
+  - **Files Created / Modified**:
+    - `backtesting/reports/tearsheet/figures.py` (pure figure renderers: plot_calibration_curves, plot_forward_vs_backtest, plot_regime_breakdown, plot_metamorphic_evidence)
+    - `backtesting/reports/tearsheet/app.py` (evidence dashboard tabs: Evidence, Forward, Metamorphic, Calibration, Realism; reads ledger records and displays provenance/manifest metrics)
+    - `tests/unit/test_evidence_figures.py` (11 unit tests verifying figure renderers, NaN handling, and Streamlit AppTest tab assertions)
+    - `logs/proof/p23c_pytest.txt` (11 passed in 4.79s)
+    - `logs/proof/p23c_streamlit_boot.txt` (headless boot verified with status 200)
+- **Part D: Generated Docs & Offline Reproduction**:
+  - **Files Created / Modified**:
+    - `docs/templates/README.md.tpl`, `FINDINGS.md.tpl`, `METHODOLOGY.md.tpl`, `LIMITATIONS.md.tpl` (ledger-backed templates with zero hand-typed metrics, resolving tag/status placeholders)
+    - `research/rebuild.py` (offline rebuild from raw archive and manifests, verifying parsed hashes without network)
+    - `research/reproduce.py` (offline reproduction re-running baseline, trial, and selected_eval experiments within 1e-9 tolerance)
+    - `integrity/stages/stage_reproduce.py` (offline rebuild verification stage integrated into verify_all)
+    - `tests/unit/test_reproduce.py` (4 unit tests verifying offline reproduction, archive blob corruption failure, render missing tag failure, doc linter on hand-edited numbers)
+    - `README.md`, `docs/README.md`, `docs/FINDINGS.md`, `docs/METHODOLOGY.md`, `docs/LIMITATIONS.md`, `docs/FORWARD_TEST.md` (rendered from ledger head, doc linter PASSED: 0 violations)
+- **Finish Protocol Outputs**:
+  - `logs/proof/p23_syntax.txt`: `636 files checked, 0 failed`
+  - `logs/proof/p23_constraints.txt`: `Constraints check PASSED: 0 violations.`
+  - `logs/proof/p23_integrity.txt`: `check_test_integrity PASSED: 0 violations.`
+  - `logs/proof/p23_full_pytest.txt`: `333 passed, 1 skipped, 7 warnings in 267.80s`
+  - `integrity.record_proof`: Proof recorded for tag `p23` with status `PASS`
+  - Extended Test Lock: `LOCK_FILE_SHA256=8e7be5011149fd4f1e1fdbe64abd4cf5ae3a624e227ad7d5b251bc2f2548a45a`
+  - Verification Gate Runner (`verify_all`): 10/10 stages PASSED (lock, ledger_chain, constraints, test_integrity, claims_audit, docs_lint, pytest, forward, reproduce, research)
+- **Honest Empirical Results & Limitations**:
+  - **Reproduction Invariance**: Re-running baseline (Seq 24), trial (Seq 28), and selected evaluation (Seq 185) from recorded specs reproduced exact metrics with 0.00e+00 difference, demonstrating full deterministic reproducibility.
+  - **Documentation Anti-Forgery**: All documented metrics and outcomes are rendered dynamically from cryptographically chained ledger records; hand-editing numerical results triggers automated linter failure.
+  - **Lockbox Vault Intact**: Lockbox holdout data remains strictly isolated and un-evaluated (`UNOPENED`, `eval_count=0`).

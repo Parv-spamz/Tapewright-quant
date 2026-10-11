@@ -1,0 +1,18 @@
+﻿=== FINPULSE-APEX VALIDATION PIPELINE EXECUTION ===
+Active Protocol ID: f01f0813ddedf76eb97e5ab3cb35de473935bf31e6b093e508d5de066466d5ac
+
+--- Evaluating Selected Candidates on Validation Split ---
+2026-10-10 21:24:22,533 | WARNING | Portfolio | No valid market price recorded for ETHUSDT to size signal
+
+========================================================================================================================
+Family           | Spec Hash      | Val Sharpe | PSR (0)    | PSR (Base) | Dev DSR    | Survives  
+------------------------------------------------------------------------------------------------------------------------
+breakout         | 1bf3280eb6d1   | -0.9842    | 0.0159     | 0.0004     | 0.0000     | False     
+crossover        | 7481ca4a751e   | 0.3059     | 0.7505     | 0.2900     | 0.0360     | False     
+mean_reversion   | 66b3cd7a4245   | -0.4937    | 0.1427     | 0.0115     | 0.0000     | False     
+ml_meta          | 0c9acda7f682   | 0.4258     | 0.8268     | 0.3865     | 0.0072     | False     
+pairs            | de26ca9ebb35   | 0.4717     | 0.8526     | 0.4255     | 0.0090     | False     
+xs_momentum      | eacb11b494b2   | 0.8222     | 0.9652     | 0.7213     | 0.0284     | False     
+========================================================================================================================
+
+no candidate survives the protocol

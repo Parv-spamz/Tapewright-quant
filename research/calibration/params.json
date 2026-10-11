@@ -1,0 +1,22 @@
+{
+  "symbol": "BTCUSDT",
+  "calibrated_at_utc": "2026-10-10T17:22:48.088490+00:00",
+  "manifest_ids": [
+    "microstructure_btcusdt_20261010T170307Z"
+  ],
+  "c": 0.11955839940753438,
+  "gamma": 1.198823749471541,
+  "gamma_se": 0.14376398611371238,
+  "a": -5.319152394651172,
+  "r2": 0.48109857139475287,
+  "spread_median_ticks": 0.999999999476131,
+  "depth_top1_median": 14.139759999999999,
+  "depth_top5_median": 18.140359999999994,
+  "fill_rates": {
+    "independent": 0.0,
+    "simulator": 0.0
+  },
+  "simulator_agreement_rate": 1.0,
+  "disagreements_count": 0,
+  "policy": "Calibrated parameters are descriptive only; earlier backtest models remain unmodified."
+}

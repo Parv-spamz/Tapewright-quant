@@ -37,11 +37,26 @@ DARK_LAYOUT = {
 }
 
 
-def _apply_dark_theme(fig: go.Figure, title: str = "") -> go.Figure:
+def _apply_dark_theme(fig: go.Figure, title: str = "", provenance: str = "") -> go.Figure:
     """Applies unified dark theme styling to a Plotly figure."""
     fig.update_layout(**DARK_LAYOUT)
     if title:
         fig.update_layout(title={"text": title, "font": {"size": 14, "color": "#FFFFFF"}})
+    if provenance:
+        fig.add_annotation(
+            text=f"PROVENANCE: {provenance}",
+            xref="paper",
+            yref="paper",
+            x=1.0,
+            y=1.05,
+            xanchor="right",
+            yanchor="bottom",
+            showarrow=False,
+            font={"size": 10, "color": "#8F9CAE"},
+            bgcolor="rgba(30, 35, 47, 0.7)",
+            bordercolor="#3B4252",
+            borderwidth=1,
+        )
     return fig
 
 
@@ -576,3 +591,227 @@ def kpi_dict(tearsheet_or_result: dict[str, Any] | Any) -> dict[str, Any]:
         "Calmar Ratio": f"{cal:.2f}",
         "Win Rate": f"{win * 100.0:.1f}%" if win <= 1.0 else f"{win:.1f}%",
     }
+
+
+def not_run_figure(reason: str = "NOT_RUN", title: str = "", provenance: str = "") -> go.Figure:
+    """Generates an institutional placeholder figure displaying NOT_RUN status and reason."""
+    fig = go.Figure()
+    label = str(reason)
+    if "NOT_RUN" not in label:
+        label = f"NOT_RUN: {label}"
+    fig.add_annotation(
+        text=label,
+        xref="paper",
+        yref="paper",
+        x=0.5,
+        y=0.5,
+        showarrow=False,
+        font={"size": 16, "color": "#FFB300"},
+        bgcolor="rgba(30, 35, 47, 0.8)",
+        bordercolor="#FFB300",
+        borderwidth=1,
+    )
+    fig.update_layout(
+        xaxis={"visible": False},
+        yaxis={"visible": False},
+    )
+    return _apply_dark_theme(fig, title=title, provenance=provenance)
+
+
+def evidence_metric_figure(
+    data: Sequence[float] | pd.Series | dict[str, Any] | str,
+    title: str = "Evidence Metric Trajectory",
+    provenance: str = "",
+) -> go.Figure:
+    """Pure function generating metric trajectory figure. Handles NOT_RUN status."""
+    if isinstance(data, str) and ("NOT_RUN" in data or data == ""):
+        return not_run_figure(data or "NOT_RUN", title=title, provenance=provenance)
+    if isinstance(data, dict) and data.get("status") == "NOT_RUN":
+        return not_run_figure(data.get("reason", "NOT_RUN"), title=title, provenance=provenance)
+
+    # Pure copy to guarantee no mutation
+    if isinstance(data, pd.Series):
+        s_data = data.copy()
+        x_vals = list(s_data.index)
+        y_vals = list(s_data.values)
+    elif isinstance(data, dict):
+        x_vals = list(data.keys())
+        y_vals = list(data.values())
+    else:
+        y_vals = list(copy.deepcopy(data))
+        x_vals = list(range(len(y_vals)))
+
+    if len(y_vals) == 0:
+        return not_run_figure("NOT_RUN: empty dataset", title=title, provenance=provenance)
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=x_vals,
+            y=y_vals,
+            mode="lines+markers",
+            name="Metric Value",
+            line={"color": "#4C9AFF", "width": 2},
+            marker={"size": 6, "color": "#00D4B2"},
+        )
+    )
+    fig.update_layout(xaxis_title="Step / Observation", yaxis_title="Metric Value")
+    return _apply_dark_theme(fig, title=title, provenance=provenance)
+
+
+def validation_survives_figure(
+    val_records: list[dict[str, Any]] | str,
+    title: str = "Validation Survives Breakdown",
+    provenance: str = "",
+) -> go.Figure:
+    """Pure function plotting validation scores with survives flag indication."""
+    if isinstance(val_records, str) and ("NOT_RUN" in val_records or val_records == ""):
+        return not_run_figure(val_records or "NOT_RUN", title=title, provenance=provenance)
+    if not isinstance(val_records, list) or len(val_records) == 0:
+        return not_run_figure("NOT_RUN: no validation records", title=title, provenance=provenance)
+
+    records = copy.deepcopy(val_records)
+    names = [str(r.get("name", r.get("trial", f"Trial {i}"))) for i, r in enumerate(records)]
+    scores = [float(r.get("score", r.get("sharpe", r.get("metric", 0.0)))) for r in records]
+    survives = [bool(r.get("survives", False)) for r in records]
+    colors = ["#00D4B2" if s else "#FF5252" for s in survives]
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=names,
+            y=scores,
+            marker_color=colors,
+            name="Validation Score",
+        )
+    )
+    fig.update_layout(xaxis_title="Candidate Model / Trial", yaxis_title="Validation Performance Score")
+    return _apply_dark_theme(fig, title=title, provenance=provenance)
+
+
+def ablation_benefit_figure(
+    ablation_records: list[dict[str, Any]] | str,
+    title: str = "Ablation Benefit Analysis",
+    provenance: str = "",
+) -> go.Figure:
+    """Pure function displaying ablation deltas with 'no demonstrated benefit' flags."""
+    if isinstance(ablation_records, str) and ("NOT_RUN" in ablation_records or ablation_records == ""):
+        return not_run_figure(ablation_records or "NOT_RUN", title=title, provenance=provenance)
+    if not isinstance(ablation_records, list) or len(ablation_records) == 0:
+        return not_run_figure("NOT_RUN: no ablation records", title=title, provenance=provenance)
+
+    records = copy.deepcopy(ablation_records)
+    components = [str(r.get("component", r.get("variant", f"Var {i}"))) for i, r in enumerate(records)]
+    deltas = [float(r.get("delta", r.get("impact", 0.0))) for r in records]
+    has_benefit = [bool(r.get("demonstrated_benefit", r.get("delta", 0.0) > 0.0)) for r in records]
+    colors = ["#00D4B2" if b else "#FFB300" for b in has_benefit]
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=components,
+            y=deltas,
+            marker_color=colors,
+            name="Delta Over Baseline",
+        )
+    )
+    fig.update_layout(xaxis_title="Ablated Component / Feature", yaxis_title="Marginal Performance Delta")
+    return _apply_dark_theme(fig, title=title, provenance=provenance)
+
+
+def calibration_reliability_figure(
+    calibration_data: list[tuple[float, float]] | dict[str, Any] | pd.DataFrame | str,
+    title: str = "Calibration Reliability Diagram",
+    provenance: str = "",
+) -> go.Figure:
+    """Pure function generating calibration reliability curve comparing predicted vs empirical probabilities."""
+    if isinstance(calibration_data, str) and ("NOT_RUN" in calibration_data or calibration_data == ""):
+        return not_run_figure(calibration_data or "NOT_RUN", title=title, provenance=provenance)
+    if isinstance(calibration_data, dict) and calibration_data.get("status") == "NOT_RUN":
+        return not_run_figure(calibration_data.get("reason", "NOT_RUN"), title=title, provenance=provenance)
+
+    if isinstance(calibration_data, pd.DataFrame):
+        df_cal = calibration_data.copy()
+        pred_p = [float(v) for v in df_cal.iloc[:, 0].values]
+        obs_p = [float(v) for v in df_cal.iloc[:, 1].values]
+    elif isinstance(calibration_data, dict):
+        pred_p = [float(v) for v in calibration_data.get("predicted", [])]
+        obs_p = [float(v) for v in calibration_data.get("observed", [])]
+    else:
+        cal_list = copy.deepcopy(calibration_data)
+        if not cal_list:
+            return not_run_figure("NOT_RUN: empty calibration points", title=title, provenance=provenance)
+        pred_p = [float(pt[0]) for pt in cal_list]
+        obs_p = [float(pt[1]) for pt in cal_list]
+
+    if len(pred_p) == 0:
+        return not_run_figure("NOT_RUN: no calibration data", title=title, provenance=provenance)
+
+    fig = go.Figure()
+    # Perfectly calibrated 45-degree reference line
+    fig.add_trace(
+        go.Scatter(
+            x=[0.0, 1.0],
+            y=[0.0, 1.0],
+            mode="lines",
+            name="Ideal Calibration",
+            line={"dash": "dash", "color": "#8F9CAE", "width": 1},
+        )
+    )
+    # Empirical calibration points
+    fig.add_trace(
+        go.Scatter(
+            x=pred_p,
+            y=obs_p,
+            mode="lines+markers",
+            name="Observed Frequency",
+            line={"color": "#4C9AFF", "width": 2},
+            marker={"size": 6, "color": "#00D4B2"},
+        )
+    )
+    fig.update_layout(
+        xaxis={"title": "Mean Predicted Probability", "range": [0.0, 1.0]},
+        yaxis={"title": "Empirical Frequency", "range": [0.0, 1.0]},
+    )
+    return _apply_dark_theme(fig, title=title, provenance=provenance)
+
+
+def forward_test_figure(
+    forward_data: pd.Series | Sequence[float] | dict[str, Any] | str,
+    title: str = "Forward Paper Test Trajectory",
+    provenance: str = "",
+) -> go.Figure:
+    """Pure function generating forward paper test trajectory. Handles NOT_RUN status."""
+    if isinstance(forward_data, str) and ("NOT_RUN" in forward_data or forward_data == ""):
+        return not_run_figure(forward_data or "NOT_RUN", title=title, provenance=provenance)
+    if isinstance(forward_data, dict) and forward_data.get("status") == "NOT_RUN":
+        return not_run_figure(forward_data.get("reason", "NOT_RUN"), title=title, provenance=provenance)
+
+    if isinstance(forward_data, pd.Series):
+        s_data = forward_data.copy()
+        x_vals = list(s_data.index)
+        y_vals = list(s_data.values)
+    elif isinstance(forward_data, dict):
+        x_vals = list(forward_data.keys())
+        y_vals = list(forward_data.values())
+    else:
+        y_vals = list(copy.deepcopy(forward_data))
+        x_vals = list(range(len(y_vals)))
+
+    if len(y_vals) == 0:
+        return not_run_figure("NOT_RUN: no forward testing points logged", title=title, provenance=provenance)
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=x_vals,
+            y=y_vals,
+            mode="lines+markers",
+            name="Forward Paper Cumulative PnL",
+            line={"color": "#00D4B2", "width": 2},
+            marker={"size": 5, "color": "#00D4B2"},
+        )
+    )
+    fig.update_layout(xaxis_title="Forward Observation Period", yaxis_title="Paper Performance")
+    return _apply_dark_theme(fig, title=title, provenance=provenance)
+
