@@ -351,11 +351,13 @@ python -m research.reproduce
 
 ## Documentation Sitemap
 
-- [FINDINGS.md](docs/FINDINGS.md): Comprehensive empirical findings, validation survival, component ablations, stress test calibrations, and Binance L2 metrics.
-- [METHODOLOGY.md](docs/METHODOLOGY.md): Mathematical derivations, causal gating, purged cross-validation, and execution mechanics.
-- [LIMITATIONS.md](docs/LIMITATIONS.md): Transparent record of known protocol biases, dataset limits, and unmeasured assumptions.
-- [FORWARD_TEST.md](docs/FORWARD_TEST.md): Operational instructions for Windows Task Scheduler paper forward testing.
-- [TAPEWRIGHT_QUANT_MASTER_SPECIFICATION.md](TAPEWRIGHT_QUANT_MASTER_SPECIFICATION.md): Master architectural specification and mathematical foundations dossier.
+- [PROJECT_SPEC.md](PROJECT_SPEC.md): Authoritative architectural specifications and technical constraints.
+- [SYSTEM_STATUS.md](SYSTEM_STATUS.md): Production verification audit and component implementation status.
+- [CONTRIBUTING.md](CONTRIBUTING.md): Contributor workflow, testing gates, and research integrity guidelines.
+- [docs/METHODOLOGY.md](docs/METHODOLOGY.md): Mathematical derivations, causal gating, purged cross-validation, and execution mechanics.
+- [docs/FINDINGS.md](docs/FINDINGS.md): Comprehensive empirical findings, validation survival, component ablations, stress test calibrations, and Binance L2 metrics.
+- [docs/LIMITATIONS.md](docs/LIMITATIONS.md): Transparent record of known protocol biases, dataset limits, and unmeasured assumptions.
+- [docs/FORWARD_TEST.md](docs/FORWARD_TEST.md): Operational instructions for Windows Task Scheduler paper forward testing.
 
 ---
 
