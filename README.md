@@ -34,21 +34,15 @@ Tapewright-Quant (FinPulse-Apex) is an open-source quantitative research and exe
   <a href="research/vault/"><img src="https://img.shields.io/badge/Holdout%20Vault-SEALED%20(UNOPENED)-7C3AED?style=flat-square" alt="Sealed Vault" /></a>
 </p>
 
-[Overview](#overview) | [Architecture](#system-architecture) | [The 5 Pillars](#the-5-pillars) | [Event Lifecycle](#event-lifecycle) | [Trust Layer](#research-integrity--trust-layer) | [Verification](#verification--hardening-metrics) | [Empirical Findings](#empirical-findings) | [Disclosures](#disclosures--boundaries) | [Quick Start](#quick-start) | [Docs](#documentation-sitemap)
+[Overview](#overview) | [Architecture](#system-architecture) | [The 5 Pillars](#the-5-pillars) | [Event Lifecycle](#event-lifecycle) | [Trust Layer](#research-integrity--trust-layer) | [Verification](#verification--hardening-metrics) | [Empirical Findings](#empirical-findings) | [Repo Map](#repository-map) | [Docs](#documentation-sitemap)
 
 </div>
 
 ## Overview
 
-Tapewright-Quant unites discrete-event simulation, empirical Level-2 limit order book queues, Marcos López de Prado financial econometrics, and a tamper-evident SHA-256 cryptographic audit ledger.
-
-The engine eliminates lookahead bias by freezing state at bar $t$ close and deferring order fills to bar $t+1$ open under simulated adverse selection and queue priority tracking.
-
-All experimental parameters, trial counts, and out-of-sample data partitions are cryptographically anchored to prevent multi-testing selection bias.
+Tapewright-Quant unites discrete-event simulation, empirical Level-2 order book queues, Marcos López de Prado econometrics, and an append-only SHA-256 audit ledger.
 
 ## System Architecture
-
-The platform separates high-throughput time-series arrays in columnar Parquet partitions from transactional relational state in MySQL 8.0+ or zero-config SQLite. All workflows pass through a 10-stage cryptographic integrity gate.
 
 <details>
 <summary><b>🔍 View Full System Architecture Diagrams</b></summary>
@@ -96,34 +90,15 @@ graph LR
 
 ## The 5 Pillars
 
-### 1. Market Microstructure Realism
-
-* **Module:** `backtesting/execution/`
-* **Implementation:** Synthesizes 5-tier Level-2 limit order books with Poisson order arrival and cancellation queues. Tracks queue position priority (`ahead_qty`) and penalizes execution fills with adverse selection (VPIN) and calibrated Kyle's Lambda square-root price impact.
-
-### 2. Marcos López de Prado Econometrics
-
-* **Module:** `features/econometric/`
-* **Implementation:** Applies Fractional Differentiation (FFD) to preserve stationarity while retaining over 90% memory correlation. Generates dynamic Triple-Barrier return labels and eliminates lookahead leakage through Purged and Combinatorially Embargoed Cross-Validation (`PurgedKFold`).
-
-### 3. Predictive Causal Graph Discovery
-
-* **Module:** `signals/filtering/`
-* **Implementation:** Evaluates bivariate Vector Autoregressive (VAR) Granger causality and non-parametric Transfer Entropy permutation null distributions to prune spurious correlations before training. Controls multi-comparison family-wise error rates using the Benjamini-Hochberg False Discovery Rate ($q \le 0.05$).
-
-### 4. Dynamic Risk Budgeting & Optimization
-
-* **Module:** `backtesting/portfolio/`
-* **Implementation:** Allocates capital via Hierarchical Risk Parity (HRP) dendrogram clustering and Equal Risk Contribution (ERC) with Ledoit-Wolf analytical covariance shrinkage. Computes continuous Half-Kelly sizing fractions constrained by GARCH conditional volatility and 99% Expected Shortfall (CVaR).
-
-### 5. Macro Crisis Replay & Tearsheets
-
-* **Module:** `research/real_stress.py`
-* **Implementation:** Replays calibrated macroeconomic shocks including the 2008 Lehman collapse, 2020 COVID liquidity crunch, and 2022 rate hikes. Solves for minimum break-even asset shocks via Newton-Raphson reverse stress testing and renders interactive Plotly tearsheets.
+| Pillar | Module Path |
+| :--- | :--- |
+| **Market Microstructure Realism** | [`backtesting/execution/`](backtesting/execution/) |
+| **Marcos López de Prado Econometrics** | [`features/econometric/`](features/econometric/) |
+| **Predictive Causal Graph Discovery** | [`signals/filtering/`](signals/filtering/) |
+| **Dynamic Risk Budgeting & Optimization** | [`backtesting/portfolio/`](backtesting/portfolio/) |
+| **Macro Crisis Replay & Tearsheets** | [`research/real_stress.py`](research/real_stress.py) |
 
 ## Event Lifecycle
-
-The execution loop guarantees strict temporal causality: an order emitted from bar $t$ close is processed at bar $t+1$ open with queue priority and price impact.
 
 ```mermaid
 sequenceDiagram
@@ -147,10 +122,6 @@ sequenceDiagram
 ```
 
 ## Research Integrity & Trust Layer
-
-Tapewright-Quant implements an append-only, SHA-256 cryptographic audit ledger (`research/ledger/ledger.jsonl`) that records every raw dataset hash, experimental specification, parameter trial, calibration metric, and forward paper test signal.
-
-Each block computes an `entry_hash = SHA256(prev_hash + payload)` establishing a continuous hash chain that prevents retroactive parameter tweaking, trial count concealment, or arbitrary benchmark shifting.
 
 ```
  [Raw Content-Addressed Archive] ──► SHA-256 Dataset Manifest
@@ -208,77 +179,6 @@ Each block computes an `entry_hash = SHA256(prev_hash + payload)` establishing a
 | **ML Meta** | 0.4913 | 6.19% | -39.48% | 0.4258 | 0.8268 | 0.0072 | **False** |
 | **Pairs Arbitrage** | 0.5197 | 6.04% | -36.84% | 0.4717 | 0.8526 | 0.0090 | **False** |
 | **Cross-Sectional Momentum** | 0.6226 | 8.33% | -31.90% | 0.8222 | 0.9652 | 0.0284 | **False** |
-
-### Research Conclusions
-
-* **Zero Candidates Survived:** No candidate strategy passed the pre-registered criteria requiring Dev DSR $\ge 0.90$, Val Net Sharpe $> 0.0$, and Val PSR $\ge 0.90$.
-* **Trial Penalty Impact:** Although Cross-Sectional Momentum achieved positive out-of-sample returns, evaluating 55 parameter trials depressed its Deflated Sharpe Ratio below threshold.
-* **Holdout Vault Preservation:** Because zero models met the pre-registered validation gates, the final research vault (`research/vault/`) remains sealed and unopened (`eval_count=0`).
-
-## Disclosures & Boundaries
-
-* **Cryptographic Integrity vs Economic Validity:** The SHA-256 ledger guarantees provenance and trial counts, but does not prove trading profitability or market stationarity.
-* **Synthetic Order Book Mechanics:** The execution engine constructs 5 visible price tiers using Poisson arrival dynamics calibrated to empirical Binance L2 data rather than raw exchange packet replay.
-* **Zero Lookahead Verification:** Causality is enforced by bar $t$ state freezing, $t+1$ open execution, and continuous slice invariance tests yielding 0.0 deviation.
-* **1 Hz Snapshot Resolution:** Public REST depth snapshots record at 1 Hz intervals, meaning sub-second cancellation bursts and latency routing advantages are unobservable.
-* **ETF Survivor Bias:** The 12-asset ETF universe was chosen using historical longevity and liquidity, omitting funds that delisted or merged during 2005–2024.
-* **Macro Stress Assumptions:** Historical drawdown shocks apply calibrated asset path declines, but secondary counterparty liquidations and margin call cascades remain simulated.
-* **Dual Database Modes:** Production operates with MySQL 8.0 connection pools, while offline environments utilize zero-config SQLite with live connections cleanly bypassed.
-
-## Quick Start
-
-### 1. Clone & Environment Setup
-
-```powershell
-# Clone the repository
-git clone https://github.com/Parv-spamz/Tapewright-quant.git
-cd Tapewright-quant
-
-# Create and activate virtual environment
-python -m venv .venv
-.venv\Scripts\Activate.ps1    # On Windows PowerShell
-# source .venv/bin/activate   # On Linux/macOS
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Verify Constraints & Code Integrity
-
-```powershell
-# Verify syntax, architectural constraints, and test integrity
-python scripts/check_syntax.py
-python scripts/check_constraints.py
-python scripts/check_test_integrity.py
-```
-
-### 3. Run the End-to-End Platform Demo
-
-```powershell
-python -m pipelines.run_demo
-```
-
-### 4. Launch the Interactive Tearsheet Dashboard
-
-```powershell
-streamlit run backtesting/reports/tearsheet/app.py
-```
-
-### 5. Run the Full Test Suite & Verification Gate
-
-```powershell
-# Complete test suite
-pytest -v
-
-# 10-stage cryptographic verification gate
-python -m integrity.verify_all --lock-sha 8e7be5011149fd4f1e1fdbe64abd4cf5ae3a624e227ad7d5b251bc2f2548a45a
-```
-
-### 6. Deterministic Offline Reproduction
-
-```powershell
-python -m research.reproduce
-```
 
 ## Repository Map
 
