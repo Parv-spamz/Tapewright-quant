@@ -32,19 +32,7 @@ Tapewright-Quant (FinPulse-Apex) is an open-source quantitative research and exe
   <a href="research/vault/"><img src="https://img.shields.io/badge/Holdout%20Vault-SEALED%20(UNOPENED)-7C3AED?style=flat-square" alt="Sealed Vault" /></a>
 </p>
 
-<p align="center">
-  <a href="#overview">Overview</a> &bull;
-  <a href="#system-architecture">Architecture</a> &bull;
-  <a href="#the-5-pillars">The 5 Pillars</a> &bull;
-  <a href="#event-lifecycle">Event Lifecycle</a> &bull;
-  <a href="#research-integrity--trust-layer">Trust Layer</a> &bull;
-  <a href="#verification--hardening-metrics">Verification</a> &bull;
-  <a href="#empirical-findings">Empirical Findings</a> &bull;
-  <a href="#disclosures--boundaries">Disclosures</a> &bull;
-  <a href="#quick-start">Quick Start</a> &bull;
-  <a href="#repository-map">Repo Map</a> &bull;
-  <a href="#documentation-sitemap">Docs</a>
-</p>
+[Overview](#overview) | [Architecture](#system-architecture) | [The 5 Pillars](#the-5-pillars) | [Event Lifecycle](#event-lifecycle) | [Trust Layer](#research-integrity--trust-layer) | [Verification](#verification--hardening-metrics) | [Empirical Findings](#empirical-findings) | [Disclosures](#disclosures--boundaries) | [Quick Start](#quick-start) | [Docs](#documentation-sitemap)
 
 </div>
 
@@ -63,13 +51,8 @@ The platform separates high-throughput time-series arrays in columnar Parquet pa
 <details>
 <summary><b>🔍 View Full System Architecture Diagrams</b></summary>
 
-```
-   Market Feeds ──► Causal Graph ──► Discrete Event Loop ──► L2 Queue Matching ──► Cryptographic Ledger
-   (Equities/L2)     (Transfer H)     (Tick -> Fill t+1)     (Kyle's Lambda)       (Tamper-Evident)
-```
-
 ```mermaid
-graph TD
+graph LR
     classDef storage fill:#0b1329,stroke:#0ea5e9,stroke-width:1px,color:#e2e8f0;
     classDef process fill:#0b1d1e,stroke:#00e5bf,stroke-width:1px,color:#e2e8f0;
     classDef gate fill:#20160b,stroke:#f59e0b,stroke-width:1px,color:#e2e8f0;
