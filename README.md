@@ -2,7 +2,7 @@
 <!-- GENERATED:BEGIN -->
 <div align="center">
 
-<img src="docs/assets/logo.svg" alt="Tapewright-Quant Logo" width="100%" />
+<img src="docs/assets/banner.png" alt="Tapewright-Quant Banner" width="100%" />
 
 # Tapewright-Quant
 
