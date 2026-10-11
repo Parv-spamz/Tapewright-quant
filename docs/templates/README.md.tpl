@@ -7,6 +7,13 @@
 </p>
 
 <p align="center">
+  <code>Strictly causal backtesting</code> &bull;
+  <code>Microstructure-aware execution</code> &bull;
+  <code>Leakage-resistant research</code> &bull;
+  <code>Cryptographically auditable experiments</code>
+</p>
+
+<p align="center">
   <strong>Institutional-Grade Quantitative Research &amp; Microstructure Execution Engine</strong><br />
   <em>Strictly causal discrete events, empirical order-book queues, and cryptographic experiment provenance.</em>
 </p>
@@ -26,6 +33,7 @@
   <a href="#event-lifecycle--temporal-causality">Event Lifecycle</a> &bull;
   <a href="#research-integrity--the-trust-layer">Trust Layer</a> &bull;
   <a href="#empirical-findings--honest-validation-survival">Empirical Findings</a> &bull;
+  <a href="#disclosures--operational-boundaries">Disclosures &amp; Boundaries</a> &bull;
   <a href="#quick-start--setup">Quick Start</a> &bull;
   <a href="#documentation-sitemap">Docs</a>
 </p>
@@ -211,6 +219,30 @@ While Cross-Sectional Momentum achieved positive out-of-sample performance (Val 
 - **Anti-Overfitting Discipline**: Multiple testing inflation is real. Positive historical returns are easy to find by luck, but true statistically significant alpha requires accounting for trial selection bias.
 - **Protocol Integrity**: Rather than retroactively lowering thresholds to claim success, the engine transparently reports the empirical outcome.
 - **Sealed Lockbox Vault**: The true out-of-sample partition (`research/vault/`) remains completely **UNOPENED (`eval_count=0`)**, reserved for a future single-use evaluation.
+
+---
+
+## Disclosures & Operational Boundaries
+
+In adherence to institutional research standards, this section discloses the key structural limitations, operational boundaries, and verification controls governing the platform:
+
+1. **Cryptographic Integrity vs. Economic Validity**:
+   The SHA-256 ledger guarantees data provenance, freezes experimental specifications, and audits parameter trial counts. It does *not* prove that an underlying model is profitable, that a dataset is free from economic biases, or that market regimes will remain stationary in live execution.
+2. **Synthetic vs. Physical Level-2 Order Book**:
+   The execution engine's Level-2 order book simulator constructs 5 visible price tiers using Poisson arrival and cancellation dynamics calibrated against empirical Binance L2 data. It is a mathematical execution model rather than a physical nanosecond packet replay of raw exchange ITCH feeds.
+3. **Zero Lookahead Controls & Verification**:
+   Strict causality is not treated as an unverified assumption. It is continuously audited through:
+   - Discrete-event state freezing at bar $t$ close and execution deferral to bar $t+1$ open.
+   - Slice invariance tests (`tests/integration/test_zero_lookahead.py`) verifying that evaluating $N=300$ vs $N=400$ bars produces $0.000000000$ deviation on historical signals.
+   - Metamorphic mutant detection tests catching intentional lookahead off-by-one shifts with $> 1300$ standard deviation divergences.
+4. **1 Hz Polling Snapshot Resolution**:
+   The empirical Binance Level-2 depth recorder captures snapshots and aggregate trade streams at 1 Hz intervals via public REST endpoints. Sub-second queue cancellation micro-bursts and latency routing advantages are unobservable at this polling frequency.
+5. **Liquid ETF Universe Survivor Bias**:
+   The historical ETF dataset (SPY, QQQ, IWM, EFA, TLT, IEF, GLD, XLE, XLF, XLK, XLV, XLY) was selected using present-day knowledge of longevity and liquidity, excluding ETFs that liquidated or merged during 2005–2024.
+6. **Macro Crisis Scenario Assumptions**:
+   Macro stress test scenarios (2008 Lehman GFC -46.04%, 2020 COVID -33.72%, 2022 Rate Hikes -24.50%) apply calibrated historical equity and treasury drawdowns. Secondary market conditions (broker margin call cascades, repo freezes, counterparty failures) remain simulated scenario assumptions rather than observed portfolio execution fills.
+7. **Live MySQL vs. Offline SQLite Mode**:
+   Production deployment supports MySQL 8.0+ connection pooling with transactional ACID guarantees. In offline developer environments without an active external MySQL instance, the SQLite dual-engine manager is used and the live MySQL connection test is cleanly skipped under `tests/SKIP_WHITELIST.txt`.
 
 ---
 
