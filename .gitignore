@@ -16,3 +16,26 @@ research/raw_archive/
 research/store_devval/
 research/vault/
 research/results/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE / Editor metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing & Type checking caches
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
