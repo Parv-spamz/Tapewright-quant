@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 140" width="100%" height="140" fill="none">
+  <defs>
+    <linearGradient id="markGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00E5BF"/>
+      <stop offset="50%" stop-color="#0EA5E9"/>
+      <stop offset="100%" stop-color="#6366F1"/>
+    </linearGradient>
+    <linearGradient id="barGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00E5BF" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0EA5E9" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="barGrad2" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#F43F5E" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#FB7185" stop-opacity="0.2"/>
+    </linearGradient>
+    <style>
+      .title-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif; font-weight: 800; font-size: 38px; letter-spacing: 3px; }
+      .sub-text { font-family: 'SF Mono', 'Fira Code', 'Roboto Mono', Consolas, monospace; font-size: 13px; letter-spacing: 2.5px; }
+      .badge-text { font-family: 'SF Mono', 'Fira Code', 'Roboto Mono', Consolas, monospace; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; }
+      @media (prefers-color-scheme: light) {
+        .text-primary { fill: #0F172A; }
+        .text-secondary { fill: #475569; }
+        .grid-line { stroke: #E2E8F0; }
+        .panel-bg { fill: #F8FAFC; stroke: #E2E8F0; }
+      }
+      @media (prefers-color-scheme: dark) {
+        .text-primary { fill: #F8FAFC; }
+        .text-secondary { fill: #94A3B8; }
+        .grid-line { stroke: #1E293B; }
+        .panel-bg { fill: #0B0F19; stroke: #1E293B; }
+      }
+      /* Fallback for environments without prefers-color-scheme in SVG */
+      .text-primary { fill: #E2E8F0; }
+      .text-secondary { fill: #94A3B8; }
+      .grid-line { stroke: #1E293B; stroke-opacity: 0.6; }
+      .panel-bg { fill: #090D16; stroke: #1E293B; }
+    </style>
+  </defs>
+
+  <!-- Background Panel (Dark Mode Optimized, Translucent) -->
+  <rect x="2" y="2" width="876" height="136" rx="12" class="panel-bg" stroke-width="1.5"/>
+
+  <!-- Subtle Grid Lines -->
+  <line x1="20" y1="35" x2="150" y2="35" class="grid-line" stroke-dasharray="2 4"/>
+  <line x1="20" y1="70" x2="150" y2="70" class="grid-line" stroke-dasharray="2 4"/>
+  <line x1="20" y1="105" x2="150" y2="105" class="grid-line" stroke-dasharray="2 4"/>
+  <line x1="45" y1="15" x2="45" y2="125" class="grid-line" stroke-dasharray="2 4"/>
+  <line x1="85" y1="15" x2="85" y2="125" class="grid-line" stroke-dasharray="2 4"/>
+  <line x1="125" y1="15" x2="125" y2="125" class="grid-line" stroke-dasharray="2 4"/>
+
+  <!-- Geometric L2 Order Book / Discrete Event Mark -->
+  <g transform="translate(30, 20)">
+    <!-- Asks / Bids Microstructure Bars -->
+    <rect x="10" y="22" width="28" height="6" rx="2" fill="url(#barGrad1)"/>
+    <rect x="4" y="32" width="34" height="6" rx="2" fill="url(#barGrad1)"/>
+    <rect x="0" y="42" width="38" height="6" rx="2" fill="url(#barGrad1)"/>
+    
+    <rect x="62" y="42" width="38" height="6" rx="2" fill="url(#barGrad2)"/>
+    <rect x="62" y="52" width="32" height="6" rx="2" fill="url(#barGrad2)"/>
+    <rect x="62" y="62" width="26" height="6" rx="2" fill="url(#barGrad2)"/>
+
+    <!-- Central Midprice Spread Gap Indicator -->
+    <line x1="50" y1="15" x2="50" y2="85" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
+
+    <!-- Dynamic Causal Signal Vector (The Apex Chevron) -->
+    <path d="M 22 75 L 50 25 L 78 75 Z" stroke="url(#markGrad)" stroke-width="3" fill="url(#markGrad)" fill-opacity="0.12" stroke-linejoin="round"/>
+    <circle cx="50" cy="25" r="4" fill="#00E5BF"/>
+    <circle cx="22" cy="75" r="3" fill="#0EA5E9"/>
+    <circle cx="78" cy="75" r="3" fill="#6366F1"/>
+
+    <!-- Discrete Event Pulse Nodes -->
+    <path d="M 12 88 L 32 88 L 44 68 L 56 102 L 68 88 L 88 88" stroke="#00E5BF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="44" cy="68" r="2.5" fill="#00E5BF"/>
+    <circle cx="56" cy="102" r="2.5" fill="#38BDF8"/>
+  </g>
+
+  <!-- Typography Lockup -->
+  <!-- Main Title -->
+  <text x="160" y="58" class="title-text text-primary">TAPEWRIGHT<tspan fill="#00E5BF">-QUANT</tspan></text>
+  
+  <!-- Subtitle -->
+  <text x="162" y="88" class="sub-text text-secondary">CAUSAL DISCRETE-EVENT ENGINE &amp; MICROSTRUCTURE RESEARCH PLATFORM</text>
+
+  <!-- Research Badge & Provenance Hash Pill -->
+  <g transform="translate(162, 102)">
+    <rect x="0" y="0" width="128" height="20" rx="4" fill="#0369A1" fill-opacity="0.25" stroke="#0284C7" stroke-width="1"/>
+    <text x="64" y="14" class="badge-text" fill="#38BDF8" text-anchor="middle">FINPULSE-APEX</text>
+
+    <rect x="136" y="0" width="146" height="20" rx="4" fill="#065F46" fill-opacity="0.25" stroke="#059669" stroke-width="1"/>
+    <text x="209" y="14" class="badge-text" fill="#34D399" text-anchor="middle">ZERO-LOOKAHEAD</text>
+
+    <rect x="290" y="0" width="168" height="20" rx="4" fill="#4338CA" fill-opacity="0.25" stroke="#6366F1" stroke-width="1"/>
+    <text x="374" y="14" class="badge-text" fill="#A5B4FC" text-anchor="middle">SHA-256 PROVENANCE</text>
+  </g>
+</svg>

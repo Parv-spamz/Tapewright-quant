@@ -1,0 +1,1 @@
+"""Documentation visual assets package."""
