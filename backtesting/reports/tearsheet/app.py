@@ -12,6 +12,7 @@ import io
 from pathlib import Path
 from typing import Any
 
+import importlib
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -31,6 +32,8 @@ from backtesting.metrics.risk_measures import (
     probabilistic_sharpe_ratio,
     summary,
 )
+from backtesting.reports.tearsheet import figures
+importlib.reload(figures)
 from backtesting.reports.tearsheet.figures import (
     ablation_benefit_figure,
     calibration_reliability_figure,
@@ -209,8 +212,42 @@ def main() -> None:
             font-variant-numeric: tabular-nums !important;
         }
 
-        /* Hide native Streamlit header & toolbar */
+        /* Fix 1: Transparent non-blocking header and styled collapsed control */
         header[data-testid="stHeader"] {
+            background: transparent !important;
+            height: 0px !important;
+            pointer-events: none !important;
+        }
+
+        [data-testid="stToolbar"] {
+            display: none !important;
+        }
+
+        /* Permanently lock the sidebar docked open */
+        section[data-testid="stSidebar"],
+        [data-testid="stSidebar"],
+        [data-testid="stSidebar"] > div:first-child {
+            margin-left: 0px !important;
+            transform: none !important;
+            display: block !important;
+            visibility: visible !important;
+            width: 280px !important;
+            min-width: 280px !important;
+            max-width: 280px !important;
+            background-color: #0B0E14 !important;
+            border-right: 1px solid #1E2433 !important;
+            overflow-y: hidden !important;
+            max-height: 100vh !important;
+        }
+
+        /* Hide the collapse chevron inside the sidebar */
+        [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
+        [data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"] {
+            display: none !important;
+        }
+
+        /* Hide collapsedControl since sidebar is permanently open */
+        [data-testid="collapsedControl"] {
             display: none !important;
         }
 
@@ -223,34 +260,46 @@ def main() -> None:
             max-width: 100% !important;
         }
 
-        /* Non-scrolling, viewport-locked sidebar */
-        [data-testid="stSidebar"] {
-            background-color: #0E1117 !important;
-            border-right: 1px solid #1E2433 !important;
-            overflow-y: hidden !important;
-            max-height: 100vh !important;
-        }
-
         [data-testid="stSidebarContent"] {
             overflow-y: hidden !important;
-            padding: 0.75rem 0.65rem !important;
+            padding: 0.65rem 0.55rem !important;
         }
 
         [data-testid="stSidebarContent"] .stVerticalBlock {
-            gap: 0.35rem !important;
+            gap: 0.25rem !important;
         }
 
-        /* Sidebar Section Titles */
-        .sidebar-sec-title {
-            font-size: 10px !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.08em !important;
-            text-transform: uppercase !important;
-            color: #64748B !important;
-            margin-top: 0.4rem !important;
-            margin-bottom: 0.15rem !important;
-            border-bottom: 1px solid #1E2433 !important;
-            padding-bottom: 2px !important;
+        /* Dedicated Sidebar Rack Brand Header */
+        .sidebar-rack-header {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            color: #94A3B8;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-bottom: 1px solid #1E2433;
+            padding-bottom: 5px;
+            margin-bottom: 6px;
+        }
+
+        /* Distinct Group Containers (Card/Rack Sections) */
+        .sidebar-rack-group {
+            background: #11151F;
+            border: 1px solid #1A202E;
+            border-radius: 4px;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+        }
+
+        .sidebar-group-title {
+            border-left: 2px solid #3B82F6;
+            padding-left: 5px;
+            color: #E2E8F0;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+            text-transform: uppercase;
         }
 
         /* Compact form input labels */
@@ -264,12 +313,20 @@ def main() -> None:
             margin-bottom: 1px !important;
         }
 
+        /* Hide stepper buttons on number inputs for clean terminal look */
+        button.step-up, button.step-down,
+        [data-testid="stNumberInputStepUp"],
+        [data-testid="stNumberInputStepDown"],
+        [data-testid="stNumberInput"] button {
+            display: none !important;
+        }
+
         /* Compact form input fields */
         [data-testid="stSidebar"] input,
         [data-testid="stSidebar"] select,
         [data-testid="stSidebar"] div[data-baseweb="select"] > div {
-            background-color: #12161F !important;
-            border: 1px solid #1E2433 !important;
+            background-color: #090B10 !important;
+            border: 1px solid #262F40 !important;
             border-radius: 3px !important;
             color: #F1F5F9 !important;
             font-family: 'JetBrains Mono', monospace !important;
@@ -304,23 +361,23 @@ def main() -> None:
             border-color: #3B82F6 !important;
         }
 
-        /* Primary action button */
-        button[kind="primary"] {
-            background: #1D4ED8 !important;
+        /* Sleek institutional action trigger button */
+        [data-testid="stSidebar"] button[kind="primary"] {
+            background: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%) !important;
             border: 1px solid #3B82F6 !important;
-            color: #F8FAFC !important;
-            border-radius: 3px !important;
+            color: #FFFFFF !important;
             font-family: 'JetBrains Mono', monospace !important;
             font-size: 11px !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.06em !important;
-            padding: 5px 10px !important;
-            margin-top: 4px !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.08em !important;
             height: 32px !important;
+            border-radius: 3px !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+            margin-top: 4px !important;
         }
 
-        button[kind="primary"]:hover {
-            background: #2563EB !important;
+        [data-testid="stSidebar"] button[kind="primary"]:hover {
+            background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%) !important;
             border-color: #60A5FA !important;
         }
 
@@ -549,12 +606,15 @@ def main() -> None:
             color: #F43F5E;
         }
 
+        .val-muted {
+            color: #94A3B8;
+        }
+
         /* Plotly chart container crisp borders */
         [data-testid="stPlotlyChart"] {
             border: 1px solid #1E2433 !important;
             border-radius: 3px !important;
             background-color: #12161F !important;
-            overflow: hidden !important;
         }
 
         /* Secondary section headers */
@@ -580,31 +640,34 @@ def main() -> None:
         unsafe_allow_html=True,
     )
 
-    # 1. Viewport-Locked Sidebar
+    # 1. Viewport-Locked Sidebar with Distinct Rack Group Cards
     with st.sidebar:
-        st.markdown('<div class="sidebar-sec-title">UNIVERSE & FEED</div>', unsafe_allow_html=True)
-        col_u1, col_u2 = st.columns([1.2, 0.8])
+        st.markdown('<div class="sidebar-rack-header">PARAMETERS // CONTROL RACK</div>', unsafe_allow_html=True)
+
+        st.markdown('<div class="sidebar-rack-group"><div class="sidebar-group-title">UNIVERSE & FEED</div>', unsafe_allow_html=True)
+        col_u1, col_u2 = st.columns([1.8, 1.2])
         with col_u1:
             symbols_input = st.text_input("Symbols", value="AAPL, MSFT, SPY")
         with col_u2:
-            days = st.number_input("Lookback (D)", min_value=50, max_value=2000, value=500, step=50)
+            days = st.number_input("Days", min_value=50, max_value=2000, value=500, step=50)
 
         col_f1, col_f2 = st.columns(2)
         with col_f1:
-            data_source = st.selectbox("Feed", ["LIVE (SIP/Direct)", "Synthetic", "Local Cache"])
+            data_source = st.selectbox("Feed", ["LIVE SIP", "Synthetic", "Cache"])
         with col_f2:
-            strategy = st.selectbox("Strategy", ["MA Crossover", "Breakout", "Mean Reversion", "Pairs Arbitrage", "ML-Meta"])
+            strategy = st.selectbox("Strategy", ["Crossover", "Breakout", "Mean Reversion", "Pairs", "ML-Meta"])
 
-        col_sync1, col_sync2 = st.columns([1.2, 0.8])
+        col_sync1, col_sync2 = st.columns([1.5, 1.0])
         with col_sync1:
             auto_refresh = st.checkbox("Auto-Sync Feed", value=False)
         with col_sync2:
             refresh_rate = st.number_input("Rate (s)", min_value=3, max_value=60, value=10, step=1) if auto_refresh else 10
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="sidebar-sec-title">MICROSTRUCTURE & COSTS</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-rack-group"><div class="sidebar-group-title">MICROSTRUCTURE & COSTS</div>', unsafe_allow_html=True)
         col_m1, col_m2 = st.columns(2)
         with col_m1:
-            exec_model = st.selectbox("Engine", ["Realistic (LOB)", "Zero Cost", "Queue Model"])
+            exec_model = st.selectbox("Engine", ["Realistic", "Zero Cost", "Queue"])
         with col_m2:
             commission = st.number_input("Fee (bps)", min_value=0.0, max_value=50.0, value=5.0, step=0.5)
 
@@ -613,11 +676,12 @@ def main() -> None:
             slippage_c = st.slider("Kyle Lambda (c)", min_value=0.0, max_value=1.0, value=0.1, step=0.05)
         with col_m4:
             vpin_gamma = st.slider("VPIN Penalty", min_value=0.0, max_value=2.0, value=0.5, step=0.1)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="sidebar-sec-title">RISK & ALLOCATION</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sidebar-rack-group"><div class="sidebar-group-title">RISK & ALLOCATION</div>', unsafe_allow_html=True)
         col_r1, col_r2 = st.columns(2)
         with col_r1:
-            sizing = st.selectbox("Sizing", ["Half-Kelly + CVaR", "Fixed Ratio"])
+            sizing = st.selectbox("Sizing", ["Half-Kelly", "Fixed"])
         with col_r2:
             max_pos = st.slider("Max Alloc %", min_value=0.1, max_value=2.0, value=1.0, step=0.1)
 
@@ -626,13 +690,14 @@ def main() -> None:
             target_vol = st.slider("Target Vol %", min_value=5.0, max_value=40.0, value=15.0, step=1.0) / 100.0
         with col_r4:
             seed = st.number_input("Seed", value=42, step=1)
+        st.markdown('</div>', unsafe_allow_html=True)
 
         run_btn = st.button("EXECUTE SIMULATION", type="primary", use_container_width=True)
 
     # Initialize session state & execute simulation
     if run_btn or "backtest_data" not in st.session_state:
         symbols_list = [s.strip() for s in symbols_input.split(",") if s.strip()]
-        selected_src = "real" if "live" in data_source.lower() or "direct" in data_source.lower() else data_source
+        selected_src = "real" if any(k in data_source.lower() for k in ("live", "sip", "direct", "yahoo")) else data_source
         with st.spinner("Processing event-driven execution..."):
             st.session_state["backtest_data"] = run_backtest_simulation(
                 symbols=symbols_list,
@@ -723,30 +788,38 @@ def main() -> None:
             unsafe_allow_html=True,
         )
 
-        # High-Density KPI Metric Grid
+        # High-Density KPI Metric Grid with Correct Max Drawdown Binding & Semantic Colors
         eq_start = float(equity_s.iloc[0]) if len(equity_s) > 0 else 100_000.0
         eq_end = float(equity_s.iloc[-1]) if len(equity_s) > 0 else eq_start
         tot_ret = (eq_end - eq_start) / eq_start if eq_start > 0 else 0.0
+        tot_ret = 0.0 if abs(tot_ret) < 1e-6 else tot_ret
+
         sr = float(metrics.get("sharpe", 0.0))
-        mdd = float(metrics.get("max_drawdown", 0.0))
+        dd_series = data["drawdown_curve"]
+        raw_mdd = abs(float(dd_series.min())) if not dd_series.empty else 0.0
+        mdd = 0.0 if raw_mdd < 1e-6 else raw_mdd
+
         t_len = len(rets_s)
         sk = float(metrics.get("skew", 0.0))
         kt = float(metrics.get("kurtosis", 3.0))
         psr = probabilistic_sharpe_ratio(sr_hat=sr, sr_benchmark=0.0, T=t_len, skew=sk, kurt=kt) if t_len > 10 else 0.5
 
-        ret_cls = "val-pos" if tot_ret >= 0 else "val-neg"
-        mdd_cls = "val-neg" if mdd > 0 else "val-pos"
+        tot_ret_str = f"{tot_ret * 100.0:+.2f}%" if tot_ret != 0 else "0.00%"
+        ret_cls = "val-pos" if tot_ret > 0 else ("val-neg" if tot_ret < 0 else "val-muted")
+
+        mdd_str = f"-{mdd * 100.0:.2f}%" if mdd > 0 else "0.00%"
+        mdd_cls = "val-neg" if mdd > 0 else "val-muted"
 
         st.markdown(
             f"""
             <div class="kpi-strip">
                 <div class="kpi-cell">
                     <div class="kpi-label">PORTFOLIO NAV</div>
-                    <div class="kpi-val">${eq_end:,.2f} <span class="kpi-sub {ret_cls}">{tot_ret * 100.0:+.2f}%</span></div>
+                    <div class="kpi-val">${eq_end:,.2f} <span class="kpi-sub {ret_cls}">{tot_ret_str}</span></div>
                 </div>
                 <div class="kpi-cell">
                     <div class="kpi-label">NET RETURN</div>
-                    <div class="kpi-val {ret_cls}">{tot_ret * 100.0:+.2f}%</div>
+                    <div class="kpi-val {ret_cls}">{tot_ret_str}</div>
                 </div>
                 <div class="kpi-cell">
                     <div class="kpi-label">SHARPE (ANN.)</div>
@@ -754,7 +827,7 @@ def main() -> None:
                 </div>
                 <div class="kpi-cell">
                     <div class="kpi-label">MAX DRAWDOWN</div>
-                    <div class="kpi-val {mdd_cls}">-{abs(mdd) * 100.0:.2f}%</div>
+                    <div class="kpi-val {mdd_cls}">{mdd_str}</div>
                 </div>
                 <div class="kpi-cell">
                     <div class="kpi-label">PROBABILISTIC SR</div>
@@ -772,7 +845,7 @@ def main() -> None:
         with c2:
             st.plotly_chart(drawdown_figure(data["drawdown_curve"]), use_container_width=True)
 
-        st.markdown('<div class="sec-label">MONTHLY RETURNS MATRIX</div>', unsafe_allow_html=True)
+        # Monthly Returns Heatmap (Redundant label removed; title is inside Plotly)
         st.plotly_chart(monthly_heatmap_figure(rets_s), use_container_width=True)
 
         with st.expander("REPORT PAYLOAD & EXPORT", expanded=False):
