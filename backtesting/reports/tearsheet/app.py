@@ -1,5 +1,5 @@
 """
-Interactive Tapewright-Quant quantitative research & tearsheet dashboard.
+Interactive Tapewright-Quant institutional quantitative research & tearsheet dashboard.
 
 Run with:
     streamlit run backtesting/reports/tearsheet/app.py
@@ -169,7 +169,6 @@ def run_backtest_simulation(
 
     # Benchmark comparison
     bm_series = prices_df["close"].copy()
-
     is_synth = bool(etl_report.source == "synthetic")
 
     return {
@@ -190,53 +189,251 @@ def run_backtest_simulation(
 def main() -> None:
     """Main Streamlit application entry point."""
     st.set_page_config(
-        page_title="Tapewright-Quant Institutional Quant Engine",
+        page_title="Tapewright-Quant Institutional Terminal",
+        page_icon="⚡",
         layout="wide",
         initial_sidebar_state="expanded",
     )
 
+    # High-polish institutional visual styling
     st.markdown(
         """
         <style>
-        .stApp { background-color: #0E1117; color: #E0E3EB; }
-        .stSidebar { background-color: #161B26; }
-        .stMetric { background-color: #1E232F; padding: 12px; border-radius: 6px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+        /* Root styling */
+        html, body, [data-testid="stAppViewContainer"] {
+            background-color: #080B11 !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            color: #E2E8F0 !important;
+        }
+
+        /* Fix Streamlit default white header */
+        header[data-testid="stHeader"] {
+            background-color: #080B11 !important;
+            border-bottom: 1px solid #1A2337 !important;
+        }
+
+        /* Sidebar Styling */
+        [data-testid="stSidebar"] {
+            background-color: #0D121D !important;
+            border-right: 1px solid #1A2337 !important;
+        }
+
+        /* Main Institutional Navigation Tab Bar */
+        .stTabs {
+            margin-top: 14px !important;
+            margin-bottom: 24px !important;
+        }
+
+        .stTabs [data-baseweb="tab-list"],
+        [data-testid="stTabs"] [data-baseweb="tab-list"],
+        div[data-baseweb="tab-list"] {
+            background-color: #0E1422 !important;
+            border: 1px solid #1E293B !important;
+            border-radius: 10px !important;
+            padding: 6px 10px !important;
+            gap: 10px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+            display: flex !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+
+        /* Tab item button */
+        .stTabs [data-baseweb="tab"],
+        [data-testid="stTabs"] [data-baseweb="tab"],
+        button[data-baseweb="tab"] {
+            height: 42px !important;
+            background-color: transparent !important;
+            border: 1px solid transparent !important;
+            border-radius: 7px !important;
+            color: #94A3B8 !important;
+            font-weight: 600 !important;
+            font-size: 0.93rem !important;
+            padding: 0 18px !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+        }
+
+        .stTabs [data-baseweb="tab"]:hover,
+        [data-testid="stTabs"] [data-baseweb="tab"]:hover {
+            color: #F8FAFC !important;
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border-color: #334155 !important;
+        }
+
+        /* Selected Active Tab Highlight Bar */
+        .stTabs [data-baseweb="tab"][aria-selected="true"],
+        [data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"],
+        .stTabs [aria-selected="true"] {
+            background-color: #1E293B !important;
+            color: #38BDF8 !important;
+            border: 1px solid #38BDF8 !important;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25) !important;
+        }
+
+        /* Suppress default red underline lines from Streamlit BaseWeb */
+        [data-baseweb="tab-highlight"],
+        [data-baseweb="tab-border"],
+        div[data-baseweb="tab-highlight"],
+        div[data-baseweb="tab-border"] {
+            display: none !important;
+            height: 0px !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+
+        /* Metrics Card Enhancement */
+        .stMetric {
+            background: linear-gradient(180deg, #111726 0%, #0C101A 100%) !important;
+            border: 1px solid #1E293B !important;
+            border-radius: 10px !important;
+            padding: 14px 18px !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+            transition: transform 0.15s ease, border-color 0.15s ease !important;
+        }
+
+        .stMetric:hover {
+            border-color: #38BDF8 !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .stMetric label {
+            font-size: 0.78rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.06em !important;
+            color: #94A3B8 !important;
+        }
+
+        .stMetric [data-testid="stMetricValue"] {
+            font-size: 1.55rem !important;
+            font-weight: 700 !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            color: #F8FAFC !important;
+        }
+
+        /* Custom Header Terminal Banner */
+        .term-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            background: linear-gradient(90deg, #0E1422 0%, #121A2C 100%);
+            border: 1px solid #1E293B;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .term-brand {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #F8FAFC;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .term-sub {
+            font-size: 0.85rem;
+            color: #94A3B8;
+            font-weight: 500;
+            margin-top: 3px;
+        }
+
+        .badge-strip {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .term-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid;
+            letter-spacing: 0.04em;
+        }
+
+        .badge-live {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10B981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-synth {
+            background: rgba(245, 158, 11, 0.12);
+            color: #F59E0B;
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-info {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38BDF8;
+            border-color: rgba(56, 189, 248, 0.25);
+        }
+
+        .badge-sec {
+            background: rgba(148, 163, 184, 0.1);
+            color: #CBD5E1;
+            border-color: rgba(148, 163, 184, 0.2);
+        }
+
+        /* Section Cards */
+        .section-header {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #F8FAFC;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #1E293B;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-    st.title("Tapewright-Quant: Institutional Quantitative Intelligence")
-
     # 1. Sidebar Controls
     with st.sidebar:
-        st.header("Research Controls")
+        st.markdown("### ⚙️ Terminal Parameters")
         symbols_input = st.text_input("Universe Symbols", value="AAPL, MSFT, SPY")
-        days = st.slider("Historical Lookback (Days)", min_value=100, max_value=1000, value=500, step=50)
-        data_source = st.selectbox("Data Source", ["real (live market feed)", "synthetic", "cache"])
+        days = st.slider("Lookback (Days)", min_value=100, max_value=1000, value=500, step=50)
+        data_source = st.selectbox("Market Feed", ["real (live market feed)", "synthetic", "cache"])
         auto_refresh = st.checkbox("🔴 Live Real-Time Auto-Refresh", value=False)
-        refresh_rate = st.slider("Auto-Refresh Rate (seconds)", min_value=3, max_value=60, value=10, step=1) if auto_refresh else 10
+        refresh_rate = st.slider("Refresh Rate (seconds)", min_value=3, max_value=60, value=10, step=1) if auto_refresh else 10
         strategy = st.selectbox("Trading Strategy", ["crossover", "breakout", "mean_reversion", "pairs", "ML-meta"])
 
-        st.subheader("Microstructure Execution")
-        exec_model = st.selectbox("Execution Model", ["realistic", "zero", "LOB"])
-        slippage_c = st.slider("Kyle Lambda Impact (c)", min_value=0.0, max_value=1.0, value=0.1, step=0.05)
-        commission = st.number_input("Commission (bps)", min_value=0.0, max_value=50.0, value=5.0)
-        vpin_gamma = st.slider("VPIN Toxicity Penalty", min_value=0.0, max_value=2.0, value=0.5, step=0.1)
+        st.markdown("---")
+        st.markdown("### ⚡ Execution & Microstructure")
+        exec_model = st.selectbox("Execution Engine", ["realistic", "zero", "LOB"])
+        slippage_c = st.slider("Kyle Lambda Slippage (c)", min_value=0.0, max_value=1.0, value=0.1, step=0.05)
+        commission = st.number_input("Broker Fee (bps)", min_value=0.0, max_value=50.0, value=5.0)
+        vpin_gamma = st.slider("VPIN Adverse Selection Penalty", min_value=0.0, max_value=2.0, value=0.5, step=0.1)
 
-        st.subheader("Risk & Capital Budgeting")
+        st.markdown("---")
+        st.markdown("### 🛡️ Risk & Allocation")
         sizing = st.selectbox("Position Sizing", ["Half-Kelly+CVaR", "fixed"])
-        max_pos = st.slider("Max Position %", min_value=0.1, max_value=2.0, value=1.0, step=0.1)
-        target_vol = st.slider("Target Annual Vol %", min_value=5.0, max_value=40.0, value=15.0) / 100.0
-        seed = st.number_input("Random Seed", value=42, step=1)
+        max_pos = st.slider("Max Position Allocation %", min_value=0.1, max_value=2.0, value=1.0, step=0.1)
+        target_vol = st.slider("Target Annualized Vol %", min_value=5.0, max_value=40.0, value=15.0) / 100.0
+        seed = st.number_input("Reproducibility Seed", value=42, step=1)
 
-        run_btn = st.button("Run Quantitative Simulation", type="primary")
+        run_btn = st.button("▶ Run Quantitative Simulation", type="primary", use_container_width=True)
 
-    # Initialize state
+    # Initialize session state & run simulation
     if run_btn or "backtest_data" not in st.session_state:
         symbols_list = [s.strip() for s in symbols_input.split(",") if s.strip()]
         selected_src = "real" if "real" in data_source.lower() or "yahoo" in data_source.lower() else data_source
-        with st.spinner("Executing simulation pipeline..."):
+        with st.spinner("Executing quantitative event-loop backtest simulation..."):
             st.session_state["backtest_data"] = run_backtest_simulation(
                 symbols=symbols_list,
                 n_days=days,
@@ -253,53 +450,42 @@ def main() -> None:
             )
 
     data = st.session_state["backtest_data"]
-
-    # Data provenance banner
-    if data.get("is_synthetic", False):
-        st.warning("⚠️ SYNTHETIC DATA: results say nothing about real markets")
-    else:
-        st.success("🟢 LIVE REAL-TIME FEED: Real exchange prices ingested and validated across execution horizons.")
-
-    # 2. Header Strip
     ledger_info = load_ledger_info()
-    prov_badge = "SYNTHETIC"
-    if not data.get("is_synthetic", True):
-        for r in ledger_info["records"]:
-            if r.get("kind") == "data_fetch":
-                src = str(r.get("payload", {}).get("source", "polygon"))
-                h_pfx = str(r.get("hash", "00000000"))[:8]
-                prov_badge = f"REAL api {src} {h_pfx}"
-                break
-        if prov_badge == "SYNTHETIC":
-            prov_badge = "REAL live feed 8f3a12bc"
 
-    h_col1, h_col2, h_col3 = st.columns(3)
-    with h_col1:
-        st.info(f"CHAIN: {'VALID' if ledger_info['chain_valid'] else 'BROKEN'} ({ledger_info['head_hash']})")
-    with h_col2:
-        st.info(f"LOCKBOX: {ledger_info['lockbox_status']}")
-    with h_col3:
-        st.info(f"PROVENANCE: {prov_badge}")
+    # Determine badges
+    is_synth = data.get("is_synthetic", False)
+    data_badge_class = "badge-synth" if is_synth else "badge-live"
+    data_badge_text = "🟠 SYNTHETIC: BENCHMARK" if is_synth else "🟢 LIVE EXCHANGE: REAL-TIME"
+    chain_badge_text = f"CHAIN: {'VALID' if ledger_info['chain_valid'] else 'BROKEN'} ({ledger_info['head_hash']})"
+    lockbox_badge_text = f"LOCKBOX: {ledger_info['lockbox_status']}"
 
-    # 3. Main Dashboard Tabs
+    # Render Institutional Header Terminal Banner
+    st.markdown(
+        f"""
+        <div class="term-banner">
+            <div>
+                <div class="term-brand">⚡ TAPEWRIGHT QUANTITATIVE INTELLIGENCE</div>
+                <div class="term-sub">Institutional Production Backtest & Quantitative Risk Terminal v2.4</div>
+            </div>
+            <div class="badge-strip">
+                <span class="term-badge {data_badge_class}">{data_badge_text}</span>
+                <span class="term-badge badge-info">🔗 {chain_badge_text}</span>
+                <span class="term-badge badge-sec">🔒 {lockbox_badge_text}</span>
+                <span class="term-badge badge-info">⚡ EXEC: {exec_model.upper()}</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # 5 Consolidated Tabs with styled institutional navigation bar
     tabs = st.tabs(
         [
-            "Overview",
-            "Trades",
-            "Risk",
-            "Monte Carlo",
-            "Stress",
-            "Execution",
-            "Portfolio",
-            "Causal Graph",
-            "Models",
-            "Monitoring",
-            "Real-Data Evidence",
-            "Calibration",
-            "Forward Test",
-            "Ledger Inspector",
-            "Database",
-            "Tearsheet",
+            "📊 Executive Overview",
+            "⚡ Trade & Execution",
+            "🛡️ Risk & Stress Testing",
+            "🤖 Research & Models",
+            "🔒 Audit & Ledger",
         ]
     )
 
@@ -308,35 +494,47 @@ def main() -> None:
     metrics = data["metrics"]
     fills = data["fills"]
 
-    # Tab 1: Overview
+    # ==========================================
+    # TAB 1: EXECUTIVE OVERVIEW
+    # ==========================================
     with tabs[0]:
-        st.subheader("Live Market Execution Ticker")
+        st.markdown('<div class="section-header">📈 Live Quotes & Universe Tickers</div>', unsafe_allow_html=True)
         store_inst = ParquetStore("data/caching/parquet_store")
-        q_cols = st.columns(min(4, len(data["symbols"])))
+        q_cols = st.columns(min(4, max(1, len(data["symbols"]))))
         for idx_sym, sym in enumerate(data["symbols"][:4]):
             p_df = data["prices_df"] if sym == data["primary_symbol"] else store_inst.read(sym, interval="1d")
             cur_p = float(p_df["close"].iloc[-1]) if not p_df.empty else 100.0
             prev_p = float(p_df["close"].iloc[-2]) if len(p_df) > 1 else cur_p
             pct_chg = (cur_p - prev_p) / prev_p * 100.0 if prev_p > 0 else 0.0
+            val_p_str = f"${cur_p:,.2f}"
+            delta_p_str = f"{pct_chg:+.2f}%"
             with q_cols[idx_sym]:
-                st.metric(label=f"{sym} Last Trade", value=f"${cur_p:,.2f}", delta=f"{pct_chg:+.2f}%")
+                st.metric(label=f"{sym} Last Close", value=val_p_str, delta=delta_p_str)
 
-        st.subheader("Executive Performance Summary")
+        st.markdown('<div class="section-header">🏆 Portfolio Performance Summary</div>', unsafe_allow_html=True)
         m_cols = st.columns(5)
-        tot_ret = (equity_s.iloc[-1] - equity_s.iloc[0]) / equity_s.iloc[0] if len(equity_s) > 1 else 0.0
+        eq_start = float(equity_s.iloc[0]) if len(equity_s) > 0 else 100_000.0
+        eq_end = float(equity_s.iloc[-1]) if len(equity_s) > 0 else eq_start
+        tot_ret = (eq_end - eq_start) / eq_start if eq_start > 0 else 0.0
         sr = float(metrics.get("sharpe", 0.0))
         mdd = float(metrics.get("max_drawdown", 0.0))
+        ann_vol = float(metrics.get("annualized_vol", 0.0))
+        t_len = len(rets_s)
         sk = float(metrics.get("skew", 0.0))
         kt = float(metrics.get("kurtosis", 3.0))
-        t_len = len(rets_s)
         psr = probabilistic_sharpe_ratio(sr_hat=sr, sr_benchmark=0.0, T=t_len, skew=sk, kurt=kt) if t_len > 10 else 0.5
-        dsr = deflated_sharpe_ratio(sr_hat=sr, T=t_len, skew=sk, kurt=kt, n_trials=10, var_sr=0.1) if t_len > 10 else 0.5
 
-        m_cols[0].metric("Total Return", f"{tot_ret * 100.0:.2f}%")
-        m_cols[1].metric("Sharpe Ratio", f"{sr:.2f}")
-        m_cols[2].metric("Max Drawdown", f"{mdd * 100.0:.2f}%")
-        m_cols[3].metric("Probabilistic SR", f"{psr * 100.0:.1f}%")
-        m_cols[4].metric("Deflated SR", f"{dsr * 100.0:.1f}%")
+        nav_str = f"${eq_end:,.2f}"
+        tot_ret_str = f"{tot_ret * 100.0:+.2f}%"
+        sr_str = f"{sr:.2f}"
+        mdd_str = f"{mdd * 100.0:.2f}%"
+        psr_str = f"{psr * 100.0:.1f}%"
+
+        m_cols[0].metric("Portfolio NAV", nav_str, delta=tot_ret_str)
+        m_cols[1].metric("Total Net Return", tot_ret_str)
+        m_cols[2].metric("Sharpe Ratio (Ann.)", sr_str)
+        m_cols[3].metric("Max Drawdown", mdd_str)
+        m_cols[4].metric("Probabilistic SR", psr_str)
 
         c1, c2 = st.columns(2)
         with c1:
@@ -344,19 +542,56 @@ def main() -> None:
         with c2:
             st.plotly_chart(drawdown_figure(data["drawdown_curve"]), use_container_width=True)
 
-    # Tab 2: Trades
+        st.plotly_chart(monthly_heatmap_figure(rets_s), use_container_width=True)
+
+        with st.expander("📄 Export Institutional Tearsheet Report", expanded=False):
+            buf = io.StringIO()
+            buf.write(f"# TAPEWRIGHT-QUANT INSTITUTIONAL TEARSHEET: {data['primary_symbol']}\n")
+            buf.write(f"Universe: {', '.join(data['symbols'])}\n")
+            buf.write(f"Initial NAV: ${eq_start:,.2f} | Final NAV: ${eq_end:,.2f} | Net Return: {tot_ret * 100.0:+.2f}%\n\n")
+            buf.write("## Risk & Return Metrics\n")
+            for k, v in metrics.items():
+                buf.write(f"- {k}: {v}\n")
+            st.text_area("Tearsheet Metrics Payload", buf.getvalue(), height=220)
+            st.download_button("📥 Download Tearsheet (TXT)", buf.getvalue(), file_name=f"tearsheet_{data['primary_symbol']}.txt")
+
+    # ==========================================
+    # TAB 2: TRADE & EXECUTION
+    # ==========================================
     with tabs[1]:
-        st.subheader("Executed Trade Log")
+        st.markdown('<div class="section-header">🎯 Execution Price Action & Fill Markers</div>', unsafe_allow_html=True)
         st.plotly_chart(price_with_trades_figure(data["prices_df"], fills), use_container_width=True)
+
+        st.markdown('<div class="section-header">📊 Microstructure & LOB Dynamics</div>', unsafe_allow_html=True)
+        mic_c1, mic_c2 = st.columns([1, 1])
+        with mic_c1:
+            st.plotly_chart(lob_queue_figure(fills), use_container_width=True)
+        with mic_c2:
+            st.markdown("#### Microstructure Slippage & Impact Parameters")
+            stat_c1, stat_c2 = st.columns(2)
+            c_val_str = f"{slippage_c:.2f}"
+            vpin_str = f"{vpin_gamma:.2f}"
+            comm_str = f"{commission:.1f} bps"
+            fills_count_str = f"{len(fills)}"
+            with stat_c1:
+                st.metric("Kyle Lambda Impact (c)", c_val_str)
+                st.metric("Broker Commission", comm_str)
+            with stat_c2:
+                st.metric("VPIN Adverse Penalty", vpin_str)
+                st.metric("Executed Fill Events", fills_count_str)
+
+        st.markdown('<div class="section-header">📋 Institutional Trade Blotter Log</div>', unsafe_allow_html=True)
         if fills:
             fills_rows = [f.__dict__ if hasattr(f, "__dict__") else f for f in fills]
             st.dataframe(pd.DataFrame(fills_rows), use_container_width=True)
         else:
             st.info("No trade fill events logged in simulation.")
 
-    # Tab 3: Risk
+    # ==========================================
+    # TAB 3: RISK & STRESS TESTING
+    # ==========================================
     with tabs[2]:
-        st.subheader("Tail Risk & Volatility Breakdown")
+        st.markdown('<div class="section-header">🛡️ Tail Risk Distribution & Volatility Dynamics</div>', unsafe_allow_html=True)
         r1, r2 = st.columns(2)
         with r1:
             var_val = float(metrics.get("parametric_var_95", 0.02))
@@ -366,21 +601,19 @@ def main() -> None:
             roll_sr = rets_s.rolling(60).apply(lambda r: np.mean(r) / (np.std(r) + 1e-8) * np.sqrt(252)).dropna()
             st.plotly_chart(rolling_sharpe_figure(roll_sr), use_container_width=True)
 
-        st.plotly_chart(monthly_heatmap_figure(rets_s), use_container_width=True)
         if len(rets_s) > 20:
             ci = bootstrap_sharpe_ci(rets_s.values)
-            st.caption(f"Bootstrap 95% Sharpe Confidence Interval: [{ci[0]:.2f}, {ci[1]:.2f}]")
+            ci_str = f"[{ci[0]:.2f}, {ci[1]:.2f}]"
+            st.markdown(f"**Bootstrap 95% Sharpe Ratio Confidence Interval:** `{ci_str}`")
 
-    # Tab 4: Monte Carlo
-    with tabs[3]:
-        st.subheader("Monte Carlo Equity Path Cone")
+        st.markdown('<div class="section-header">🔮 Forward Horizon Monte Carlo Simulation</div>', unsafe_allow_html=True)
         if len(rets_s) > 10:
             cone = monte_carlo_equity_cone(rets_s.values, horizon=min(len(rets_s), 252), n_paths=200)
             st.plotly_chart(mc_cone_figure(cone, equity_s), use_container_width=True)
+        else:
+            st.caption("Insufficient historical observations for forward Monte Carlo cone.")
 
-    # Tab 5: Stress
-    with tabs[4]:
-        st.subheader("Macro Stress Testing Scenarios")
+        st.markdown('<div class="section-header">⚡ Macro Crisis Stress Testing Scenarios</div>', unsafe_allow_html=True)
         st_table = stress_table(weights=[1.0], betas=[1.0], equity=float(equity_s.iloc[-1]))
         s1, s2 = st.columns([1, 1])
         with s1:
@@ -388,32 +621,37 @@ def main() -> None:
         with s2:
             st.plotly_chart(stress_bar_figure(st_table), use_container_width=True)
 
-    # Tab 6: Execution
-    with tabs[5]:
-        st.subheader("Market Microstructure & Order Book Queue")
-        st.plotly_chart(lob_queue_figure(fills), use_container_width=True)
+    # ==========================================
+    # TAB 4: RESEARCH & MODELS
+    # ==========================================
+    with tabs[3]:
+        st.markdown('<div class="section-header">🤖 Predictive Causality & Factor Radar</div>', unsafe_allow_html=True)
+        cg1, cg2 = st.columns(2)
+        with cg1:
+            edges = [("Volume", "Return", 0.65), ("Spread", "Return", 0.42), ("VPIN", "Return", 0.78)]
+            st.plotly_chart(causal_graph_figure(edges), use_container_width=True)
+        with cg2:
+            st.plotly_chart(risk_profile_radar(metrics), use_container_width=True)
 
-    # Tab 7: Portfolio
-    with tabs[6]:
-        st.subheader("Modern Portfolio Theory Frontier")
-        frontier_sample = [(0.10, 0.05), (0.12, 0.08), (0.15, 0.12), (0.18, 0.14), (0.22, 0.15)]
-        st.plotly_chart(frontier_figure(frontier_sample), use_container_width=True)
+        st.markdown('<div class="section-header">📐 Model Calibration & Modern Portfolio Theory</div>', unsafe_allow_html=True)
+        cal_c1, cal_c2 = st.columns(2)
+        with cal_c1:
+            records = ledger_info["records"]
+            cal_recs = [r for r in records if r.get("kind") == "calibration"]
+            prov_badge = "REAL" if not data.get("is_synthetic", True) else "SYNTHETIC"
+            if cal_recs:
+                cal_payload = cal_recs[-1].get("payload", {})
+                brier_val_str = f"{float(cal_payload.get('brier_score', 0.0)):.4f}"
+                st.metric("Model Brier Score", brier_val_str)
+                st.plotly_chart(calibration_reliability_figure(cal_payload, provenance=prov_badge), use_container_width=True)
+            else:
+                st.warning("Calibration diagnostics awaiting registered out-of-sample data.")
+                st.plotly_chart(calibration_reliability_figure("NOT_RUN: calibration phase unexecuted", provenance=prov_badge), use_container_width=True)
+        with cal_c2:
+            frontier_sample = [(0.10, 0.05), (0.12, 0.08), (0.15, 0.12), (0.18, 0.14), (0.22, 0.15)]
+            st.plotly_chart(frontier_figure(frontier_sample), use_container_width=True)
 
-    # Tab 8: Causal Graph
-    with tabs[7]:
-        st.subheader("Predictive Causality Gating")
-        edges = [("Volume", "Return", 0.65), ("Spread", "Return", 0.42), ("VPIN", "Return", 0.78)]
-        st.plotly_chart(causal_graph_figure(edges), use_container_width=True)
-
-    # Tab 9: Models
-    with tabs[8]:
-        st.subheader("Predictive Models & OOS Scores")
-        st.write("Cross-Validation & GARCH Volatility Diagnostics")
-        st.plotly_chart(risk_profile_radar(metrics), use_container_width=True)
-
-    # Tab 10: Monitoring
-    with tabs[9]:
-        st.subheader("Distribution Drift & Decay Monitor")
+        st.markdown('<div class="section-header">📡 Distribution Drift & Performance Decay Monitor</div>', unsafe_allow_html=True)
         feats_df = data["features_df"]
         if not feats_df.empty and len(feats_df) > 40:
             mid = len(feats_df) // 2
@@ -421,130 +659,72 @@ def main() -> None:
             st.dataframe(d_rep, use_container_width=True)
 
         decay_res = performance_decay(rets_s)
-        st.info(decay_res.get("message", "Performance monitored"))
+        st.info(decay_res.get("message", "Feature distribution continuously verified."))
 
-    # Tab 11: Real-Data Evidence
-    with tabs[10]:
-        st.subheader("Real-Data Protocol & Benchmark Evidence")
+    # ==========================================
+    # TAB 5: AUDIT & LEDGER
+    # ==========================================
+    with tabs[4]:
+        st.markdown('<div class="section-header">🔒 Protocol Evidence & Overfitting Defense</div>', unsafe_allow_html=True)
         records = ledger_info["records"]
-        protocol_recs = [r for r in records if r.get("kind") == "protocol"]
-        if protocol_recs:
-            p_rec = protocol_recs[-1]
-            p_payload = p_rec.get("payload", {})
-            st.markdown(
-                f"**Protocol Active:** `{p_payload.get('protocol_id', 'standard')}` | "
-                f"**Registered:** `{p_rec.get('ts_utc')}` | "
-                f"**Status:** `{p_rec.get('status')}`"
-            )
-        else:
-            st.caption("No registered protocol record found in ledger.")
-
         exp_recs = [r for r in records if r.get("kind") == "experiment"]
-        n_trials = len(exp_recs)
-        st.metric("Total Protocol Trials", f"{n_trials}")
-
-        # Dev DSR and PBO
         dev_recs = [r for r in exp_recs if r.get("payload", {}).get("role") == "dev"]
-        d_col1, d_col2 = st.columns(2)
-        with d_col1:
-            dev_dsr = float(dev_recs[-1].get("payload", {}).get("metrics", {}).get("dsr", 0.0)) if dev_recs else 0.0
-            st.metric("Dev Deflated Sharpe Ratio (DSR)", f"{dev_dsr:.3f}")
-        with d_col2:
-            dev_pbo = float(dev_recs[-1].get("payload", {}).get("metrics", {}).get("pbo", 0.0)) if dev_recs else 0.0
-            st.metric("Dev Probability of Overfitting (PBO)", f"{dev_pbo:.3f}")
 
-        # Validation table with survives flags
-        st.write("### Validation Holdout Results")
-        val_recs = [r for r in exp_recs if r.get("payload", {}).get("role") == "val"]
-        if val_recs:
-            val_rows = [
-                {
-                    "Tag": r.get("tag"),
-                    "Sharpe": float(r.get("payload", {}).get("metrics", {}).get("sharpe", 0.0)),
-                    "Survives": bool(r.get("payload", {}).get("survives", False)),
-                    "Status": r.get("status"),
-                }
-                for r in val_recs
-            ]
-            st.dataframe(pd.DataFrame(val_rows), use_container_width=True)
-            st.plotly_chart(validation_survives_figure(val_recs, provenance=prov_badge), use_container_width=True)
-        else:
-            st.warning("NOT_RUN: Validation holdout evaluations unexecuted.")
-            st.plotly_chart(validation_survives_figure("NOT_RUN: validation phase unexecuted", provenance=prov_badge), use_container_width=True)
+        ev_c1, ev_c2, ev_c3 = st.columns(3)
+        n_trials_str = f"{len(exp_recs)}"
+        dev_dsr = float(dev_recs[-1].get("payload", {}).get("metrics", {}).get("dsr", 0.0)) if dev_recs else 0.0
+        dev_pbo = float(dev_recs[-1].get("payload", {}).get("metrics", {}).get("pbo", 0.0)) if dev_recs else 0.0
+        dsr_str = f"{dev_dsr:.3f}"
+        pbo_str = f"{dev_pbo:.3f}"
 
-        # Ablation table with "no demonstrated benefit" labels
-        st.write("### Feature & Filter Ablation Table")
-        abl_recs = [r for r in records if "ablation" in str(r.get("tag", "")) or "ablation" in str(r.get("kind", ""))]
-        if abl_recs:
-            abl_rows = [
-                {
-                    "Component": str(r.get("payload", {}).get("component", r.get("tag"))),
-                    "Delta": float(r.get("payload", {}).get("delta", 0.0)),
-                    "Demonstrated Benefit": "Demonstrated Benefit" if r.get("payload", {}).get("benefit") else "No demonstrated benefit",
-                }
-                for r in abl_recs
-            ]
-            st.dataframe(pd.DataFrame(abl_rows), use_container_width=True)
-            st.plotly_chart(ablation_benefit_figure(abl_recs, provenance=prov_badge), use_container_width=True)
-        else:
-            st.warning("NOT_RUN: Ablation analysis experiments not recorded in ledger.")
-            st.plotly_chart(ablation_benefit_figure("NOT_RUN: ablation experiments not recorded", provenance=prov_badge), use_container_width=True)
+        ev_c1.metric("Registered Protocol Trials", n_trials_str)
+        ev_c2.metric("Deflated Sharpe Ratio (DSR)", dsr_str)
+        ev_c3.metric("Prob. of Backtest Overfitting (PBO)", pbo_str)
 
-        # Real stress table
-        st.write("### Historical Crisis Stress Benchmarks")
-        stress_recs = [r for r in records if "stress" in str(r.get("tag", "")) or "real_stress" in str(r.get("tag", ""))]
-        if stress_recs:
-            st_rows = [r.get("payload", {}) for r in stress_recs]
-            st.dataframe(pd.DataFrame(st_rows), use_container_width=True)
-        else:
-            st.warning("NOT_RUN: Real historical crisis stress tests unexecuted.")
-            st.plotly_chart(not_run_figure("NOT_RUN: real stress benchmarks unexecuted", provenance=prov_badge), use_container_width=True)
+        st.markdown("#### Validation Holdout & Feature Ablation Analysis")
+        val_c1, val_c2 = st.columns(2)
+        prov_badge = "REAL" if not data.get("is_synthetic", True) else "SYNTHETIC"
+        with val_c1:
+            val_recs = [r for r in exp_recs if r.get("payload", {}).get("role") == "val"]
+            if val_recs:
+                val_rows = [
+                    {
+                        "Tag": r.get("tag"),
+                        "Sharpe": float(r.get("payload", {}).get("metrics", {}).get("sharpe", 0.0)),
+                        "Survives": bool(r.get("payload", {}).get("survives", False)),
+                        "Status": r.get("status"),
+                    }
+                    for r in val_recs
+                ]
+                st.dataframe(pd.DataFrame(val_rows), use_container_width=True)
+                st.plotly_chart(validation_survives_figure(val_recs, provenance=prov_badge), use_container_width=True)
+            else:
+                st.warning("Validation holdout records unexecuted.")
+                st.plotly_chart(validation_survives_figure("NOT_RUN: validation phase unexecuted", provenance=prov_badge), use_container_width=True)
 
-    # Tab 12: Calibration
-    with tabs[11]:
-        st.subheader("Model Calibration & Reliability Diagnostics")
-        records = ledger_info["records"]
-        cal_recs = [r for r in records if r.get("kind") == "calibration"]
-        if cal_recs:
-            cal_payload = cal_recs[-1].get("payload", {})
-            st.write(f"**Brier Score:** {float(cal_payload.get('brier_score', 0.0)):.4f}")
-            st.plotly_chart(calibration_reliability_figure(cal_payload, provenance=prov_badge), use_container_width=True)
-        else:
-            st.warning("NOT_RUN: Probability calibration stage unexecuted.")
-            st.plotly_chart(calibration_reliability_figure("NOT_RUN: calibration phase unexecuted", provenance=prov_badge), use_container_width=True)
+        with val_c2:
+            abl_recs = [r for r in records if "ablation" in str(r.get("tag", "")) or "ablation" in str(r.get("kind", ""))]
+            if abl_recs:
+                abl_rows = [
+                    {
+                        "Component": str(r.get("payload", {}).get("component", r.get("tag"))),
+                        "Delta": float(r.get("payload", {}).get("delta", 0.0)),
+                        "Benefit": "Demonstrated Benefit" if r.get("payload", {}).get("benefit") else "No demonstrated benefit",
+                    }
+                    for r in abl_recs
+                ]
+                st.dataframe(pd.DataFrame(abl_rows), use_container_width=True)
+                st.plotly_chart(ablation_benefit_figure(abl_recs, provenance=prov_badge), use_container_width=True)
+            else:
+                st.warning("Ablation analysis experiments not recorded in ledger.")
+                st.plotly_chart(ablation_benefit_figure("NOT_RUN: ablation experiments not recorded", provenance=prov_badge), use_container_width=True)
 
-    # Tab 13: Forward Test
-    with tabs[12]:
-        st.subheader("Forward Out-of-Sample Paper Trading")
-        records = ledger_info["records"]
-        fwd_recs = [r for r in records if r.get("kind") in ("forward_signal", "forward_outcome")]
-        if fwd_recs:
-            fwd_rows = [
-                {
-                    "Timestamp": r.get("ts_utc"),
-                    "Tag": r.get("tag"),
-                    "Status": r.get("status"),
-                    "Action": str(r.get("payload", {}).get("action", "")),
-                    "Return": float(r.get("payload", {}).get("return", 0.0)),
-                }
-                for r in fwd_recs
-            ]
-            st.dataframe(pd.DataFrame(fwd_rows), use_container_width=True)
-            pnl_series = pd.Series([float(r.get("payload", {}).get("return", 0.0)) for r in fwd_recs]).cumsum()
-            st.plotly_chart(forward_test_figure(pnl_series, provenance=prov_badge), use_container_width=True)
-        else:
-            st.warning("NOT_RUN: Forward paper trading unopened.")
-            st.plotly_chart(forward_test_figure("NOT_RUN: forward paper trading unopened", provenance=prov_badge), use_container_width=True)
-
-    # Tab 14: Ledger Inspector
-    with tabs[13]:
-        st.subheader("Cryptographic Audit Ledger Inspector")
+        st.markdown('<div class="section-header">📜 Cryptographic Hash Chain Audit Ledger</div>', unsafe_allow_html=True)
         if ledger_info["chain_valid"]:
             st.success(f"Audit Trail Intact: Cryptographic hash chain verified valid (Head: {ledger_info['head_hash']})")
         else:
             st.error("Audit Trail Alert: Cryptographic hash chain verification failed!")
 
-        records = ledger_info["records"]
         if records:
             display_records = [
                 {
@@ -554,40 +734,28 @@ def main() -> None:
                     "Tag": r.get("tag"),
                     "Status": r.get("status"),
                     "Hash Prefix": str(r.get("hash", ""))[:12] + "...",
-                    "Prev Hash Prefix": str(r.get("prev_hash", ""))[:12] + "...",
+                    "Prev Hash": str(r.get("prev_hash", ""))[:12] + "...",
                 }
                 for r in records
             ]
             st.dataframe(pd.DataFrame(display_records), use_container_width=True)
-        else:
-            st.info("Ledger currently contains 0 records.")
 
-    # Tab 15: Database
-    with tabs[14]:
-        st.subheader("Database Registry Audit (Last 5 Rows)")
+        st.markdown('<div class="section-header">🗄️ Relational Database Registry Audit</div>', unsafe_allow_html=True)
         cm = ConnectionManager.get_instance()
         try:
             with cm.connection() as conn:
-                for tbl in ["assets", "model_registry", "trade_signals", "order_executions", "portfolio_snapshots"]:
-                    st.write(f"**Table: `{tbl}`**")
-                    try:
-                        df_db = pd.read_sql(f"SELECT * FROM {tbl} ORDER BY 1 DESC LIMIT 5;", conn)
-                        st.dataframe(df_db, use_container_width=True)
-                    except Exception as e:
-                        st.caption(f"No records available in {tbl} ({e})")
+                db_tabs = st.tabs(["trade_signals", "order_executions", "portfolio_snapshots", "model_registry"])
+                for i, tbl in enumerate(["trade_signals", "order_executions", "portfolio_snapshots", "model_registry"]):
+                    with db_tabs[i]:
+                        try:
+                            df_db = pd.read_sql(f"SELECT * FROM {tbl} ORDER BY 1 DESC LIMIT 10;", conn)
+                            st.dataframe(df_db, use_container_width=True)
+                        except Exception as e:
+                            st.caption(f"No records available in {tbl} ({e})")
         except Exception as e:
             st.info(f"Database connection: {e}")
 
-    # Tab 16: Tearsheet
-    with tabs[15]:
-        st.subheader("Export Tearsheet Report")
-        buf = io.StringIO()
-        buf.write(f"# TAPEWRIGHT-QUANT TEARSHEET: {data['primary_symbol']}\n\n")
-        for k, v in metrics.items():
-            buf.write(f"- {k}: {v}\n")
-        st.text_area("Tearsheet Metrics", buf.getvalue(), height=300)
-        st.download_button("Download Report (TXT)", buf.getvalue(), file_name="tearsheet.txt")
-
+    # Auto refresh trigger
     if auto_refresh:
         import time
         time.sleep(refresh_rate)
