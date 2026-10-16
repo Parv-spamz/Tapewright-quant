@@ -213,7 +213,7 @@ def main() -> None:
         st.header("Research Controls")
         symbols_input = st.text_input("Universe Symbols", value="AAPL, MSFT, SPY")
         days = st.slider("Historical Lookback (Days)", min_value=100, max_value=1000, value=500, step=50)
-        data_source = st.selectbox("Data Source", ["synthetic", "real (live market feed)", "cache"])
+        data_source = st.selectbox("Data Source", ["real (live market feed)", "synthetic", "cache"])
         auto_refresh = st.checkbox("🔴 Live Real-Time Auto-Refresh", value=False)
         refresh_rate = st.slider("Auto-Refresh Rate (seconds)", min_value=3, max_value=60, value=10, step=1) if auto_refresh else 10
         strategy = st.selectbox("Trading Strategy", ["crossover", "breakout", "mean_reversion", "pairs", "ML-meta"])
