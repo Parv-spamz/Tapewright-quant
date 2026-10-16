@@ -36,7 +36,7 @@ def parse_yahoo_chart(raw_text: str) -> pd.DataFrame:
         raise FeedError("No quote data found in Yahoo chart indicators.")
 
     quotes = quote_list[0]
-    dt_index = pd.to_datetime(timestamps, unit="s", utc=True)
+    dt_index = pd.to_datetime(timestamps, unit="s", utc=True).tz_convert(None)
 
     df = pd.DataFrame(
         {
@@ -61,11 +61,22 @@ def fetch_yahoo_chart(
 ) -> pd.DataFrame:
     """Fetch historical chart OHLCV data from Yahoo Finance using standard library urllib."""
     clean_symbol = symbol.strip().upper()
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{clean_symbol}?interval=1d&range=3mo"
+    
+    if start is not None or end is not None:
+        try:
+            start_ts = pd.to_datetime(start, utc=True) if start else pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=730)
+            end_ts = pd.to_datetime(end, utc=True) if end else pd.Timestamp.now(tz="UTC")
+            p1 = int(start_ts.timestamp())
+            p2 = int(end_ts.timestamp())
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{clean_symbol}?interval=1d&period1={p1}&period2={p2}"
+        except Exception:
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{clean_symbol}?interval=1d&range=2y"
+    else:
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{clean_symbol}?interval=1d&range=2y"
 
     req = urllib.request.Request(
         url,
-        headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
+        headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"},
     )
 
     try:

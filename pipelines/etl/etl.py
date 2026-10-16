@@ -107,16 +107,26 @@ def run_etl(
     register_default_features(registry)
     all_feature_names = list(registry._registry.keys())
 
+    sources: list[str] = []
     for idx, sym in enumerate(symbol_list):
         clean_sym = sym.strip().upper()
         seed = 42 + idx * 101
 
         # 1. Ingestion
-        df_raw = make_ohlcv(symbol=clean_sym, start=start, n_days=n_days, seed=seed)
-        df_raw.attrs["source"] = "synthetic"
+        clean_src = str(source).strip().lower()
+        if clean_src in ("auto", "live", "real", "yahoo", "binance", "crypto"):
+            from data.ingestion.provider import get_prices
+            df_raw = get_prices(clean_sym, start=start, end=end, source=clean_src)
+        else:
+            df_raw = make_ohlcv(symbol=clean_sym, start=start, n_days=n_days, seed=seed)
+            df_raw.attrs["source"] = "synthetic"
+
+        data_source = df_raw.attrs.get("source", "synthetic")
+        sources.append(data_source)
 
         # 2. Outlier cleaning
         clean_df, _ = remove_bad_ticks(df_raw)
+        clean_df.attrs["source"] = data_source
 
         # 3. Validation
         val_rep = validate_ohlcv(clean_df)
@@ -138,11 +148,14 @@ def run_etl(
 
         features_df = pd.concat(feat_series_list, axis=1)
         features_df.index = clean_df.index
+        features_df.attrs["source"] = data_source
         computed_features = list(features_df.columns)
 
         # 6. Write features to Parquet
         p_store.write(clean_sym, features_df, interval="features_1d")
         feat_counts[clean_sym] = len(features_df)
+
+    resolved_source = "real" if any(s in ("real", "yahoo", "binance") for s in sources) else "synthetic"
 
     return ETLReport(
         ok=True,
@@ -150,6 +163,6 @@ def run_etl(
         raw_row_counts=raw_counts,
         feature_row_counts=feat_counts,
         feature_columns=computed_features,
-        source="synthetic",
-        message=f"Successfully processed {len(symbol_list)} symbol(s) idempotently.",
+        source=resolved_source,
+        message=f"Successfully processed {len(symbol_list)} symbol(s) idempotently ({resolved_source} data).",
     )
