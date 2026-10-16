@@ -23,17 +23,19 @@ A trading research engine built to simulate markets, test ideas, and challenge i
 
 ## What is Tapewright-Quant?
 
-Tapewright-Quant is an open-source quantitative trading research and educational platform. It brings together market-data processing, trading simulations, portfolio risk tools, and research validation in one Python-based project.
+Tapewright-Quant is an open-source quantitative trading research and execution analytics platform. It brings together live and historical market-data ingestion, discrete-event order simulations, portfolio risk tools, an institutional terminal interface, and research validation in one Python-based project.
 
 The goal is straightforward: make trading experiments more realistic and make it harder to mistake a promising-looking result for a reliable strategy.
 
 ## What does it do?
 
-- **Simulates trading**: Models trading orders, execution costs, and the practical difficulties of getting trades filled.
+- **Streams live & historical market data**: Ingests real-time and historical multi-asset market data (Yahoo Finance, Alpaca, Polygon, direct feeds) with automated timestamp normalization and bar alignment.
+- **Simulates trading**: Models trading orders, execution costs, order-book queue dynamics, and the practical difficulties of getting trades filled.
+- **Powers an institutional terminal**: Provides a high-density, dark-native quantitative analytics terminal (Streamlit) for real-time risk tearsheets, factor exposures, and return heatmaps.
 - **Studies market behaviour**: Provides tools for examining price movements, trading activity, trends, and relationships between assets.
 - **Tests trading ideas**: Runs research experiments and evaluates whether strategies hold up beyond their initial results.
-- **Examines risk**: Includes tools for portfolio allocation, position sizing, and investigating unfavourable market conditions.
-- **Records research evidence**: Uses integrity and verification tools to help trace research experiments and detect changes to recorded artifacts.
+- **Examines risk**: Includes tools for portfolio allocation, position sizing, drawdown analytics, and investigating unfavourable market conditions.
+- **Records research evidence**: Uses cryptographic ledger tracking, invariant proofs, and test-suite mutation hardening to verify research integrity.
 
 ## How it works
 
@@ -67,6 +69,8 @@ Finding that an idea does not pass is part of research. The next step is stronge
 - [Research findings](docs/FINDINGS.md)
 - [Known limitations](docs/LIMITATIONS.md)
 - [Forward testing](docs/FORWARD_TEST.md)
+- [Interactive Quantitative Terminal](backtesting/reports/tearsheet/app.py) (`streamlit run backtesting/reports/tearsheet/app.py`)
+- [Live Data Ingestion](data/ingestion/provider.py)
 
 ## Verification & Accuracy Proofs
 
