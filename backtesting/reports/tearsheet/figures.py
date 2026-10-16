@@ -17,23 +17,34 @@ import plotly.graph_objects as go
 
 # Shared institutional dark-theme layout specification
 DARK_LAYOUT = {
-    "paper_bgcolor": "#0E1117",
-    "plot_bgcolor": "#161B26",
-    "font": {"color": "#E0E3EB", "family": "Inter, sans-serif", "size": 12},
-    "margin": {"l": 50, "r": 40, "t": 50, "b": 40},
+    "paper_bgcolor": "#12161F",
+    "plot_bgcolor": "#12161F",
+    "font": {"color": "#94A3B8", "family": "Inter, -apple-system, sans-serif", "size": 11},
+    "margin": {"l": 40, "r": 16, "t": 36, "b": 30},
+    "height": 280,
     "xaxis": {
-        "gridcolor": "#262B3D",
-        "zerolinecolor": "#3B4252",
+        "gridcolor": "#1A202C",
+        "zerolinecolor": "#2D3748",
         "showline": True,
-        "linecolor": "#3B4252",
+        "linecolor": "#1E2433",
+        "tickfont": {"family": "JetBrains Mono, monospace", "size": 10, "color": "#64748B"},
     },
     "yaxis": {
-        "gridcolor": "#262B3D",
-        "zerolinecolor": "#3B4252",
+        "gridcolor": "#1A202C",
+        "zerolinecolor": "#2D3748",
         "showline": True,
-        "linecolor": "#3B4252",
+        "linecolor": "#1E2433",
+        "tickfont": {"family": "JetBrains Mono, monospace", "size": 10, "color": "#64748B"},
     },
-    "legend": {"bgcolor": "rgba(22, 27, 38, 0.8)", "font": {"color": "#E0E3EB"}},
+    "legend": {
+        "orientation": "h",
+        "yanchor": "bottom",
+        "y": 1.02,
+        "xanchor": "right",
+        "x": 1.0,
+        "bgcolor": "rgba(0,0,0,0)",
+        "font": {"color": "#94A3B8", "size": 10},
+    },
 }
 
 
@@ -41,7 +52,16 @@ def _apply_dark_theme(fig: go.Figure, title: str = "", provenance: str = "") -> 
     """Applies unified dark theme styling to a Plotly figure."""
     fig.update_layout(**DARK_LAYOUT)
     if title:
-        fig.update_layout(title={"text": title, "font": {"size": 14, "color": "#FFFFFF"}})
+        fig.update_layout(
+            title={
+                "text": title.upper(),
+                "font": {"size": 11, "color": "#64748B", "family": "Inter, sans-serif"},
+                "x": 0.0,
+                "xanchor": "left",
+                "y": 0.98,
+                "yanchor": "top",
+            }
+        )
     if provenance:
         fig.add_annotation(
             text=f"PROVENANCE: {provenance}",
@@ -52,9 +72,9 @@ def _apply_dark_theme(fig: go.Figure, title: str = "", provenance: str = "") -> 
             xanchor="right",
             yanchor="bottom",
             showarrow=False,
-            font={"size": 10, "color": "#8F9CAE"},
-            bgcolor="rgba(30, 35, 47, 0.7)",
-            bordercolor="#3B4252",
+            font={"size": 9, "color": "#64748B", "family": "JetBrains Mono, monospace"},
+            bgcolor="rgba(18, 22, 31, 0.8)",
+            bordercolor="#1E2433",
             borderwidth=1,
         )
     return fig
@@ -86,7 +106,7 @@ def equity_figure(
             y=s_equity.values,
             mode="lines",
             name="Portfolio NAV",
-            line={"color": "#00D4B2", "width": 2},
+            line={"color": "#10B981", "width": 1.5},
         )
     )
 
@@ -101,7 +121,7 @@ def equity_figure(
                 y=bm_scaled.values,
                 mode="lines",
                 name="Benchmark (SPY)",
-                line={"color": "#7E8B9B", "width": 1.5, "dash": "dot"},
+                line={"color": "#64748B", "width": 1.2, "dash": "dot"},
             )
         )
 
@@ -121,9 +141,9 @@ def drawdown_figure(underwater_series: pd.Series) -> go.Figure:
             y=vals,
             mode="lines",
             name="Drawdown",
-            line={"color": "#FF5252", "width": 1.5},
+            line={"color": "#F43F5E", "width": 1.2},
             fill="tozeroy",
-            fillcolor="rgba(255, 82, 82, 0.25)",
+            fillcolor="rgba(244, 63, 94, 0.12)",
         )
     )
     return _apply_dark_theme(fig, "Underwater Portfolio Drawdown")
