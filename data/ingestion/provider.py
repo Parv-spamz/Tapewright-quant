@@ -40,16 +40,19 @@ def get_prices(
 
             if df.index.tz is not None:
                 df.index = df.index.tz_convert(None)
+            df.index = df.index.normalize()
 
             if start is not None:
                 start_ts = pd.to_datetime(start)
                 if getattr(start_ts, "tz", None) is not None:
                     start_ts = start_ts.tz_localize(None)
+                start_ts = start_ts.normalize()
                 df = df[df.index >= start_ts]
             if end is not None:
                 end_ts = pd.to_datetime(end)
                 if getattr(end_ts, "tz", None) is not None:
                     end_ts = end_ts.tz_localize(None)
+                end_ts = end_ts.normalize()
                 df = df[df.index <= end_ts]
 
             if not df.empty:
