@@ -125,7 +125,19 @@ def equity_figure(
             )
         )
 
-    return _apply_dark_theme(fig, "Portfolio Equity Curve vs Benchmark")
+    fig = _apply_dark_theme(fig, "Portfolio Equity Curve vs Benchmark")
+    fig.update_layout(
+        legend={
+            "orientation": "h",
+            "yanchor": "bottom",
+            "y": 1.02,
+            "xanchor": "right",
+            "x": 1.0,
+            "bgcolor": "rgba(0,0,0,0)",
+        },
+        margin={"l": 40, "r": 16, "t": 36, "b": 30},
+    )
+    return fig
 
 
 def drawdown_figure(underwater_series: pd.Series) -> go.Figure:
@@ -146,7 +158,27 @@ def drawdown_figure(underwater_series: pd.Series) -> go.Figure:
             fillcolor="rgba(244, 63, 94, 0.12)",
         )
     )
-    return _apply_dark_theme(fig, "Underwater Portfolio Drawdown")
+    fig = _apply_dark_theme(fig, "Underwater Portfolio Drawdown")
+    fig.update_layout(
+        yaxis={
+            "tickformat": ".0%",
+            "gridcolor": "#1A202C",
+            "zerolinecolor": "#2D3748",
+            "showline": True,
+            "linecolor": "#1E2433",
+            "tickfont": {"family": "JetBrains Mono, monospace", "size": 10, "color": "#64748B"},
+        }
+    )
+    return fig
+
+
+INSTITUTIONAL_HEATMAP_COLORSCALE = [
+    [0.0, "#881337"],    # deep crimson (-5%+)
+    [0.35, "#E11D48"],   # muted crimson (-2%)
+    [0.5, "#161B26"],    # dark neutral slate (0.0% - matches background)
+    [0.65, "#065F46"],   # dark emerald (+2%)
+    [1.0, "#10B981"],    # crisp emerald (+5%+)
+]
 
 
 def monthly_heatmap_figure(
@@ -171,21 +203,60 @@ def monthly_heatmap_figure(
     pivot = pivot[sorted(pivot.columns)]
 
     z_vals = pivot.values * 100.0  # percentage
-    text_vals = np.where(np.isnan(z_vals), "", np.char.mod("%.1f%%", z_vals))
+    text_vals = np.where(np.isnan(z_vals), "", np.char.mod("%+.1f%%", z_vals))
+    years_str = [str(y) for y in pivot.index]
 
     fig = go.Figure(
         data=go.Heatmap(
             z=z_vals,
             x=month_names,
-            y=[str(y) for y in pivot.index],
+            y=years_str,
             text=text_vals,
             texttemplate="%{text}",
-            colorscale="RdYlGn",
+            textfont={"family": "JetBrains Mono, monospace", "size": 11, "color": "#F8FAFC"},
+            colorscale=INSTITUTIONAL_HEATMAP_COLORSCALE,
             zmid=0.0,
-            colorbar={"title": {"text": "Return %", "side": "right"}},
+            xgap=2,
+            ygap=2,
+            colorbar={
+                "thickness": 10,
+                "len": 0.85,
+                "tickfont": {"size": 9, "color": "#64748B", "family": "JetBrains Mono, monospace"},
+                "title": {"text": "%", "side": "right", "font": {"size": 9, "color": "#64748B"}},
+            },
         )
     )
-    return _apply_dark_theme(fig, "Monthly Returns Heatmap")
+    fig.update_layout(**DARK_LAYOUT)
+    fig.update_layout(
+        height=210,
+        margin={"l": 40, "r": 16, "t": 28, "b": 24},
+        xaxis={
+            "side": "top",
+            "tickmode": "array",
+            "tickvals": month_names,
+            "ticktext": month_names,
+            "showgrid": False,
+            "zeroline": False,
+            "tickfont": {"family": "JetBrains Mono, monospace", "size": 10, "color": "#94A3B8"},
+        },
+        yaxis={
+            "type": "category",
+            "dtick": 1,
+            "autorange": "reversed",
+            "showgrid": False,
+            "zeroline": False,
+            "tickfont": {"family": "JetBrains Mono, monospace", "size": 10, "color": "#94A3B8"},
+        },
+        title={
+            "text": "MONTHLY RETURNS MATRIX",
+            "font": {"size": 11, "color": "#64748B", "family": "Inter, sans-serif"},
+            "x": 0.0,
+            "xanchor": "left",
+            "y": 0.98,
+            "yanchor": "top",
+        },
+    )
+    return fig
 
 
 def returns_hist_figure(
