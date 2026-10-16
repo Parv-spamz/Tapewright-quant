@@ -3,65 +3,65 @@
 ======================================================================
 
 === SUMMARY PERFORMANCE METRICS ===
-  Annualized Return (CAGR) :     -0.87%
-  Annualized Volatility    :      6.01%
-  Sharpe Ratio (Rf=0.0%)  :    -0.1159
-  Sortino Ratio            :    -0.1444
-  Calmar Ratio             :    -0.0557
-  Max Drawdown             :    -15.70%
-  Historical VaR (99%)     :      0.78%
-  Historical CVaR (99%)    :      1.49%
-  Cornish-Fisher VaR (99%) :      2.26%
-  Omega Ratio              :     0.9785
-  Skewness                 :    -4.1008
-  Raw Kurtosis             :    58.5423
+  Annualized Return (CAGR) :   4441.12%
+  Annualized Volatility    :    488.80%
+  Sharpe Ratio (Rf=0.0%)  :     2.9051
+  Sortino Ratio            :     6.0561
+  Calmar Ratio             :    79.3150
+  Max Drawdown             :    -55.99%
+  Historical VaR (99%)     :     50.89%
+  Historical CVaR (99%)    :     53.41%
+  Cornish-Fisher VaR (99%) :     90.63%
+  Omega Ratio              :     1.9828
+  Skewness                 :     1.1429
+  Raw Kurtosis             :     4.9305
 
 === OVERFITTING & PROBABILISTIC SHARPE (PSR/DSR) ===
-  Probabilistic Sharpe (PSR) :     0.4025
+  Probabilistic Sharpe (PSR) :     1.0000
   Deflated Sharpe (DSR)      : Not computed (trial_sharpes not provided, n_trials=1)
 
 === BOOTSTRAP SHARPE CONFIDENCE INTERVAL ===
-  95% Block Bootstrap CI     : [-1.0057, 0.9324]
+  95% Block Bootstrap CI     : [2.3939, 3.4550]
 
 === TOP 5 DRAWDOWN PERIODS ===
-     start     trough        end     depth  duration  recovery_duration
-2023-04-03 2026-05-05        NaT -0.157049       703                NaN
-2022-06-15 2022-10-19 2023-03-27 -0.066449       195              108.0
-2021-11-08 2022-01-05 2022-02-09 -0.036649        64               24.0
-2022-02-23 2022-03-21 2022-05-03 -0.015717        48               30.0
-2021-09-30 2021-10-04 2021-10-18 -0.009634        12               10.0
+     start              trough        end     depth  duration  recovery_duration
+2026-09-21 2026-09-21 13:30:00 2026-09-22 -0.559935         2                1.0
+2026-09-24 2026-09-28 13:30:00 2026-09-29 -0.554318         6                1.0
+2026-09-17 2026-09-17 13:30:00 2026-09-18 -0.546923         2                1.0
+2026-09-22 2026-09-22 13:30:00 2026-09-23 -0.546802         2                1.0
+2026-09-23 2026-09-23 13:30:00 2026-09-24 -0.538397         2                1.0
 
 === MONTHLY RETURNS GRID ===
-         Jan     Feb     Mar     Apr     May     Jun     Jul     Aug     Sep     Oct     Nov     Dec    Year
-2021       -       -       -       -       -       -       -   0.00%   0.00%   0.13%  -0.38%  -1.70%  -1.95%
-2022   2.08%   2.10%  -0.20%   0.21%   2.72%  -2.10%   1.22%  -1.25%  -2.32%  -0.54%   1.13%  -1.04%   1.87%
-2023   1.18%   2.33%   3.02%  -0.95%  -1.86%  -0.55%   1.84%  -0.83%   1.01%  -0.11%  -1.83%   2.84%   6.08%
-2024       -       -       -       -       -       -       -       -  -5.29%   0.26%  -0.87%  -0.21%  -6.06%
-2025  -1.49%   1.22%   2.93%  -0.60%   0.55%   1.55%  -0.85%   1.44%  -1.88%  -2.52%  -1.17%  -4.94%  -5.84%
-2026  -0.18%  -1.16%  -0.63%  -1.48%   2.08%   1.75%  -0.26%   1.09%   2.09%  -0.59%       -       -   2.66%
+          Jan    Feb     Mar     Apr     May     Jun     Jul      Aug     Sep      Oct         Nov          Dec             Year
+2021        -      -       -       -       -       -       -    0.00%   0.00%    0.13%      -0.38%       -1.70%           -1.95%
+2022    2.08%  2.10%  -0.20%   0.21%   2.72%  -2.10%   1.22%   -1.25%  -2.32%   -0.54%       1.13%       -1.04%            1.87%
+2023    1.18%  2.33%   3.02%  -0.95%  -1.86%  -0.55%   1.84%   -0.83%   1.01%   -0.11%      -1.83%        2.84%            6.08%
+2024        -      -       -       -       -       -       -        -  -4.56%   -0.76%       0.40%       -0.42%           -5.31%
+2025   -1.51%  0.37%   2.93%  -0.88%   0.73%   1.48%  -0.07%    1.00%  -1.94%    9.20%  188333.62%  6093972.06%  12793350578.93%
+2026  248.52%  7.61%  -9.13%  11.44%   8.22%  -2.98%  15.62%  -11.73%   0.94%  105.83%           -            -          745.48%
 
 === TRADE STATISTICS ===
-  Total Closed Trades      :         43
-  Win Rate                 :     23.26%
-  Profit Factor            :     0.7923
-  Average Win              :    2460.50
-  Average Loss             :    -941.03
-  Portfolio Turnover       :      10.63
+  Total Closed Trades      :        505
+  Win Rate                 :     65.94%
+  Profit Factor            :     2.7474
+  Average Win              : 521758146253.79
+  Average Loss             : -367671349432.64
+  Portfolio Turnover       :     385.22
 
 === ASCII EQUITY CURVE ===
-106700.89 |                      #                                    
-          |                       #     # #                           
-          |           # #      #   # ### #           #                
-          |            # #      #   #                 ##              
-          |        ###                           ####   #             
-          |    #  #       # ###            ##                         
-          | ###                              ## #        ##           
-          |     ##         #                   #                      
+108776879762214.64 |                                                          #
+          |                                                         # 
           |                                                           
-          |                                                          #
-          |                                                      # ## 
-          |                                                ##     #   
-          |                                                  ## #     
-          |                                                    #      
- 89943.61 |                                                           
+          |                                                        #  
+          |                                                     ###   
+          |                                                           
+          |                                           ##      ##      
+          |                                          #  ##  ##        
+          |                                               ##          
+          |                                                           
+          |                                                           
+          |                                                           
+          |                                                           
+          |                                                           
+ 50829.77 | #########################################                 
 ======================================================================
